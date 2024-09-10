@@ -1,0 +1,16 @@
+###
+POST http://localhost:5000/category/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZDQ3MTJkNzgtNzhkNi00ZDZmLTk1NmItZDIxMzM1OTk1ZDRiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0ODUzMTgzLCJleHAiOjE3MjQ4NTQwODN9.X0jpv1Bn3kju-EKgzqt_KVlu-w0SbMCz8y1RIFs5t18
+
+{
+    "category_name": "multiple"
+}
+
+###
+GET http://localhost:5000/category/info/bdf3b1bb-46ba-415e-9b00-a1f09392c170
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NTU1MjYzLCJleHAiOjE3MjQ1NTYxNjN9.ychiJj1e0NCkTZGzTX36J7bxHTzaUTTlSr0k4t07_EA
+
+###
+GET http://localhost:5000/category/all?page=1&limit=6
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NTU1MjYzLCJleHAiOjE3MjQ1NTYxNjN9.ychiJj1e0NCkTZGzTX36J7bxHTzaUTTlSr0k4t07_EA

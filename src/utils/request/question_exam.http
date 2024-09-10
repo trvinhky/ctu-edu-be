@@ -1,0 +1,32 @@
+###
+POST http://localhost:5000/question-exam/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NTU1MjYzLCJleHAiOjE3MjQ1NTYxNjN9.ychiJj1e0NCkTZGzTX36J7bxHTzaUTTlSr0k4t07_EA
+
+{
+    "exam_Id": "888ca0bb-df74-4c22-8b06-c2bdf3f40944", 
+    "question_Id": "888ca0bb-df74-4c22-8b06-c2bdf3f40944", 
+    "question_exam_score": 0.25
+}
+
+###
+PUT http://localhost:5000/question-exam/update?exam=bdf3b1bb-46ba-415e-9b00-a1f09392c170&question=bdf3b1bb-46ba-415e-9b00-a1f09392c170
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NTU1MjYzLCJleHAiOjE3MjQ1NTYxNjN9.ychiJj1e0NCkTZGzTX36J7bxHTzaUTTlSr0k4t07_EA
+
+{
+    "question_exam_score": 0.25
+}
+
+###
+GET http://localhost:5000/question-exam/all?page=1&limit=6&exam=bdf3b1bb-46ba-415e-9b00-a1f09392c170
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NTU1MjYzLCJleHAiOjE3MjQ1NTYxNjN9.ychiJj1e0NCkTZGzTX36J7bxHTzaUTTlSr0k4t07_EA
+
+###
+GET http://localhost:5000/question-exam/all?page=1&limit=6&question=bdf3b1bb-46ba-415e-9b00-a1f09392c170
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NTU1MjYzLCJleHAiOjE3MjQ1NTYxNjN9.ychiJj1e0NCkTZGzTX36J7bxHTzaUTTlSr0k4t07_EA
+
+
+###
+DELETE http://localhost:5000/question-exam/delete?exam=bdf3b1bb-46ba-415e-9b00-a1f09392c170&question=bdf3b1bb-46ba-415e-9b00-a1f09392c170
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NTU1MjYzLCJleHAiOjE3MjQ1NTYxNjN9.ychiJj1e0NCkTZGzTX36J7bxHTzaUTTlSr0k4t07_EA

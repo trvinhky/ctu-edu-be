@@ -1,0 +1,19 @@
+###
+POST http://localhost:5000/result/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NTU1MjYzLCJleHAiOjE3MjQ1NTYxNjN9.ychiJj1e0NCkTZGzTX36J7bxHTzaUTTlSr0k4t07_EA
+
+{
+    "student_Id": "888ca0bb-df74-4c22-8b06-c2bdf3f40944", 
+    "exam_Id": "888ca0bb-df74-4c22-8b06-c2bdf3f40944", 
+    "result_score": 9, 
+    "result_completed": "2024-09-09 09:00:00"
+}
+
+###
+GET http://localhost:5000/result/all?page=1&limit=6&exam=bdf3b1bb-46ba-415e-9b00-a1f09392c170
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NTU1MjYzLCJleHAiOjE3MjQ1NTYxNjN9.ychiJj1e0NCkTZGzTX36J7bxHTzaUTTlSr0k4t07_EA
+
+###
+GET http://localhost:5000/result/all?page=1&limit=6&student=bdf3b1bb-46ba-415e-9b00-a1f09392c170
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NTU1MjYzLCJleHAiOjE3MjQ1NTYxNjN9.ychiJj1e0NCkTZGzTX36J7bxHTzaUTTlSr0k4t07_EA

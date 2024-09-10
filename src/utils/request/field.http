@@ -1,0 +1,25 @@
+###
+POST http://localhost:5000/field/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDkxNDY4LCJleHAiOjE3MjQ0OTIzNjh9.ClKiP_E_JnWr_-pdOLIFYj--7D6U-ev26xUkdRtE-KA
+
+{
+    "field_name": "Lập trình Web",
+    "field_description": "Bao gồm Front-End và Back-End"
+}
+
+###
+PUT http://localhost:5000/field/f58f3fd2-3754-408b-9ee0-ee07e53d5460
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDkxNDY4LCJleHAiOjE3MjQ0OTIzNjh9.ClKiP_E_JnWr_-pdOLIFYj--7D6U-ev26xUkdRtE-KA
+
+{
+    "field_name": "Lập Trình Web",
+    "field_description": "Bao gồm Front-End và Back-End"
+}
+
+###
+GET http://localhost:5000/field/info/f58f3fd2-3754-408b-9ee0-ee07e53d5460
+
+###
+GET http://localhost:5000/field/all?page=1&limit=6

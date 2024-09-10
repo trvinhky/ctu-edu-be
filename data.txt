@@ -1,0 +1,20 @@
+# account
+{
+    "email": "admin@gmail.com",
+    "password": "VinhKy@2002",
+    "name": "admin",
+    "role": "e4401e12-7c63-4ac9-9b76-afdd136db326"
+}
+
+{
+    "email": "vinhky@gmail.com",
+    "name": "vinhky",
+    "password": "VinhKy@2002"
+}
+
+{
+    "email": "teacher@gmail.com",
+    "password": "VinhKy@2002",
+    "name": "teacher",
+    "role": "b856fdf6-b2b2-4976-bc80-a8611d699359"
+}

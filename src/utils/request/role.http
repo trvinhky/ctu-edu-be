@@ -1,0 +1,20 @@
+###
+POST http://localhost:5000/role/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJoZW5yeSIsImlhdCI6MTYxNTcxNjE5NCwiZXhwIjoxNjE1NzE2NDk0fQ.GwjcMpf5itSfVepLKgnXlOvzkLgrwOhuXfOZVtOctbk
+
+{
+    "role_name": "admin"
+}
+
+###
+GET http://localhost:5000/role/info/9743a673-0e72-456d-bceb-3a9cbe74fb09
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA3NDQ4LCJleHAiOjE3MjQ0MDgzNDh9.DOdUy2N_0_I5oRNmKFdMozveZYp3XvcaJrDfofHWB6M
+
+###
+GET http://localhost:5000/role/name/user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA3NDQ4LCJleHAiOjE3MjQ0MDgzNDh9.DOdUy2N_0_I5oRNmKFdMozveZYp3XvcaJrDfofHWB6M
+
+###
+GET http://localhost:5000/role/all?page=1&limit=6
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA3NDQ4LCJleHAiOjE3MjQ0MDgzNDh9.DOdUy2N_0_I5oRNmKFdMozveZYp3XvcaJrDfofHWB6M

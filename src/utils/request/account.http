@@ -1,0 +1,38 @@
+POST http://localhost:5000/account/create
+Content-Type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "password": "VinhKy@2002",
+    "name": "admin",
+    "role": "e4401e12-7c63-4ac9-9b76-afdd136db326"
+}
+
+###
+POST http://localhost:5000/account/login
+Content-Type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "password": "VinhKy@2002"
+}
+
+###
+GET http://localhost:5000/account/token
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA2MTIzLCJleHAiOjE3MjQ0OTI1MjN9.l9bdG8qWfkiDC33SoWkBaGCjLIg3Ecnq1xwc8ik4xVU"
+}
+
+###
+DELETE http://localhost:5000/account/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA2MTYwLCJleHAiOjE3MjQ0MDcwNjB9.hRnvqdN-HpQTq2csaoNE6p5FnuPHqYMoYq2de2qlxJQ
+
+###
+GET http://localhost:5000/account/info
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA4NDA3LCJleHAiOjE3MjQ0MDkzMDd9.-Ti_NUMviS8gPlg9dsFWsezkYmThqZaWXlaFST7rLkI
+
+###
+GET http://localhost:5000/account/all?page=1&limit=6&role=jdkadkjbadkbua
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA4NDA3LCJleHAiOjE3MjQ0MDkzMDd9.-Ti_NUMviS8gPlg9dsFWsezkYmThqZaWXlaFST7rLkI
