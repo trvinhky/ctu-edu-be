@@ -7,16 +7,10 @@ const TypeServices = {
     async getOne(type_Id) {
         return await db.Type.findOne({
             where: { type_Id },
-            include: [
-                {
-                    model: db.Resource,
-                    as: 'resources'
-                },
-                {
-                    model: db.QuestionResource,
-                    as: 'questions'
-                }
-            ]
+            include: [{
+                model: db.Question,
+                as: 'questions'
+            }]
         })
     },
     async getAll(params) {

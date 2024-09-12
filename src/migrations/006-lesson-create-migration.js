@@ -12,8 +12,7 @@ module.exports = {
                 allowNull: false
             },
             lesson_content: {
-                type: Sequelize.TEXT,
-                allowNull: true
+                type: Sequelize.TEXT
             },
             course_Id: {
                 type: Sequelize.UUID,

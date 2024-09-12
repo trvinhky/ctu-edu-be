@@ -9,9 +9,9 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'lessons'
             })
 
-            this.belongsTo(models.Type, {
-                foreignKey: 'resource_type',
-                as: 'type'
+            this.belongsTo(models.Category, {
+                foreignKey: 'category_Id',
+                as: 'category'
             })
         }
     }
@@ -24,7 +24,8 @@ module.exports = (sequelize, DataTypes) => {
         },
         resource_url: DataTypes.STRING,
         lesson_Id: DataTypes.STRING,
-        resource_type: DataTypes.STRING
+        resource_price: DataTypes.INTEGER,
+        category_Id: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'Resource',

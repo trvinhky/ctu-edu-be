@@ -33,6 +33,11 @@ const EnrollmentServices = {
                 }
             ]
         })
+    },
+    async delete(student_Id, course_Id) {
+        return await db.Enrollment.destroy({
+            where: { student_Id, course_Id }
+        });
     }
 }
 

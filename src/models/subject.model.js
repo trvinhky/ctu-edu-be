@@ -1,28 +1,32 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class Field extends Model {
+    class Subject extends Model {
         static associate(models) {
             this.hasMany(models.Course, {
-                foreignKey: 'field_Id',
+                foreignKey: 'subject_Id',
                 as: 'courses'
+            })
+
+            this.hasMany(models.Post, {
+                foreignKey: 'subject_Id',
+                as: 'posts'
             })
         }
     }
-    Field.init({
-        field_Id: {
+    Subject.init({
+        subject_Id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             allowNull: false,
             primaryKey: true
         },
-        field_name: DataTypes.STRING,
-        field_description: DataTypes.STRING,
+        subject_name: DataTypes.STRING
     }, {
         sequelize,
-        modelName: 'Field',
-        tableName: 'fields',
+        modelName: 'Subject',
+        tableName: 'subjects',
         timestamps: false
     });
-    return Field;
+    return Subject;
 };

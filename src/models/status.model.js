@@ -1,33 +1,33 @@
 'use strict';
 const { Model } = require('sequelize');
-const { TYPE } = require('../utils/constants');
+const { STATUS } = require('../utils/constants');
 
 module.exports = (sequelize, DataTypes) => {
-    class Type extends Model {
+    class Status extends Model {
         static associate(models) {
-            this.hasMany(models.Question, {
-                foreignKey: 'type_Id',
-                as: 'questions'
+            this.hasMany(models.Post, {
+                foreignKey: 'status_Id',
+                as: 'posts'
             })
         }
     }
-    Type.init({
-        type_Id: {
+    Status.init({
+        status_Id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             allowNull: false,
             primaryKey: true
         },
-        type_name: {
+        status_name: {
             type: DataTypes.ENUM,
-            values: Object.values(TYPE),
-            defaultValue: TYPE.ONE
+            values: Object.values(STATUS),
+            defaultValue: STATUS.PENDING
         }
     }, {
         sequelize,
-        modelName: 'Type',
-        tableName: 'types',
+        modelName: 'Status',
+        tableName: 'status',
         timestamps: false
     });
-    return Type;
+    return Status;
 };

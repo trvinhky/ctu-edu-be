@@ -26,6 +26,9 @@ module.exports = {
             profile_info: {
                 type: Sequelize.TEXT
             },
+            profile_score: {
+                type: Sequelize.INTEGER
+            },
             account_Id: {
                 allowNull: false,
                 type: Sequelize.UUID,

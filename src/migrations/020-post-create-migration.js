@@ -1,20 +1,17 @@
 'use strict'
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable('courses', {
-            course_Id: {
+        await queryInterface.createTable('posts', {
+            post_Id: {
                 allowNull: false,
                 primaryKey: true,
                 type: Sequelize.UUID
             },
-            course_name: {
+            post_title: {
                 type: Sequelize.STRING(500),
                 allowNull: false
             },
-            course_image: {
-                type: Sequelize.STRING(500),
-            },
-            course_content: {
+            post_content: {
                 type: Sequelize.TEXT,
                 allowNull: false
             },
@@ -26,12 +23,12 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            teacher_Id: {
+            status_Id: {
                 type: Sequelize.UUID,
                 allowNull: false,
                 references: {
-                    model: 'account',
-                    key: 'account_Id'
+                    model: 'status',
+                    key: 'status_Id'
                 }
             },
             subject_Id: {
@@ -41,10 +38,18 @@ module.exports = {
                     model: 'subjects',
                     key: 'subject_Id'
                 }
+            },
+            auth_Id: {
+                type: Sequelize.UUID,
+                allowNull: false,
+                references: {
+                    model: 'account',
+                    key: 'account_Id'
+                }
             }
         })
     },
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable('courses')
+        await queryInterface.dropTable('posts')
     }
 }

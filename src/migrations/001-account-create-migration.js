@@ -16,13 +16,8 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: false
             },
-            account_active: {
-                type: Sequelize.BOOLEAN,
-                allowNull: true
-            },
             account_token: {
                 type: Sequelize.STRING,
-                allowNull: true
             },
             createdAt: {
                 allowNull: false,

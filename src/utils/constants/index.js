@@ -4,16 +4,22 @@ const ROLES = {
     ADMIN: 'admin'
 }
 
-const CATEGORY = {
+const TYPE = {
     MULTIPLE: "multiple",
     ONE: "one"
 }
 
-const TYPE = {
+const CATEGORY = {
     FILE: "file",
     IMAGE: "image",
     VIDEO: "video",
     AUDIO: "audio"
 }
 
-module.exports = { ROLES, CATEGORY, TYPE }
+const STATUS = {
+    PENDING: 'chờ xác nhận',
+    CONFIRM: 'xác nhận',
+    CANCEL: 'hủy'
+}
+
+module.exports = { ROLES, CATEGORY, TYPE, STATUS }

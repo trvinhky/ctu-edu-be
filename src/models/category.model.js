@@ -5,7 +5,12 @@ const { CATEGORY } = require('../utils/constants');
 module.exports = (sequelize, DataTypes) => {
     class Category extends Model {
         static associate(models) {
-            this.hasMany(models.Question, {
+            this.hasMany(models.Resource, {
+                foreignKey: 'category_Id',
+                as: 'resources'
+            })
+
+            this.hasMany(models.QuestionResource, {
                 foreignKey: 'category_Id',
                 as: 'questions'
             })
@@ -19,9 +24,8 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true
         },
         category_name: {
-            type: DataTypes.ENUM,
-            values: Object.values(CATEGORY),
-            defaultValue: CATEGORY.ONE
+            type: DataTypes.STRING,
+            defaultValue: CATEGORY.IMAGE
         }
     }, {
         sequelize,

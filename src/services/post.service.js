@@ -1,19 +1,21 @@
 const db = require("../models")
 
-const CourseServices = {
-    async create(course) {
-        return await db.Course.create(course)
+const PostServices = {
+    async create(post) {
+        return await db.Post.create(post)
     },
-    async update(course, course_Id) {
-        return await db.Course.update(
-            course,
-            { where: { course_Id } }
-        )
-    },
-    async getOne(params) {
-        return await db.Course.findOne({
-            where: params,
+    async getOne(post_Id) {
+        return await db.Post.findOne({
+            where: { post_Id },
             include: [
+                {
+                    model: db.Status,
+                    as: 'status'
+                },
+                {
+                    model: db.Subject,
+                    as: 'subject'
+                },
                 {
                     model: db.Account,
                     as: 'teacher',
@@ -30,31 +32,33 @@ const CourseServices = {
                             as: 'profile'
                         }
                     ]
-                },
-                {
-                    model: db.Subject,
-                    as: 'subject'
                 }
             ]
         })
+    },
+    async update(post, post_Id) {
+        return await db.Post.update(
+            post,
+            { where: { post_Id } }
+        )
     },
     async getAll(params) {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
-        const title = params.title ?? ''
-        const subject_Id = params.subject ?? ''
 
-        return await db.Course.findAndCountAll({
+        return await db.Post.findAndCountAll({
             limit,
             offset,
-            where: {
-                course_name: {
-                    [db.Sequelize.Op.like]: `%${title}%`
-                },
-                subject_Id
-            },
             include: [
+                {
+                    model: db.Status,
+                    as: 'status'
+                },
+                {
+                    model: db.Subject,
+                    as: 'subject'
+                },
                 {
                     model: db.Account,
                     as: 'teacher',
@@ -71,14 +75,10 @@ const CourseServices = {
                             as: 'profile'
                         }
                     ]
-                },
-                {
-                    model: db.Subject,
-                    as: 'subject'
                 }
             ]
         })
     }
 }
 
-module.exports = CourseServices
+module.exports = PostServices

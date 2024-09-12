@@ -9,8 +9,8 @@ const QuestionServices = {
             where: { question_Id },
             include: [
                 {
-                    model: db.Category,
-                    as: 'category'
+                    model: db.Type,
+                    as: 'type'
                 },
                 {
                     model: db.QuestionResource,
@@ -52,8 +52,8 @@ const QuestionServices = {
             where: { auth_Id },
             include: [
                 {
-                    model: db.Category,
-                    as: 'category'
+                    model: db.Type,
+                    as: 'type'
                 },
                 {
                     model: db.Account,

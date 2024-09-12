@@ -1,22 +1,20 @@
 'use strict'
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable('fields', {
-            field_Id: {
+        await queryInterface.createTable('subjects', {
+            subject_Id: {
                 allowNull: false,
                 primaryKey: true,
                 type: Sequelize.UUID
             },
-            field_name: {
+            subject_name: {
                 type: Sequelize.STRING,
-                allowNull: false
-            },
-            field_description: {
-                type: Sequelize.TEXT
+                allowNull: false,
+                unique: true
             }
         })
     },
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable('fields')
+        await queryInterface.dropTable('subjects')
     }
 }

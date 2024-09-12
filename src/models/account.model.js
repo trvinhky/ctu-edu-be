@@ -14,6 +14,16 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'courses'
             })
 
+            this.hasMany(models.Post, {
+                foreignKey: 'auth_Id',
+                as: 'posts'
+            })
+
+            this.hasMany(models.Comment, {
+                foreignKey: 'account_Id',
+                as: 'comments'
+            })
+
             this.hasMany(models.Question, {
                 foreignKey: 'auth_Id',
                 as: 'questions'
@@ -67,7 +77,6 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         account_password: DataTypes.STRING,
-        account_active: DataTypes.BOOLEAN,
         account_token: {
             type: DataTypes.STRING,
             unique: true,

@@ -5,20 +5,12 @@ module.exports = {
     up: async (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('types', [
             {
-                type_Id: '6db0c3a7-3666-441f-b0a2-5ff127bba96f',
-                type_name: TYPE.FILE
+                category_Id: 'a21aff4e-74cd-46ec-adf8-2499379ac0b1',
+                category_name: TYPE.ONE
             },
             {
-                type_Id: 'c5626118-a6f8-49b0-b792-5ac3fb5884c0',
-                type_name: TYPE.IMAGE
-            },
-            {
-                type_Id: 'edfb12ab-e721-4c66-b38a-68737641bd73',
-                type_name: TYPE.VIDEO
-            },
-            {
-                type_Id: '749a43ef-cbaa-4f36-ad6a-de1a2d204c29',
-                type_name: TYPE.AUDIO
+                category_Id: '6438a022-01ae-42a6-a401-6ac0622e34c8',
+                category_name: TYPE.MULTIPLE
             }
         ], {});
     },

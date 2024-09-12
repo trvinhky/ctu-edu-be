@@ -9,8 +9,8 @@ const QuestionResourceServices = {
             where: { question_resource_Id },
             include: [
                 {
-                    model: db.Type,
-                    as: 'type'
+                    model: db.Category,
+                    as: 'category'
                 }
             ]
         })
@@ -31,8 +31,8 @@ const QuestionResourceServices = {
             offset,
             include: [
                 {
-                    model: db.Type,
-                    as: 'type'
+                    model: db.Category,
+                    as: 'category'
                 }
             ]
         })

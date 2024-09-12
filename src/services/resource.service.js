@@ -8,8 +8,8 @@ const ResourceServices = {
         return await db.Resource.findOne({
             where: { resource_Id },
             include: [{
-                model: db.Type,
-                as: 'type'
+                model: db.Category,
+                as: 'category'
             }]
         })
     },
@@ -23,7 +23,7 @@ const ResourceServices = {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
-        const lesson_Id = params.type ?? ''
+        const lesson_Id = params.lesson ?? ''
 
         return await db.Resource.findAndCountAll({
             limit,
@@ -31,6 +31,11 @@ const ResourceServices = {
             where: { lesson_Id }
         })
     },
+    async delete(resource_Id) {
+        return await db.Resource.destroy({
+            where: { resource_Id }
+        });
+    }
 }
 
 module.exports = ResourceServices

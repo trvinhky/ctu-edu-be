@@ -11,12 +11,12 @@ module.exports = {
                 type: Sequelize.STRING(500),
                 allowNull: false
             },
-            resource_type: {
+            category_Id: {
                 type: Sequelize.UUID,
                 allowNull: false,
                 references: {
-                    model: 'types',
-                    key: 'type_Id'
+                    model: 'categories',
+                    key: 'category_Id'
                 }
             },
             question_Id: {

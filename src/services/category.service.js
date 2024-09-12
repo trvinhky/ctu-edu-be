@@ -7,10 +7,16 @@ const CategoryServices = {
     async getOne(category_Id) {
         return await db.Category.findOne({
             where: { category_Id },
-            include: [{
-                model: db.Question,
-                as: 'questions'
-            }]
+            include: [
+                {
+                    model: db.Resource,
+                    as: 'resources'
+                },
+                {
+                    model: db.QuestionResource,
+                    as: 'questions'
+                }
+            ]
         })
     },
     async getAll(params) {
@@ -23,6 +29,11 @@ const CategoryServices = {
             offset
         })
     },
+    async delete(category_Id) {
+        return await db.Category.destroy({
+            where: { category_Id }
+        });
+    }
 }
 
 module.exports = CategoryServices

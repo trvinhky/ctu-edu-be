@@ -8,9 +8,9 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'teacher'
             })
 
-            this.belongsTo(models.Field, {
-                foreignKey: 'field_Id',
-                as: 'field'
+            this.belongsTo(models.Subject, {
+                foreignKey: 'subject_Id',
+                as: 'subject'
             })
 
             this.hasMany(models.Lesson, {
@@ -44,11 +44,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         course_name: DataTypes.STRING,
         course_image: DataTypes.STRING,
-        course_required: DataTypes.STRING,
         course_content: DataTypes.STRING,
-        course_total: DataTypes.INTEGER,
         teacher_Id: DataTypes.STRING,
-        field_Id: DataTypes.STRING
+        subject_Id: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'Course',

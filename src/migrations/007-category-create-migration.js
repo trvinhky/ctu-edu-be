@@ -1,6 +1,4 @@
 'use strict'
-const { CATEGORY } = require("../utils/constants")
-
 module.exports = {
     up: async (queryInterface, Sequelize) => {
         await queryInterface.createTable('categories', {
@@ -10,8 +8,7 @@ module.exports = {
                 type: Sequelize.UUID
             },
             category_name: {
-                type: Sequelize.ENUM,
-                values: Object.values(CATEGORY),
+                type: Sequelize.STRING(15),
                 allowNull: false,
                 unique: true
             }

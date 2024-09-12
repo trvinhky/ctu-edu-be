@@ -12,8 +12,7 @@ module.exports = {
                 allowNull: false
             },
             exam_description: {
-                type: Sequelize.TEXT,
-                allowNull: true
+                type: Sequelize.TEXT
             },
             exam_total_score: {
                 type: Sequelize.DOUBLE,
@@ -21,7 +20,7 @@ module.exports = {
             },
             exam_start_time: {
                 type: Sequelize.DATE,
-                allowNull: true,
+                allowNull: false,
             },
             exam_limit: {
                 type: Sequelize.INTEGER,

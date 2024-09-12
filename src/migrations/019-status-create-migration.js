@@ -1,20 +1,23 @@
 'use strict'
+const { STATUS } = require("../utils/constants")
+
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable('role', {
-            role_Id: {
+        await queryInterface.createTable('status', {
+            status_Id: {
                 allowNull: false,
                 primaryKey: true,
                 type: Sequelize.UUID
             },
-            role_name: {
-                type: Sequelize.STRING(15),
+            status_name: {
+                type: Sequelize.ENUM,
+                values: Object.values(STATUS),
                 allowNull: false,
                 unique: true
             }
         })
     },
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable('role')
+        await queryInterface.dropTable('status')
     }
 }

@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         profile_avatar: DataTypes.STRING,
         profile_birthday: DataTypes.DATE,
         profile_info: DataTypes.TEXT,
+        profile_score: DataTypes.INTEGER,
         account_Id: DataTypes.STRING
     }, {
         sequelize,

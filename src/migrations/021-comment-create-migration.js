@@ -1,32 +1,33 @@
 'use strict'
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable('courses', {
-            course_Id: {
+        await queryInterface.createTable('comments', {
+            comment_Id: {
                 allowNull: false,
                 primaryKey: true,
                 type: Sequelize.UUID
             },
-            course_name: {
-                type: Sequelize.STRING(500),
-                allowNull: false
-            },
-            course_image: {
-                type: Sequelize.STRING(500),
-            },
-            course_content: {
+            comment_content: {
                 type: Sequelize.TEXT,
                 allowNull: false
             },
             createdAt: {
-                type: Sequelize.DATE,
-                allowNull: false
+                allowNull: false,
+                type: Sequelize.DATE
             },
             updatedAt: {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            teacher_Id: {
+            post_Id: {
+                type: Sequelize.UUID,
+                allowNull: false,
+                references: {
+                    model: 'posts',
+                    key: 'post_Id'
+                }
+            },
+            account_Id: {
                 type: Sequelize.UUID,
                 allowNull: false,
                 references: {
@@ -34,17 +35,17 @@ module.exports = {
                     key: 'account_Id'
                 }
             },
-            subject_Id: {
+            parent_Id: {
                 type: Sequelize.UUID,
-                allowNull: false,
+                allowNull: true,
                 references: {
-                    model: 'subjects',
-                    key: 'subject_Id'
+                    model: 'comments',
+                    key: 'comment_Id'
                 }
             }
         })
     },
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable('courses')
+        await queryInterface.dropTable('comments')
     }
 }

@@ -11,12 +11,12 @@ module.exports = {
                 type: Sequelize.TEXT,
                 allowNull: false
             },
-            category_Id: {
+            type_Id: {
                 type: Sequelize.UUID,
                 allowNull: false,
                 references: {
-                    model: 'categories',
-                    key: 'category_Id'
+                    model: 'types',
+                    key: 'type_Id'
                 }
             },
             auth_Id: {
