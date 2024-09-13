@@ -121,11 +121,11 @@ const QuestionExamControllers = {
         }
 
         try {
-            const questionExams = await QuestionExamServices.delete({
+            const questionExam = await QuestionExamServices.delete({
                 exam, question
             })
 
-            if (questionExams) {
+            if (questionExam) {
                 return res.status(200).json({
                     message: 'Xóa câu hỏi vào bài thi thành công!'
                 })

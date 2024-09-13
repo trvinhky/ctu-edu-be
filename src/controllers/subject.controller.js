@@ -1,33 +1,30 @@
-const FieldServices = require("../services/field.service")
+const SubjectServices = require("../services/subject.service")
 const ApiError = require("../utils/constants/api-error")
 
-const FieldControllers = {
+const SubjectControllers = {
     async create(req, res, next) {
-        const { field_name, field_description } = req.body
+        const { subject_name } = req.body
 
-        if (!field_name) {
+        if (!subject_name) {
             return next(new ApiError(
                 400,
-                'Tên lĩnh vực không được rỗng!'
+                'Tên môn học không được rỗng!'
             ))
         }
 
         try {
-            const newField = await FieldServices.create(
-                {
-                    field_name,
-                    field_description: field_description ?? null
-                }
+            const newSubject = await SubjectServices.create(
+                { subject_name }
             )
 
-            if (newField) {
+            if (newSubject) {
                 return res.status(200).json({
-                    message: 'Thêm mới lĩnh vực thành công!'
+                    message: 'Thêm mới môn học thành công!'
                 })
             }
 
             return res.status(404).json({
-                message: 'Thêm mới lĩnh vực thất bại!'
+                message: 'Thêm mới môn học thất bại!'
             })
         } catch (err) {
             return next(new ApiError(
@@ -37,10 +34,10 @@ const FieldControllers = {
         }
     },
     async update(req, res, next) {
-        const { field_name, field_description } = req.body
+        const { subject_name } = req.body
         const { id } = req.params
 
-        if (!id || !field_name) {
+        if (!id || !subject_name) {
             return next(new ApiError(
                 400,
                 'Tất cả các trường không được rỗng!'
@@ -48,22 +45,19 @@ const FieldControllers = {
         }
 
         try {
-            const field = await FieldServices.update(
-                {
-                    field_name,
-                    field_description: field_description ?? null
-                },
+            const subject = await SubjectServices.update(
+                { subject_name },
                 id
             )
 
-            if (field) {
+            if (subject) {
                 return res.status(200).json({
-                    message: 'Cập nhật lĩnh vực thành công!'
+                    message: 'Cập nhật môn học thành công!'
                 })
             }
 
             return res.status(404).json({
-                message: 'Cập nhật lĩnh vực thất bại!'
+                message: 'Cập nhật môn học thất bại!'
             })
         } catch (err) {
             return next(new ApiError(
@@ -78,22 +72,22 @@ const FieldControllers = {
         if (!id) {
             return next(new ApiError(
                 400,
-                'Id lĩnh vực không tồn tại!'
+                'Id môn học không tồn tại!'
             ))
         }
 
         try {
-            const field = await FieldServices.getOne(id)
+            const subject = await SubjectServices.getOne(id)
 
-            if (field) {
+            if (subject) {
                 return res.status(201).json({
-                    data: field,
-                    message: 'Lấy lĩnh vực thành công!'
+                    data: subject,
+                    message: 'Lấy môn học thành công!'
                 })
             }
 
             return res.status(404).json({
-                message: 'Lấy lĩnh vực thất bại!'
+                message: 'Lấy môn học thất bại!'
             })
         } catch (err) {
             return next(new ApiError(
@@ -106,19 +100,19 @@ const FieldControllers = {
         const { page, limit } = req.query
 
         try {
-            const fields = await FieldServices.getAll({
+            const subjects = await SubjectServices.getAll({
                 page, limit
             })
 
-            if (fields) {
+            if (subjects) {
                 return res.status(201).json({
-                    data: fields,
-                    message: 'Lấy tất cả lĩnh vực thành công!'
+                    data: subjects,
+                    message: 'Lấy tất cả môn học thành công!'
                 })
             }
 
             return res.status(404).json({
-                message: 'Lấy tất cả lĩnh vực thất bại!'
+                message: 'Lấy tất cả môn học thất bại!'
             })
         } catch (err) {
             return next(new ApiError(
@@ -129,4 +123,4 @@ const FieldControllers = {
     }
 }
 
-module.exports = FieldControllers
+module.exports = SubjectControllers

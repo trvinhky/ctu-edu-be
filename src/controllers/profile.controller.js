@@ -39,7 +39,7 @@ const ProfileControllers = {
             profile_phone,
             profile_avatar,
             profile_birthday,
-            profile_info,
+            profile_info
         } = req.body
 
         const { id } = req.params
@@ -47,7 +47,7 @@ const ProfileControllers = {
         if (!profile_name || !id) {
             return next(new ApiError(
                 400,
-                'Tất cả các trường dữ liệu rỗng'
+                'Tất cả các trường dữ liệu rỗng!'
             ))
         }
 
@@ -69,6 +69,39 @@ const ProfileControllers = {
 
             return res.status(404).json({
                 message: 'Cập nhật thông tin người dùng thất bại!'
+            })
+        } catch (err) {
+            return next(new ApiError(
+                500,
+                err
+            ))
+        }
+    },
+    async recharge(req, res, next) {
+        const { profile_score } = req.body
+        const { id } = req.params
+
+        if (isNaN(+profile_score) || !id) {
+            return next(new ApiError(
+                400,
+                'Tất cả các trường dữ liệu không hợp lệ!'
+            ))
+        }
+
+        try {
+            const profile = ProfileServices.recharge(
+                +profile_score,
+                id
+            )
+
+            if (profile) {
+                return res.status(200).json({
+                    message: 'Thêm điểm người dùng thành công!'
+                })
+            }
+
+            return res.status(404).json({
+                message: 'Thêm điểm người dùng thất bại!'
             })
         } catch (err) {
             return next(new ApiError(

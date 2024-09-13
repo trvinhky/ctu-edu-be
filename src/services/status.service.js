@@ -4,9 +4,18 @@ const StatusServices = {
     async create(status) {
         return await db.Status.create(status)
     },
-    async getOne(status_Id) {
+    async getOne(params) {
+        let where = params
+        if (params.status_name) {
+            where = {
+                status_name: {
+                    [db.Sequelize.Op.like]: `%${params.status_name}%`
+                }
+            }
+        }
+
         return await db.Status.findOne({
-            where: { status_Id },
+            where,
             include: [{
                 model: db.Post,
                 as: 'posts'
@@ -22,11 +31,6 @@ const StatusServices = {
             limit,
             offset
         })
-    },
-    async delete(status_Id) {
-        return await db.Status.destroy({
-            where: { status_Id }
-        });
     }
 }
 

@@ -14,7 +14,7 @@ const RoleServices = {
             }
         }
         return await db.Role.findOne({
-            where: where,
+            where,
             include: [{
                 model: db.Account,
                 as: 'accounts',

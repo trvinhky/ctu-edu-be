@@ -1,29 +1,29 @@
-const TypeServices = require("../services/type.service")
-const { TYPE } = require("../utils/constants")
+const StatusServices = require("../services/status.service")
+const { STATUS } = require("../utils/constants")
 const ApiError = require("../utils/constants/api-error")
 
-const TypeControllers = {
+const StatusControllers = {
     async create(req, res, next) {
-        const { type_name } = req.body
+        const { status_name } = req.body
 
-        if (!type_name || Object.values(TYPE).indexOf(type_name) === -1) {
+        if (!status_name || Object.values(STATUS).indexOf(status_name) === -1) {
             return next(new ApiError(
                 400,
-                'Tên kiểu câu hỏi không hợp lệ!'
+                'Tên trạng thái không hợp lệ!'
             ))
         }
 
         try {
-            const newType = await TypeServices.create({ type_name })
+            const newStatus = await StatusServices.create({ status_name })
 
-            if (newType) {
+            if (newStatus) {
                 return res.status(200).json({
-                    message: 'Thêm mới kiểu câu hỏi thành công!'
+                    message: 'Thêm mới trạng thái thành công!'
                 })
             }
 
             return res.status(404).json({
-                message: 'Thêm mới kiểu câu hỏi thất bại!'
+                message: 'Thêm mới trạng thái thất bại!'
             })
         } catch (err) {
             return next(new ApiError(
@@ -37,22 +37,22 @@ const TypeControllers = {
         if (!id) {
             return next(new ApiError(
                 400,
-                'Id kiểu câu hỏi không tồn tại!'
+                'Id trạng thái không tồn tại!'
             ))
         }
 
         try {
-            const type = await TypeServices.getOne(id)
+            const status = await StatusServices.getOne({ status_Id: id })
 
-            if (type) {
+            if (status) {
                 return res.status(201).json({
-                    data: type,
-                    message: 'Lấy kiểu câu hỏi thành công!'
+                    data: status,
+                    message: 'Lấy trạng thái thành công!'
                 })
             }
 
             return res.status(404).json({
-                message: 'Lấy kiểu câu hỏi thất bại!'
+                message: 'Lấy trạng thái thất bại!'
             })
         } catch (err) {
             return next(new ApiError(
@@ -65,19 +65,19 @@ const TypeControllers = {
         const { page, limit } = req.query
 
         try {
-            const types = await TypeServices.getAll({
+            const status = await StatusServices.getAll({
                 page, limit
             })
 
-            if (types) {
+            if (status) {
                 return res.status(201).json({
-                    data: types,
-                    message: 'Lấy tất cả kiểu câu hỏi thành công!'
+                    data: status,
+                    message: 'Lấy tất cả trạng thái thành công!'
                 })
             }
 
             return res.status(404).json({
-                message: 'Lấy tất cả kiểu câu hỏi thất bại!'
+                message: 'Lấy tất cả trạng thái thất bại!'
             })
         } catch (err) {
             return next(new ApiError(
@@ -88,4 +88,4 @@ const TypeControllers = {
     }
 }
 
-module.exports = TypeControllers
+module.exports = StatusControllers

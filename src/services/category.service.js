@@ -19,6 +19,12 @@ const CategoryServices = {
             ]
         })
     },
+    async update(category, category_Id) {
+        return await db.Category.update(
+            category,
+            { where: { category_Id } }
+        )
+    },
     async getAll(params) {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;

@@ -11,6 +11,12 @@ const ProfileServices = {
             profile,
             { where: { profile_Id } }
         )
+    },
+    async recharge(profile_score, account_Id) {
+        return await db.Profile.update(
+            { profile_score },
+            { where: { account_Id } }
+        )
     }
 }
 

@@ -12,7 +12,7 @@ module.exports = {
                 type: Sequelize.STRING(500),
                 allowNull: false
             },
-            resource_price: {
+            resource_score: {
                 type: Sequelize.INTEGER,
                 allowNull: false
             },

@@ -1,15 +1,14 @@
 const RoleServices = require("../services/role.service")
-const { ROLES } = require("../utils/constants")
 const ApiError = require("../utils/constants/api-error")
 
 const RoleControllers = {
     async create(req, res, next) {
         const { role_name } = req.body
 
-        if (!role_name || Object.values(ROLES).indexOf(role_name) === -1) {
+        if (!role_name) {
             return next(new ApiError(
                 400,
-                'Tên role không hợp lệ!'
+                'Tên role không tồn tại!'
             ))
         }
 

@@ -5,11 +5,11 @@ const QuestionControllers = {
     async create(req, res, next) {
         const {
             question_content,
-            category_Id,
+            type_Id,
             auth_Id
         } = req.body
 
-        if (!question_content || !category_Id || !auth_Id) {
+        if (!question_content || !type_Id || !auth_Id) {
             return next(new ApiError(
                 400,
                 'Tất cả các trường dữ liệu rỗng!'
@@ -20,7 +20,7 @@ const QuestionControllers = {
             const newQuestion = await QuestionServices.create(
                 {
                     question_content,
-                    category_Id,
+                    type_Id,
                     auth_Id
                 }
             )
@@ -44,13 +44,13 @@ const QuestionControllers = {
     async update(req, res, next) {
         const {
             question_content,
-            category_Id,
+            type_Id,
             auth_Id
         } = req.body
 
         const { id } = req.params
 
-        if (!question_content || !category_Id || !id || !auth_Id) {
+        if (!question_content || !type_Id || !id || !auth_Id) {
             return next(new ApiError(
                 400,
                 'Tất cả các trường dữ liệu rỗng!'
@@ -61,7 +61,7 @@ const QuestionControllers = {
             const question = await QuestionServices.update(
                 {
                     question_content,
-                    category_Id,
+                    type_Id,
                     auth_Id
                 },
                 id

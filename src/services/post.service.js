@@ -46,10 +46,13 @@ const PostServices = {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
+        const status_Id = params.status ?? ''
+        const auth_Id = params.auth
 
         return await db.Post.findAndCountAll({
             limit,
             offset,
+            where: { auth_Id, status_Id },
             include: [
                 {
                     model: db.Status,
@@ -78,6 +81,13 @@ const PostServices = {
                 }
             ]
         })
+    },
+    async delete(params) {
+        const status_Id = params.status
+        const post_Id = params.post
+        return await db.Post.destroy({
+            where: { status_Id, post_Id }
+        });
     }
 }
 

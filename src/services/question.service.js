@@ -19,17 +19,6 @@ const QuestionServices = {
                 {
                     model: db.Option,
                     as: 'options'
-                },
-                {
-                    model: db.Account,
-                    as: 'auth',
-                    attributes: {
-                        exclude: [
-                            'account_password',
-                            'account_token',
-                            'role_Id'
-                        ]
-                    }
                 }
             ]
         })
@@ -54,17 +43,6 @@ const QuestionServices = {
                 {
                     model: db.Type,
                     as: 'type'
-                },
-                {
-                    model: db.Account,
-                    as: 'auth',
-                    attributes: {
-                        exclude: [
-                            'account_password',
-                            'account_token',
-                            'role_Id'
-                        ]
-                    }
                 }
             ]
         })

@@ -6,14 +6,12 @@ const CourseControllers = {
         const {
             course_name,
             course_content,
-            course_total,
             teacher_Id,
             course_image,
-            course_required,
-            field_Id
+            subject_Id
         } = req.body
 
-        if (!course_name || !course_content || !teacher_Id || !field_Id || isNaN(+course_total)) {
+        if (!course_name || !course_content || !teacher_Id || !subject_Id || isNaN(+course_total)) {
             return next(new ApiError(
                 400,
                 'Tất cả các trường dữ liệu rỗng!'
@@ -25,11 +23,9 @@ const CourseControllers = {
                 {
                     course_name,
                     course_content,
-                    course_total: parseInt(course_total),
                     teacher_Id,
-                    course_required: course_required ?? null,
                     course_image: course_image ?? null,
-                    field_Id
+                    subject_Id
                 }
             )
 
@@ -53,15 +49,13 @@ const CourseControllers = {
         const {
             course_name,
             course_content,
-            course_total,
             course_image,
-            course_required,
-            field_Id,
+            subject_Id,
             teacher_Id
         } = req.body
         const { id } = req.params
 
-        if (!id || !course_name || !course_content || isNaN(+course_total) || !field_Id || !teacher_Id) {
+        if (!id || !course_name || !course_content || !subject_Id || !teacher_Id) {
             return next(new ApiError(
                 400,
                 'Tất cả các trường không được rỗng!'
@@ -73,9 +67,7 @@ const CourseControllers = {
                 {
                     course_name,
                     course_content,
-                    course_total: parseInt(course_total),
-                    field_Id,
-                    course_required: course_required ?? null,
+                    subject_Id,
                     course_image: course_image ?? null,
                     teacher_Id
                 },
@@ -129,11 +121,11 @@ const CourseControllers = {
         }
     },
     async getAll(req, res, next) {
-        const { page, limit, title, field } = req.query
+        const { page, limit, title, subject } = req.query
 
         try {
             const courses = await CourseServices.getAll({
-                page, limit, title, field
+                page, limit, title, subject
             })
 
             if (courses) {

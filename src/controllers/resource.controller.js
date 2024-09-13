@@ -3,9 +3,9 @@ const ApiError = require("../utils/constants/api-error")
 
 const ResourceControllers = {
     async create(req, res, next) {
-        const { resource_url, lesson_Id, resource_type } = req.body
+        const { resource_url, lesson_Id, category_Id } = req.body
 
-        if (!resource_url || !lesson_Id || !resource_type) {
+        if (!resource_url || !lesson_Id || !category_Id) {
             return next(new ApiError(
                 400,
                 'Tất cả các trường dữ liệu rỗng!'
@@ -16,7 +16,7 @@ const ResourceControllers = {
             const newResource = await ResourceServices.create({
                 resource_url,
                 lesson_Id,
-                resource_type
+                category_Id
             })
 
             if (newResource) {
@@ -36,10 +36,10 @@ const ResourceControllers = {
         }
     },
     async update(req, res, next) {
-        const { resource_url, lesson_Id, resource_type } = req.body
+        const { resource_url, lesson_Id, category_Id } = req.body
         const { id } = req.params
 
-        if (!resource_url || !lesson_Id || !resource_type || !id) {
+        if (!resource_url || !lesson_Id || !category_Id || !id) {
             return next(new ApiError(
                 400,
                 'Tất cả các trường dữ liệu rỗng!'
@@ -50,7 +50,7 @@ const ResourceControllers = {
             const resource = await ResourceServices.update({
                 resource_url,
                 lesson_Id,
-                resource_type
+                category_Id
             }, id)
 
             if (resource) {
@@ -122,7 +122,36 @@ const ResourceControllers = {
                 err
             ))
         }
-    }
+    },
+    async delete(req, res, next) {
+        const { id } = req.params
+
+        if (!id) {
+            return next(new ApiError(
+                400,
+                'Id tài liệu không tồn tại!'
+            ))
+        }
+
+        try {
+            const resource = await ResourceServices.delete(id)
+
+            if (resource) {
+                return res.status(200).json({
+                    message: 'Xóa tài liệu thành công!'
+                })
+            }
+
+            return res.status(404).json({
+                message: 'Xóa tài liệu thất bại!'
+            })
+        } catch (err) {
+            return next(new ApiError(
+                500,
+                err
+            ))
+        }
+    },
 }
 
 module.exports = ResourceControllers

@@ -24,7 +24,7 @@ const AccountControllers = {
 
             if (!role_Id) {
                 return next(new ApiError(
-                    400,
+                    404,
                     'Không tồn tại Id role!'
                 ))
             }

@@ -3,10 +3,10 @@ const AuthMiddlewares = require("../middlewares/auth.middleware");
 
 const router = require("express").Router();
 
-router.post('/create', AuthMiddlewares.verifyToken, AuthMiddlewares.teacherRole, OptionControllers.create)
-router.put('/:id', AuthMiddlewares.verifyToken, AuthMiddlewares.teacherRole, OptionControllers.update)
+router.post('/create', AuthMiddlewares.verifyToken, AuthMiddlewares.otherUser, OptionControllers.create)
+router.put('/:id', AuthMiddlewares.verifyToken, AuthMiddlewares.otherUser, OptionControllers.update)
 router.get('/info/:id', AuthMiddlewares.verifyToken, OptionControllers.getOne)
 router.get('/all', AuthMiddlewares.verifyToken, OptionControllers.getAll)
-router.delete('/:id', AuthMiddlewares.verifyToken, AuthMiddlewares.teacherRole, OptionControllers.delete)
+router.delete('/:id', AuthMiddlewares.verifyToken, AuthMiddlewares.otherUser, OptionControllers.delete)
 
 module.exports = router;

@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     class QuestionResource extends Model {
         static associate(models) {
             this.belongsTo(models.Category, {
-                foreignKey: 'question_Id',
+                foreignKey: 'category_Id',
                 as: 'category'
             })
 
@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         question_resource_url: DataTypes.STRING,
         question_Id: DataTypes.STRING,
-        question_Id: DataTypes.STRING
+        category_Id: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'QuestionResource',

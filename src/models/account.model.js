@@ -45,6 +45,12 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'course_Id'
             })
 
+            this.belongsToMany(models.Resource, {
+                through: models.Buy,
+                foreignKey: 'student_Id',
+                otherKey: 'resource_Id'
+            })
+
             this.belongsToMany(models.Exam, {
                 through: models.Result,
                 foreignKey: 'student_Id',

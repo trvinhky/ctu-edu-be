@@ -13,6 +13,12 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'category_Id',
                 as: 'category'
             })
+
+            this.belongsToMany(models.Account, {
+                through: models.Buy,
+                foreignKey: 'resource_Id',
+                otherKey: 'student_Id'
+            })
         }
     }
     Resource.init({
@@ -24,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         resource_url: DataTypes.STRING,
         lesson_Id: DataTypes.STRING,
-        resource_price: DataTypes.INTEGER,
+        resource_score: DataTypes.INTEGER,
         category_Id: DataTypes.STRING
     }, {
         sequelize,

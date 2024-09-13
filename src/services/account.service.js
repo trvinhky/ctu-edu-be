@@ -6,6 +6,7 @@ const AccountServices = {
             ...account,
             profile: [{
                 profile_name: account.name,
+                profile_score: 0
             }]
         }, {
             include: [{
