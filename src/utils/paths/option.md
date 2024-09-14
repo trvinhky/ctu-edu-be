@@ -3,7 +3,7 @@
 ```ts
 method: POST
 path: `/option/create`
-required: "teacher login"
+required: "teacher or admin login"
 body: (option_content, question_Id)<string>, option_is_correct<boolean>
 // option_is_correct - option, default: false
 ```
@@ -14,7 +14,7 @@ body: (option_content, question_Id)<string>, option_is_correct<boolean>
 method: PUT
 id: string
 path: `/option/${id}`
-required: "teacher login"
+required: "teacher or admin login"
 body: (option_content, question_Id)<string>, option_is_correct<boolean>
 // option_is_correct - option, default: false
 ```
@@ -44,5 +44,5 @@ required: "login"
 method: DELETE
 id: string
 path: `/option/${id}`
-required: "teacher login"
+required: "teacher or admin login"
 ```

@@ -99,11 +99,11 @@ const ResourceControllers = {
         }
     },
     async getAll(req, res, next) {
-        const { page, limit, type } = req.query
+        const { page, limit, lesson } = req.query
 
         try {
             const resources = await ResourceServices.getAll({
-                page, limit, type
+                page, limit, lesson
             })
 
             if (resources) {

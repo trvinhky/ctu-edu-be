@@ -5,7 +5,7 @@ const router = require("express").Router();
 
 router.post('/create', AuthMiddlewares.verifyToken, DiscussionControllers.create)
 router.put('/:id', AuthMiddlewares.verifyToken, DiscussionControllers.update)
-router.get('/info/:id', AuthMiddlewares.verifyToken, DiscussionControllers.getOne)
-router.get('/all', AuthMiddlewares.verifyToken, DiscussionControllers.getAll)
+router.get('/info/:id', DiscussionControllers.getOne)
+router.get('/all', DiscussionControllers.getAll)
 
 module.exports = router;

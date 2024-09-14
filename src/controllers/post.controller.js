@@ -8,12 +8,11 @@ const PostControllers = {
         const {
             post_title,
             post_content,
-            status_Id,
             subject_Id,
             auth_Id
         } = req.body
 
-        if (!post_title || !post_content || !status_Id || !subject_Id || !auth_Id) {
+        if (!post_title || !post_content || !subject_Id || !auth_Id) {
             return next(new ApiError(
                 400,
                 'Tất cả các trường dữ liệu rỗng!'
@@ -21,6 +20,15 @@ const PostControllers = {
         }
 
         try {
+            const status_Id = (await StatusServices.getOne({ status_name: STATUS.PENDING })).status_Id
+
+            if (!status_Id) {
+                return next(new ApiError(
+                    404,
+                    'Lấy id trạng thái thất bại!'
+                ))
+            }
+
             const newPost = await PostServices.create(
                 {
                     post_title,
@@ -162,9 +170,9 @@ const PostControllers = {
         }
     },
     async delete(req, res, next) {
-        const { status, post } = req.query
+        const { status, id } = req.query
 
-        if (!(status || post)) {
+        if (!(status || id)) {
             return next(new ApiError(
                 400,
                 'Id bài thi và Id câu hỏi không tồn tại!'
@@ -182,7 +190,7 @@ const PostControllers = {
             }
 
             const post = await PostServices.delete({
-                status, post
+                status, id
             })
 
             if (post) {

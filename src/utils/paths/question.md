@@ -3,7 +3,7 @@
 ```ts
 method: POST
 path: `/question/create`
-required: "teacher login"
+required: "teacher or admin login"
 body: (question_content, category_Id, auth_Id)<string>
 ```
 
@@ -13,7 +13,7 @@ body: (question_content, category_Id, auth_Id)<string>
 method: PUT
 id: string
 path: `/question/${id}`
-required: "teacher login"
+required: "teacher or admin login"
 body: (question_content, category_Id, auth_Id)<string>
 ```
 
@@ -23,7 +23,6 @@ body: (question_content, category_Id, auth_Id)<string>
 method: GET
 id: string
 path: `/question/info/${id}`
-required: "login"
 ```
 
 ## **Get All Question**
@@ -34,7 +33,6 @@ page: int /* option */
 limit: int /* option */
 id: string /* account_Id */
 path: `/question/all?page=${page}&limit=${limit}&id=${id}`
-required: "login"
 ```
 
 ## **Delete Question**
@@ -43,5 +41,5 @@ required: "login"
 method: DELETE
 id: string
 path: `/question/${id}`
-required: "teacher login"
+required: "teacher or admin login"
 ```

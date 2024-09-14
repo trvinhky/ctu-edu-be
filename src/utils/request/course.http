@@ -7,10 +7,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZ
     "course_name": "Lập trình Web cơ bản", 
     "course_content": "Các kiến thức cơ bản về lập trình web", 
     "teacher_Id": "888ca0bb-df74-4c22-8b06-c2bdf3f40944", 
-    "field_Id": "f58f3fd2-3754-408b-9ee0-ee07e53d5460", 
-    "course_total": 0,
-    "course_image": "",
-    "course_required": ""
+    "subject_Id": "f58f3fd2-3754-408b-9ee0-ee07e53d5460", 
+    "course_image": ""
 }
 
 ###
@@ -22,14 +20,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZ
     "course_name": "Lập trình Web siêu cơ bản free", 
     "course_content": "Các kiến thức cơ bản về lập trình web", 
     "teacher_Id": "888ca0bb-df74-4c22-8b06-c2bdf3f40944", 
-    "field_Id": "f58f3fd2-3754-408b-9ee0-ee07e53d5460", 
-    "course_total": 0,
-    "course_image": "",
-    "course_required": ""
+    "subject_Id": "f58f3fd2-3754-408b-9ee0-ee07e53d5460", 
+    "course_image": ""
 }
 
 ###
 GET http://localhost:5000/course/info/bdf3b1bb-46ba-415e-9b00-a1f09392c170
 
 ###
-GET http://localhost:5000/course/all?page=1&limit=6&title=l&field=bdf3b1bb-46ba-415e-9b00-a1f09392c170
+GET http://localhost:5000/course/all?page=1&limit=6&title=l&subject=bdf3b1bb-46ba-415e-9b00-a1f09392c170

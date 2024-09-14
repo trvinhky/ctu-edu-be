@@ -13,6 +13,7 @@ body: type_name<string>
 method: GET
 id: string
 path: `/type/info/${id}`
+required: "admin or teacher login"
 ```
 
 ## **Get All  Type**
@@ -22,4 +23,5 @@ method: GET
 page: int /* option */
 limit: int /* option */
 path: `/type/all?page=${page}&limit=${limit}`
+required: "admin or teacher login"
 ```

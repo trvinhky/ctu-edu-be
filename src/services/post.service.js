@@ -84,7 +84,7 @@ const PostServices = {
     },
     async delete(params) {
         const status_Id = params.status
-        const post_Id = params.post
+        const post_Id = params.id
         return await db.Post.destroy({
             where: { status_Id, post_Id }
         });

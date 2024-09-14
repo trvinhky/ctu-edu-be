@@ -3,7 +3,7 @@
 ```ts
 method: POST
 path: `/exam/create`
-required: "teacher login"
+required: "teacher or admin login"
 body: (exam_title, exam_description, course_Id)<string>, exam_total_score<double>, exam_start_time<DATE>, exam_limit<int>
 // exam_description, exam_limit - option
 ```
@@ -14,7 +14,7 @@ body: (exam_title, exam_description, course_Id)<string>, exam_total_score<double
 method: PUT
 id: string
 path: `/exam/${id}`
-required: "teacher login"
+required: "teacher or admin login"
 body: (exam_title, exam_description, course_Id)<string>, exam_total_score<double>, exam_start_time<DATE>, exam_limit<int>
 // exam_description, exam_limit - option
 ```
@@ -25,7 +25,6 @@ body: (exam_title, exam_description, course_Id)<string>, exam_total_score<double
 method: GET
 id: string
 path: `/exam/info/${id}`
-required: "login"
 ```
 
 ## **Get All Exam**
@@ -35,7 +34,6 @@ method: GET
 page: int /* option */
 limit: int /* option */
 path: `/exam/all?page=${page}&limit=${limit}`
-required: "login"
 ```
 
 ## **Delete Exam**
@@ -44,5 +42,5 @@ required: "login"
 method: DELETE
 id: string
 path: `/exam/${id}`
-required: "teacher login"
+required: "teacher or admin login"
 ```

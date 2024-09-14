@@ -4,7 +4,7 @@
 method: POST
 path: `/enrollment/create`
 required: "login"
-body: (course_Id, student_Id)<string>, enrollment_date<DATE>
+body: (course_Id, student_Id)<string>
 ```
 
 ## **Get All Enrollment**

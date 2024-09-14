@@ -22,6 +22,12 @@ const RoleServices = {
             }]
         })
     },
+    async update(role, role_Id) {
+        return await db.Role.update(
+            role,
+            { where: { role_Id } }
+        )
+    },
     async getAll(params) {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;

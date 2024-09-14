@@ -11,7 +11,7 @@ const CourseControllers = {
             subject_Id
         } = req.body
 
-        if (!course_name || !course_content || !teacher_Id || !subject_Id || isNaN(+course_total)) {
+        if (!course_name || !course_content || !teacher_Id || !subject_Id) {
             return next(new ApiError(
                 400,
                 'Tất cả các trường dữ liệu rỗng!'

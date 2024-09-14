@@ -90,6 +90,36 @@ const RoleControllers = {
             ))
         }
     },
+    async update(req, res, next) {
+        const { role_name } = req.body
+        const { id } = req.params
+
+        if (!role_name || !id) {
+            return next(new ApiError(
+                400,
+                'Tất cả các trường dữ liệu rỗng!'
+            ))
+        }
+
+        try {
+            const role = await RoleServices.update({ role_name }, id)
+
+            if (role) {
+                return res.status(200).json({
+                    message: 'Cập nhật role thành công!'
+                })
+            }
+
+            return res.status(404).json({
+                message: 'Cập nhật role thất bại!'
+            })
+        } catch (err) {
+            return next(new ApiError(
+                500,
+                err
+            ))
+        }
+    },
     async getAll(req, res, next) {
         const { page, limit } = req.query
 

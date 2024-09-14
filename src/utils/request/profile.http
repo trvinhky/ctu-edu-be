@@ -3,7 +3,7 @@ GET http://localhost:5000/profile/2bb33119-ab02-48f6-97d2-bc3180d58897
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA4NDA3LCJleHAiOjE3MjQ0MDkzMDd9.-Ti_NUMviS8gPlg9dsFWsezkYmThqZaWXlaFST7rLkI
 
 ###
-PUT http://localhost:5000/profile/2bb33119-ab02-48f6-97d2-bc3180d58897
+PUT http://localhost:5000/profile/edit/2bb33119-ab02-48f6-97d2-bc3180d58897
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA4NDA3LCJleHAiOjE3MjQ0MDkzMDd9.-Ti_NUMviS8gPlg9dsFWsezkYmThqZaWXlaFST7rLkI
 Content-Type: application/json
 
@@ -14,4 +14,13 @@ Content-Type: application/json
     "profile_avatar": "",
     "profile_birthday": "2002-03-26",
     "profile_info": ""
+}
+
+###
+PUT http://localhost:5000/profile/recharge/2bb33119-ab02-48f6-97d2-bc3180d58897
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA4NDA3LCJleHAiOjE3MjQ0MDkzMDd9.-Ti_NUMviS8gPlg9dsFWsezkYmThqZaWXlaFST7rLkI
+Content-Type: application/json
+
+{
+    "profile_score": 100
 }

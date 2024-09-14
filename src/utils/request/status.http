@@ -1,16 +1,16 @@
 ###
-POST http://localhost:5000/type/create
+POST http://localhost:5000/status/create
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZDQ3MTJkNzgtNzhkNi00ZDZmLTk1NmItZDIxMzM1OTk1ZDRiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0ODUzMTgzLCJleHAiOjE3MjQ4NTQwODN9.X0jpv1Bn3kju-EKgzqt_KVlu-w0SbMCz8y1RIFs5t18
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA3NDQ4LCJleHAiOjE3MjQ0MDgzNDh9.DOdUy2N_0_I5oRNmKFdMozveZYp3XvcaJrDfofHWB6M
 
 {
-    "type_name": "one"
+    "status_name": "hủy"
 }
 
 ###
-GET http://localhost:5000/type/info/9743a673-0e72-456d-bceb-3a9cbe74fb09
+GET http://localhost:5000/status/info/9743a673-0e72-456d-bceb-3a9cbe74fb09
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA3NDQ4LCJleHAiOjE3MjQ0MDgzNDh9.DOdUy2N_0_I5oRNmKFdMozveZYp3XvcaJrDfofHWB6M
 
 ###
-GET http://localhost:5000/type/all?page=1&limit=6
+GET http://localhost:5000/status/all?page=1&limit=6
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA3NDQ4LCJleHAiOjE3MjQ0MDgzNDh9.DOdUy2N_0_I5oRNmKFdMozveZYp3XvcaJrDfofHWB6M

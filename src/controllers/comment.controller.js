@@ -44,15 +44,10 @@ const CommentControllers = {
         }
     },
     async update(req, res, next) {
-        const {
-            comment_content,
-            post_Id,
-            account_Id,
-            parent_Id
-        } = req.body
+        const { comment_content } = req.body
         const { id } = req.params
 
-        if (!comment_content || !post_Id || !account_Id) {
+        if (!comment_content || !post_Id) {
             return next(new ApiError(
                 400,
                 'Tất cả các trường không được rỗng!'
@@ -61,12 +56,7 @@ const CommentControllers = {
 
         try {
             const comment = await CommentServices.update(
-                {
-                    comment_content,
-                    post_Id,
-                    account_Id,
-                    parent_Id: parent_Id ?? null
-                },
+                { comment_content },
                 id
             )
 

@@ -3,7 +3,7 @@
 ```ts
 method: POST
 path: `/lesson/create`
-required: "teacher login"
+required: "teacher or admin login"
 body: (lesson_title, lesson_content, course_Id)<string>
 // lesson_content - option
 ```
@@ -14,7 +14,7 @@ body: (lesson_title, lesson_content, course_Id)<string>
 method: PUT
 id: string
 path: `/lesson/${id}`
-required: "teacher login"
+required: "teacher or admin login"
 body: (lesson_title, lesson_content, course_Id)<string>
 // lesson_content - option
 ```
@@ -25,7 +25,6 @@ body: (lesson_title, lesson_content, course_Id)<string>
 method: GET
 id: string
 path: `/lesson/info/${id}`
-required: "login"
 ```
 
 ## **Get All Lesson**
@@ -36,7 +35,6 @@ page: int /* option */
 limit: int /* option */
 id: string /* option */
 path: `/lesson/all?page=${page}&limit=${limit}&id=${id}`
-required: "login"
 ```
 
 ## **Delete Lesson**
@@ -45,5 +43,5 @@ required: "login"
 method: DELETE
 id: string
 path: `/lesson/${id}`
-required: "teacher login"
+required: "teacher or admin login"
 ```

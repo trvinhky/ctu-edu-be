@@ -33,7 +33,8 @@ const QuestionExamServices = {
                 },
                 {
                     model: db.Question,
-                    as: 'questions'
+                    as: 'questions',
+                    order: Sequelize.literal('RAND()') // Dùng 'RANDOM()' nếu là PostgreSQL
                 }
             ]
         })

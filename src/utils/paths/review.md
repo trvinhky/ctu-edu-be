@@ -23,7 +23,6 @@ body: (review_comment, student_Id, course_Id)<string>, review_rating<float>
 method: GET
 id: string
 path: `/review/info/${id}`
-required: "login"
 ```
 
 ## **Get All Review**
@@ -35,7 +34,6 @@ limit: int /* option */
 student: string /* option */
 course: string /* option */
 path: `/review/all?page=${page}&limit=${limit}&student=${student}&course=${course}`
-required: "login"
 ```
 
 ## **Delete Review**

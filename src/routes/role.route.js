@@ -7,5 +7,6 @@ router.post('/create', AuthMiddlewares.verifyToken, AuthMiddlewares.adminRole, R
 router.get('/info/:id', AuthMiddlewares.verifyToken, AuthMiddlewares.adminRole, RoleControllers.getOne)
 router.get('/name/:name', AuthMiddlewares.verifyToken, AuthMiddlewares.adminRole, RoleControllers.getByName)
 router.get('/all', AuthMiddlewares.verifyToken, AuthMiddlewares.adminRole, RoleControllers.getAll)
+router.put('/:id', AuthMiddlewares.verifyToken, AuthMiddlewares.adminRole, RoleControllers.update)
 
 module.exports = router;

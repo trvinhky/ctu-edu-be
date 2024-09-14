@@ -24,11 +24,16 @@ const ResourceServices = {
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
         const lesson_Id = params.lesson ?? ''
+        const category_Id = params.category ?? ''
 
         return await db.Resource.findAndCountAll({
             limit,
             offset,
-            where: { lesson_Id }
+            where: { lesson_Id, category_Id },
+            include: [{
+                model: db.Category,
+                as: 'category'
+            }]
         })
     },
     async delete(resource_Id) {

@@ -23,7 +23,6 @@ body: (discussion_comment, lesson_Id, account_Id, parent_Id)<string>
 method: GET
 id: string
 path: `/discussion/info/${id}`
-required: "login"
 ```
 
 ## **Get All Discussion**
@@ -34,5 +33,4 @@ page: int /* option */
 limit: int /* option */
 id: string /* lesson_Id */
 path: `/discussion/all?page=${page}&limit=${limit}&id=${id}`
-required: "login"
 ```

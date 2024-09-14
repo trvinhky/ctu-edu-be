@@ -5,11 +5,10 @@ const EnrollmentControllers = {
     async create(req, res, next) {
         const {
             course_Id,
-            student_Id,
-            enrollment_date
+            student_Id
         } = req.body
 
-        if (!student_Id || !course_Id || !enrollment_date) {
+        if (!student_Id || !course_Id) {
             return next(new ApiError(
                 400,
                 'Tất cả các trường dữ liệu rỗng!'
@@ -21,7 +20,7 @@ const EnrollmentControllers = {
                 {
                     course_Id,
                     student_Id,
-                    enrollment_date
+                    enrollment_date: new Date()
                 }
             )
 

@@ -5,8 +5,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZ
 
 {
     "course_Id": "888ca0bb-df74-4c22-8b06-c2bdf3f40944",
-    "student_Id": "888ca0bb-df74-4c22-8b06-c2bdf3f40944",
-    "enrollment_date": "2024-03-26"
+    "student_Id": "888ca0bb-df74-4c22-8b06-c2bdf3f40944"
 }
 
 ###

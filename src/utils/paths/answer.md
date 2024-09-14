@@ -4,7 +4,7 @@
 method: POST
 path: `/answer/create`
 required: "login"
-body: (option_Id, student_Id, question_Id,)<string>, answer_correct<boolean>
+body: (option_Id, student_Id, question_Id)<string>, answer_correct<boolean>
 // answer_correct - option, default: false
 ```
 
@@ -29,5 +29,5 @@ question: string /* question_Id */
 student: string /* account_Id */
 option: string /* option_Id */
 path: `/answer/all?page=${page}&limit=${limit}&question=${question}&student=${student}&option=${option}`
-required: "teacher login"
+required: "login"
 ```

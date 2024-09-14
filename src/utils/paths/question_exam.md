@@ -3,7 +3,7 @@
 ```ts
 method: POST
 path: `/question-exam/create`
-required: "teacher login"
+required: "teacher or admin login"
 body: (exam_Id, question_Id)<string>, question_exam_score<double>
 ```
 
@@ -14,7 +14,7 @@ method: PUT
 question: string /* question_Id */ 
 exam: string /* exam_Id */
 path: `/question-exam/update?exam=${exam}&question=${question}`
-required: "teacher login"
+required: "teacher or admin login"
 body: question_exam_score<double>
 ```
 
@@ -27,7 +27,6 @@ limit: int /* option */
 exam: string /* exam_Id - option */
 question: string /* question_Id - option */
 path: `/question-exam/all?page=${page}&limit=${limit}&exam=${exam}&question=${question}`
-required: "login"
 ```
 
 ## **Delete Question Exam**
@@ -37,5 +36,5 @@ method: DELETE
 question: string /* question_Id */ 
 exam: string /* exam_Id */
 path: `/question-exam/delete?exam=${exam}&question=${question}`
-required: "teacher login"
+required: "teacher or admin login"
 ```

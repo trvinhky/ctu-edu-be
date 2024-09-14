@@ -5,11 +5,10 @@ const BuyControllers = {
     async create(req, res, next) {
         const {
             resource_Id,
-            student_Id,
-            buy_date
+            student_Id
         } = req.body
 
-        if (!student_Id || !resource_Id || !buy_date) {
+        if (!student_Id || !resource_Id) {
             return next(new ApiError(
                 400,
                 'Tất cả các trường dữ liệu rỗng!'
@@ -21,7 +20,7 @@ const BuyControllers = {
                 {
                     resource_Id,
                     student_Id,
-                    buy_date
+                    buy_date: new Date()
                 }
             )
 
@@ -42,9 +41,9 @@ const BuyControllers = {
         }
     },
     async getAll(req, res, next) {
-        const { page, limit, resource, course } = req.query
+        const { page, limit, resource, student } = req.query
 
-        if (!(resource || course)) {
+        if (!(resource || student)) {
             return next(new ApiError(
                 400,
                 'Id tài khoản hoặc tài liệu không tồn tại!'
@@ -53,7 +52,7 @@ const BuyControllers = {
 
         try {
             const buy = await EnrollmentServices.getAll({
-                page, limit, resource, course
+                page, limit, resource, student
             })
 
             if (buy) {

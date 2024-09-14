@@ -3,8 +3,8 @@
 ```ts
 method: POST
 path: `/resource/create`
-required: "teacher login"
-body: (resource_url, lesson_Id, resource_type)<string>
+required: "teacher or admin login"
+body: (resource_url, lesson_Id, category_Id)<string>
 ```
 
 ## **Update Resource**
@@ -13,8 +13,8 @@ body: (resource_url, lesson_Id, resource_type)<string>
 method: PUT
 id: string
 path: `/resource/${id}`
-body: (resource_url, lesson_Id, resource_type)<string>
-required: "teacher login"
+body: (resource_url, lesson_Id, category_Id)<string>
+required: "teacher or admin login"
 ```
 
 ## **Get One Resource**
@@ -23,7 +23,6 @@ required: "teacher login"
 method: GET
 id: string
 path: `/resource/info/${id}`
-required: "login"
 ```
 
 ## **Get All Resource**
@@ -32,7 +31,16 @@ required: "login"
 method: GET
 page: int /* option */
 limit: int /* option */
-type: string /* lesson_Id */
-path: `/resource/all?page=${page}&limit=${limit}&type=${type}`
-required: "login"
+lesson: string /* lesson_Id */
+category: string /* category_Id */
+path: `/resource/all?page=${page}&limit=${limit}&lesson=${lesson}&category=${category}`
+```
+
+## **Delete Resource**
+
+```ts
+method: DELETE
+id: string
+path: `/resource/${id}`
+required: "teacher or admin login"
 ```

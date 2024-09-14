@@ -34,3 +34,13 @@ limit: int /* option */
 path: `/role/all?page=${page}&limit=${limit}`
 required: "admin login"
 ```
+
+## **Update Role**
+
+```ts
+method: PUT
+id: string
+path: `/role/${id}`
+required: "admin login"
+body: role_name<string>
+```

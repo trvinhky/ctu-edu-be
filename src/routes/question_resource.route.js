@@ -5,8 +5,8 @@ const router = require("express").Router();
 
 router.post('/create', AuthMiddlewares.verifyToken, AuthMiddlewares.otherUser, QuestionResourceControllers.create)
 router.put('/:id', AuthMiddlewares.verifyToken, AuthMiddlewares.otherUser, QuestionResourceControllers.update)
-router.get('/info/:id', AuthMiddlewares.verifyToken, QuestionResourceControllers.getOne)
-router.get('/all', AuthMiddlewares.verifyToken, QuestionResourceControllers.getAll)
+router.get('/info/:id', QuestionResourceControllers.getOne)
+router.get('/all', QuestionResourceControllers.getAll)
 router.delete('/:id', AuthMiddlewares.verifyToken, AuthMiddlewares.otherUser, QuestionResourceControllers.delete)
 
 module.exports = router;
