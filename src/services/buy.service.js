@@ -18,11 +18,11 @@ const BuyServices = {
             include: [
                 {
                     model: db.Resource,
-                    as: 'resources'
+                    as: 'resource'
                 },
                 {
                     model: db.Account,
-                    as: 'students',
+                    as: 'student',
                     attributes: {
                         exclude: [
                             'account_password',

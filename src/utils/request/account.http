@@ -1,11 +1,23 @@
+POST http://localhost:5000/account/code
+Content-Type: application/json
+
+{
+    "email": "vinhky26032002@gmail.com"
+}
+
+###
+GET http://localhost:5000/account/captcha
+
+###
 POST http://localhost:5000/account/create
 Content-Type: application/json
 
 {
-    "email": "admin@gmail.com",
-    "password": "VinhKy@2002",
+    "email": "vinhky26032002@gmail.com",
+    "password": "Vinhky2002",
     "name": "admin",
-    "role": "e4401e12-7c63-4ac9-9b76-afdd136db326"
+    "role": "e4401e12-7c63-4ac9-9b76-afdd136db326",
+    "code": "f28513"
 }
 
 ###
@@ -13,17 +25,41 @@ POST http://localhost:5000/account/login
 Content-Type: application/json
 
 {
-    "email": "admin@gmail.com",
-    "password": "VinhKy@2002"
+    "email": "Cfskhanhkhanh@gmail.com",
+    "password": "Vinhky2002",
+    "captcha": "d90347"
+}
+
+###
+POST http://localhost:5000/account/email
+Content-Type: application/json
+
+{
+    "email": "Cfskhanhkhanh@gmail.com"
+}
+
+###
+PUT http://localhost:5000/account/password
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA2MTYwLCJleHAiOjE3MjQ0MDcwNjB9.hRnvqdN-HpQTq2csaoNE6p5FnuPHqYMoYq2de2qlxJQ
+
+{
+    "password": "Vinhky2002",
+    "captcha": "d90347"
+}
+
+###
+PUT http://localhost:5000/account/forgot
+Content-Type: application/json
+
+{
+    "email": "Cfskhanhkhanh@gmail.com",
+    "password": "Vinhky2002",
+    "captcha": "d90347"
 }
 
 ###
 GET http://localhost:5000/account/token
-Content-Type: application/json
-
-{
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X0lkIjoiZWQ1ZDhjZGYtM2ZhZS00YjQyLWI1Y2MtMTEyYjNjZTlkNzJiIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0NDA2MTIzLCJleHAiOjE3MjQ0OTI1MjN9.l9bdG8qWfkiDC33SoWkBaGCjLIg3Ecnq1xwc8ik4xVU"
-}
 
 ###
 DELETE http://localhost:5000/account/logout

@@ -4,11 +4,17 @@ const AnswerServices = {
     async create(answer) {
         return await db.Answer.create(answer)
     },
-    async update(answer, answer_Id) {
-        return await db.Answer.update(
+    async update(answer, answer_Id, transaction) {
+        await db.Answer.update(
             answer,
-            { where: { answer_Id } }
+            { where: { answer_Id } },
+            transaction
         )
+
+        return await db.Answer.findOne({
+            where: { answer_Id },
+            transaction
+        })
     },
     async getAll(params) {
         const page = parseInt(params?.page) || 1;

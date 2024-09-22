@@ -1,8 +1,7 @@
 const LessonServices = require("../services/lesson.service")
-const ApiError = require("../utils/constants/api-error")
 
 const LessonControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const {
             lesson_title,
             lesson_content,
@@ -10,10 +9,7 @@ const LessonControllers = {
         } = req.body
 
         if (!lesson_title || !course_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -26,22 +22,20 @@ const LessonControllers = {
             )
 
             if (newLesson) {
-                return res.status(200).json({
-                    message: 'Thêm mới bài học thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới bài học thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới bài học thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm mới bài học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const {
             lesson_title,
             lesson_content,
@@ -51,10 +45,7 @@ const LessonControllers = {
         const { id } = req.params
 
         if (!lesson_title || !id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -68,52 +59,47 @@ const LessonControllers = {
             )
 
             if (lesson) {
-                return res.status(200).json({
-                    message: 'Cập nhật bài học thành công!'
-                })
+                return res.successNoData(
+                    'Cập nhật bài học thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật bài học thất bại!'
-            })
+            return res.error(
+                404,
+                'Cập nhật bài học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id bài học không tồn tại!'
-            ))
+            )
         }
 
         try {
             const lesson = await LessonServices.getOne(id)
 
             if (lesson) {
-                return res.status(201).json({
-                    data: lesson,
-                    message: 'Lấy bài học thành công!'
-                })
+                return res.success(
+                    'Lấy bài học thành công!',
+                    lesson
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy bài học thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy bài học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit, id } = req.query
 
         try {
@@ -122,49 +108,44 @@ const LessonControllers = {
             })
 
             if (lessons) {
-                return res.status(201).json({
-                    data: lessons,
-                    message: 'Lấy tất cả bài học thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả bài học thành công!',
+                    lessons
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả bài học thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy tất cả bài học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id bài học không tồn tại!'
-            ))
+            )
         }
 
         try {
             const lesson = await LessonServices.delete(id)
 
             if (lesson) {
-                return res.status(200).json({
-                    message: 'Xóa bài học thành công!'
-                })
+                return res.successNoData(
+                    'Xóa bài học thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Xóa bài học thất bại!'
-            })
+            return res.error(
+                404,
+                'Xóa bài học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
 }

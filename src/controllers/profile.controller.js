@@ -1,38 +1,35 @@
+const db = require("../models")
 const ProfileServices = require("../services/profile.service")
-const ApiError = require("../utils/constants/api-error")
 
 const ProfileControllers = {
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id không tồn tại!'
-            ))
+            )
         }
 
         try {
             const profile = await ProfileServices.getOne(id)
 
             if (profile) {
-                return res.status(201).json({
-                    data: profile,
-                    message: 'Lấy thông tin người dùng thành công!'
-                })
+                return res.success(
+                    'Lấy thông tin người dùng thành công!',
+                    profile
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy thông tin người dùng thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy thông tin người dùng thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const {
             profile_name,
             profile_address,
@@ -45,69 +42,64 @@ const ProfileControllers = {
         const { id } = req.params
 
         if (!profile_name || !id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
+        const transaction = await db.sequelize.transaction()
+
         try {
-            const profile = ProfileServices.update({
+            const profile = await ProfileServices.update({
                 profile_name,
                 profile_address: profile_address ?? null,
                 profile_phone: profile_phone ?? null,
                 profile_avatar: profile_avatar ?? null,
                 profile_birthday: profile_birthday ?? null,
                 profile_info: profile_info ?? null
-            }, id)
+            }, id, transaction)
 
             if (profile) {
-                return res.status(200).json({
-                    message: 'Cập nhật thông tin người dùng thành công!'
-                })
+                await transaction.commit()
+                return res.successNoData(
+                    'Cập nhật thông tin người dùng thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật thông tin người dùng thất bại!'
-            })
+            await transaction.rollback()
+            return res.error(
+                404,
+                'Cập nhật thông tin người dùng thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            await transaction.rollback()
+            return res.errorServer()
         }
     },
-    async recharge(req, res, next) {
+    async recharge(req, res) {
         const { profile_score } = req.body
         const { id } = req.params
 
         if (isNaN(+profile_score) || !id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu không hợp lệ!'
-            ))
+            return res.errorValid()
         }
 
         try {
-            const profile = ProfileServices.recharge(
+            const profile = await ProfileServices.recharge(
                 +profile_score,
-                id
+                id,
             )
 
             if (profile) {
-                return res.status(200).json({
-                    message: 'Thêm điểm người dùng thành công!'
-                })
+                return res.successNoData(
+                    'Thêm điểm người dùng thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm điểm người dùng thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm điểm người dùng thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     }
 }

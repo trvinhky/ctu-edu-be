@@ -29,11 +29,11 @@ const QuestionExamServices = {
             include: [
                 {
                     model: db.Exam,
-                    as: 'exams'
+                    as: 'exam'
                 },
                 {
                     model: db.Question,
-                    as: 'questions',
+                    as: 'question',
                     order: Sequelize.literal('RAND()') // Dùng 'RANDOM()' nếu là PostgreSQL
                 }
             ]

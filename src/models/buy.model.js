@@ -4,6 +4,15 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Buy extends Model {
         static associate(models) {
+            this.belongsTo(models.Account, {
+                foreignKey: 'student_Id',
+                as: 'student'
+            })
+
+            this.belongsTo(models.Resource, {
+                foreignKey: 'resource_Id',
+                as: 'resource'
+            })
         }
     }
     Buy.init({

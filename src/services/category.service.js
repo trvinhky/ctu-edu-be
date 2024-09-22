@@ -19,11 +19,17 @@ const CategoryServices = {
             ]
         })
     },
-    async update(category, category_Id) {
-        return await db.Category.update(
-            category,
+    async update(category_name, category_Id) {
+        const category = await db.Category.findOne(
             { where: { category_Id } }
         )
+
+        if (category) {
+            category.category_name = category_name
+            return await category.save()
+        }
+
+        return null
     },
     async getAll(params) {
         const page = parseInt(params?.page) || 1;

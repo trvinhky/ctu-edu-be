@@ -18,11 +18,11 @@ const EnrollmentServices = {
             include: [
                 {
                     model: db.Course,
-                    as: 'courses'
+                    as: 'course'
                 },
                 {
                     model: db.Account,
-                    as: 'students',
+                    as: 'student',
                     attributes: {
                         exclude: [
                             'account_password',

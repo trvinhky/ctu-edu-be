@@ -1,9 +1,24 @@
+## **Get Code By Email**
+
+```ts
+method: POST
+path: `/account/code`
+body: email<string>
+```
+
+## **Get Captcha**
+
+```ts
+method: GET
+path: `/account/captcha`
+```
+
 ## **Create New Account**
 
 ```ts
 method: POST
 path: `/account/create`
-body: (password, email, name, role)<string> /* role - option */
+body: (password, email, name, role, code)<string> /* role - option */
 ```
 
 ## **Login**
@@ -11,7 +26,15 @@ body: (password, email, name, role)<string> /* role - option */
 ```ts
 method: POST
 path: `/account/login`
-body: (password, email)<string>
+body: (password, email, captcha)<string>
+```
+
+## **Get One By Email**
+
+```ts
+method: POST
+path: `/account/email`
+body: email<string>
 ```
 
 ## **Update Access Token**
@@ -19,7 +42,23 @@ body: (password, email)<string>
 ```ts
 method: GET
 path: `/account/token`
-body: token<string>
+```
+
+## **Update Password**
+
+```ts
+method: PUT
+body: (password, code)<string>
+path: `/account/password`
+required: "login"
+```
+
+## **Forgot Password**
+
+```ts
+method: PUT
+body: (password, code, email)<string>
+path: `/account/forgot`
 ```
 
 ## **Logout**

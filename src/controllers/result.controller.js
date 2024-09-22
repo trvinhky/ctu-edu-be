@@ -1,8 +1,7 @@
 const ResultServices = require("../services/result.service")
-const ApiError = require("../utils/constants/api-error")
 
 const ResultControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const {
             student_Id,
             exam_Id,
@@ -11,10 +10,7 @@ const ResultControllers = {
         } = req.body
 
         if (!student_Id || !exam_Id || !result_completed || isNaN(+result_score)) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -28,29 +24,26 @@ const ResultControllers = {
             )
 
             if (newResult) {
-                return res.status(200).json({
-                    message: 'Thêm mới kết quả thi thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới kết quả thi thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới kết quả thi thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm mới kết quả thi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit, student, exam } = req.query
 
         if (!(student || exam)) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id tài khoản hoặc bài thi không tồn tại!'
-            ))
+            )
         }
 
         try {
@@ -59,20 +52,18 @@ const ResultControllers = {
             })
 
             if (exams) {
-                return res.status(201).json({
-                    data: exams,
-                    message: 'Lấy tất cả kết quả thi thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả kết quả thi thành công!',
+                    exams
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả kết quả thi thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy tất cả kết quả thi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     }
 }

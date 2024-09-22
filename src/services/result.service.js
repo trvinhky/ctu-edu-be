@@ -18,11 +18,11 @@ const ResultServices = {
             include: [
                 {
                     model: db.Exam,
-                    as: 'exams'
+                    as: 'exam'
                 },
                 {
                     model: db.Account,
-                    as: 'students',
+                    as: 'student',
                     attributes: {
                         exclude: [
                             'account_password',

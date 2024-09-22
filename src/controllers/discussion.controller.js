@@ -1,8 +1,7 @@
 const DiscussionServices = require("../services/discussion.service")
-const ApiError = require("../utils/constants/api-error")
 
 const DiscussionControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const {
             discussion_comment,
             lesson_Id,
@@ -11,10 +10,7 @@ const DiscussionControllers = {
         } = req.body
 
         if (!discussion_comment || !lesson_Id || !account_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -28,22 +24,20 @@ const DiscussionControllers = {
             )
 
             if (newDiscussion) {
-                return res.status(200).json({
-                    message: 'Thêm mới thảo luận thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới thảo luận thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới thảo luận thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm mới thảo luận thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const {
             discussion_comment,
             lesson_Id,
@@ -53,10 +47,7 @@ const DiscussionControllers = {
         const { id } = req.params
 
         if (!discussion_comment || !lesson_Id || !account_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường không được rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -71,52 +62,47 @@ const DiscussionControllers = {
             )
 
             if (discussion) {
-                return res.status(200).json({
-                    message: 'Cập nhật thảo luận thành công!'
-                })
+                return res.successNoData(
+                    'Cập nhật thảo luận thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật thảo luận thất bại!'
-            })
+            return res.error(
+                404,
+                'Cập nhật thảo luận thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id thảo luận không tồn tại!'
-            ))
+            )
         }
 
         try {
             const discussion = await DiscussionServices.getOne(id)
 
             if (discussion) {
-                return res.status(201).json({
-                    data: discussion,
-                    message: 'Lấy thảo luận thành công!'
-                })
+                return res.success(
+                    'Lấy thảo luận thành công!',
+                    discussion
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy thảo luận thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy thảo luận thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit, id } = req.query
 
         try {
@@ -125,20 +111,18 @@ const DiscussionControllers = {
             })
 
             if (discussions) {
-                return res.status(201).json({
-                    data: discussions,
-                    message: 'Lấy tất cả thảo luận thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả thảo luận thành công!',
+                    discussions
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả thảo luận thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy tất cả thảo luận thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     }
 }

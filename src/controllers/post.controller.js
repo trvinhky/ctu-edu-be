@@ -1,10 +1,9 @@
 const PostServices = require("../services/post.service")
 const StatusServices = require("../services/status.service")
 const { STATUS } = require("../utils/constants")
-const ApiError = require("../utils/constants/api-error")
 
 const PostControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const {
             post_title,
             post_content,
@@ -13,20 +12,17 @@ const PostControllers = {
         } = req.body
 
         if (!post_title || !post_content || !subject_Id || !auth_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
             const status_Id = (await StatusServices.getOne({ status_name: STATUS.PENDING })).status_Id
 
             if (!status_Id) {
-                return next(new ApiError(
+                return res.error(
                     404,
-                    'Lấy id trạng thái thất bại!'
-                ))
+                    'Thêm mới bài đăng thất bại!'
+                )
             }
 
             const newPost = await PostServices.create(
@@ -40,22 +36,20 @@ const PostControllers = {
             )
 
             if (newPost) {
-                return res.status(200).json({
-                    message: 'Thêm mới bài đăng thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới bài đăng thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới bài đăng thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm mới bài đăng thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const { id } = req.params
 
         const {
@@ -65,20 +59,17 @@ const PostControllers = {
         } = req.body
 
         if (!id || !post_title || !post_content || !subject_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
             const status_Id = (await StatusServices.getOne({ status_name: STATUS.PENDING })).status_Id
 
             if (!status_Id) {
-                return next(new ApiError(
+                return res.error(
                     404,
                     'Cập nhật trạng thái thất bại!'
-                ))
+                )
             }
 
             const post = await PostServices.update(
@@ -92,29 +83,26 @@ const PostControllers = {
             )
 
             if (post) {
-                return res.status(200).json({
-                    message: 'Cập nhật bài đăng thành công!'
-                })
+                return res.successNoData(
+                    'Cập nhật bài đăng thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật bài đăng thất bại!'
-            })
+            return res.error(
+                404,
+                'Cập nhật trạng thái thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit, status, auth } = req.query
 
         if (!auth) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id người dùng không tồn tại!'
-            ))
+            )
         }
 
         try {
@@ -123,70 +111,64 @@ const PostControllers = {
             })
 
             if (posts) {
-                return res.status(201).json({
-                    data: posts,
-                    message: 'Lấy tất cả bài đăng thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả bài đăng thành công!',
+                    posts
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả bài đăng thất bại!'
-            })
+            return rres.error(
+                404,
+                'Lấy tất cả bài đăng thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id bài đăng không tồn tại!'
-            ))
+            )
         }
 
         try {
             const post = await PostServices.getOne(id)
 
             if (post) {
-                return res.status(201).json({
-                    data: post,
-                    message: 'Lấy bài đăng thành công!'
-                })
+                return res.success(
+                    'Lấy bài đăng thành công!',
+                    post
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy bài đăng thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy bài đăng thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res) {
         const { status, id } = req.query
 
         if (!(status || id)) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id bài thi và Id câu hỏi không tồn tại!'
-            ))
+            )
         }
 
         try {
             const status_Id = (await StatusServices.getOne({ status_name: STATUS.PENDING })).status_Id
 
             if (status_Id !== status) {
-                return next(new ApiError(
+                return res.error(
                     404,
                     'Trạng thái bài đăng không hợp lệ!'
-                ))
+                )
             }
 
             const post = await PostServices.delete({
@@ -194,31 +176,26 @@ const PostControllers = {
             })
 
             if (post) {
-                return res.status(200).json({
-                    message: 'Xóa bài đăng thành công!'
-                })
+                return res.successNoData(
+                    'Xóa bài đăng thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Xóa bài đăng thất bại!'
-            })
+            return res.error(
+                404,
+                'Xóa bài đăng thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async updateStatus(req, res, next) {
+    async updateStatus(req, res) {
         const { id } = req.params
 
         const { status_Id } = req.body
 
         if (!id || !status_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -228,19 +205,17 @@ const PostControllers = {
             )
 
             if (post) {
-                return res.status(200).json({
-                    message: 'Cập nhật trạng thái bài đăng thành công!'
-                })
+                return res.successNoData(
+                    'Cập nhật trạng thái bài đăng thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật trạng thái bài đăng thất bại!'
-            })
+            return res.error(
+                404,
+                'Cập nhật trạng thái bài đăng thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     }
 }

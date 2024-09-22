@@ -4,11 +4,17 @@ const CourseServices = {
     async create(course) {
         return await db.Course.create(course)
     },
-    async update(course, course_Id) {
-        return await db.Course.update(
+    async update(course, course_Id, transaction) {
+        await db.Course.update(
             course,
-            { where: { course_Id } }
+            { where: { course_Id } },
+            transaction
         )
+
+        return await db.Course.findOne({
+            where: { course_Id },
+            transaction
+        })
     },
     async getOne(params) {
         return await db.Course.findOne({

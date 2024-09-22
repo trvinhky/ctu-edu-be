@@ -1,15 +1,13 @@
 const SubjectServices = require("../services/subject.service")
-const ApiError = require("../utils/constants/api-error")
 
 const SubjectControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const { subject_name } = req.body
 
         if (!subject_name) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Tên môn học không được rỗng!'
-            ))
+            )
         }
 
         try {
@@ -18,30 +16,25 @@ const SubjectControllers = {
             )
 
             if (newSubject) {
-                return res.status(200).json({
-                    message: 'Thêm mới môn học thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới môn học thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới môn học thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm mới môn học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const { subject_name } = req.body
         const { id } = req.params
 
         if (!id || !subject_name) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường không được rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -51,52 +44,47 @@ const SubjectControllers = {
             )
 
             if (subject) {
-                return res.status(200).json({
-                    message: 'Cập nhật môn học thành công!'
-                })
+                return res.successNoData(
+                    'Cập nhật môn học thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật môn học thất bại!'
-            })
+            return res.error(
+                404,
+                'Cập nhật môn học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id môn học không tồn tại!'
-            ))
+            )
         }
 
         try {
             const subject = await SubjectServices.getOne(id)
 
             if (subject) {
-                return res.status(201).json({
-                    data: subject,
-                    message: 'Lấy môn học thành công!'
-                })
+                return res.success(
+                    'Lấy môn học thành công!',
+                    subject
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy môn học thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy môn học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit } = req.query
 
         try {
@@ -105,20 +93,18 @@ const SubjectControllers = {
             })
 
             if (subjects) {
-                return res.status(201).json({
-                    data: subjects,
-                    message: 'Lấy tất cả môn học thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả môn học thành công!',
+                    subjects
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả môn học thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy tất cả môn học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     }
 }

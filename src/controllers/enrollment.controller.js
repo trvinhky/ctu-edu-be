@@ -1,18 +1,14 @@
 const EnrollmentServices = require("../services/enrollment.service")
-const ApiError = require("../utils/constants/api-error")
 
 const EnrollmentControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const {
             course_Id,
             student_Id
         } = req.body
 
         if (!student_Id || !course_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -25,29 +21,26 @@ const EnrollmentControllers = {
             )
 
             if (newEnrollment) {
-                return res.status(200).json({
-                    message: 'Thêm mới đăng ký khóa học thành công!'
-                })
+                return res.successNoData(
+                    'Đăng ký khóa học thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới đăng ký khóa học thất bại!'
-            })
+            return res.error(
+                404,
+                'Đăng ký khóa học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit, student, course } = req.query
 
         if (!(student || course)) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id tài khoản hoặc khóa học không tồn tại!'
-            ))
+            )
         }
 
         try {
@@ -56,20 +49,15 @@ const EnrollmentControllers = {
             })
 
             if (courses) {
-                return res.status(201).json({
-                    data: courses,
-                    message: 'Lấy tất cả đăng ký khóa học thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả đăng ký khóa học thành công!',
+                    courses
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả đăng ký khóa học thất bại!'
-            })
+            return res.error(404, 'Lấy tất cả đăng ký khóa học thất bại!')
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     }
 }

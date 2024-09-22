@@ -1,148 +1,134 @@
 const RoleServices = require("../services/role.service")
-const ApiError = require("../utils/constants/api-error")
 
 const RoleControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const { role_name } = req.body
 
         if (!role_name) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Tên role không tồn tại!'
-            ))
+            )
         }
 
         try {
             const newRole = await RoleServices.create({ role_name })
 
             if (newRole) {
-                return res.status(200).json({
-                    message: 'Thêm mới role thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới role thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới role thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm mới role thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { id } = req.params
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id role không tồn tại!'
-            ))
+            )
         }
 
         try {
             const role = await RoleServices.getOne({ role_Id: id })
 
             if (role) {
-                return res.status(201).json({
-                    data: role,
-                    message: 'Lấy role thành công!'
-                })
+                return res.success(
+                    'Lấy role thành công!',
+                    role
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy role thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy role thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getByName(req, res, next) {
+    async getByName(req, res) {
         const { name } = req.params
 
         if (!name) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Tên role không tồn tại!'
-            ))
+            )
         }
 
         try {
             const role = await RoleServices.getOne({ role_name: name })
 
             if (role) {
-                return res.status(201).json({
-                    data: role,
-                    message: 'Lấy role thành công!'
-                })
+                return res.success(
+                    'Lấy role thành công!',
+                    role
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy role thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy role thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const { role_name } = req.body
         const { id } = req.params
 
         if (!role_name || !id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
             const role = await RoleServices.update({ role_name }, id)
 
             if (role) {
-                return res.status(200).json({
-                    message: 'Cập nhật role thành công!'
-                })
+                returnres.successNoData(
+                    'Cập nhật role thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật role thất bại!'
-            })
+            return res.error(
+                404,
+                'Cập nhật role thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
-        const { page, limit } = req.query
+    async getAll(req, res) {
+        const { page, limit, child } = req.query
 
         try {
             const roles = await RoleServices.getAll({
-                page, limit
+                page, limit, child
             })
 
             if (roles) {
-                return res.status(201).json({
-                    data: roles,
-                    message: 'Lấy tất cả role thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả role thành công!',
+                    {
+                        count: roles.count,
+                        roles: roles.rows
+                    }
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả role thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy tất cả role thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     }
 }

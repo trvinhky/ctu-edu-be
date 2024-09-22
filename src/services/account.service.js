@@ -34,20 +34,18 @@ const AccountServices = {
     async setToken(account_email, refreshToken) {
         return await db.Account.update(
             {
-                account_token: refreshToken,
-                account_active: true
+                account_token: refreshToken
             },
             { where: { account_email } }
         )
     },
     async logout(account_Id) {
-        return await db.Account.update(
-            {
-                account_token: null,
-                account_active: false
-            },
-            { where: { account_Id } }
-        )
+        const account = await db.Account.findOne({ where: { account_Id } })
+        if (account) {
+            account.account_token = null
+            return await account.save()
+        }
+        return null
     },
     async getAll(params) {
         const page = parseInt(params?.page) || 1;
@@ -70,6 +68,16 @@ const AccountServices = {
                 }
             ]
         })
+    },
+    async update(account_password, params) {
+        const account_Id = params.account_Id ?? ''
+        const account_email = params.account_email ?? ''
+        const account = await db.Account.findOne({ where: { account_Id, account_email } })
+        if (account) {
+            account.account_password = account_password
+            return await account.save()
+        }
+        return null
     }
 }
 

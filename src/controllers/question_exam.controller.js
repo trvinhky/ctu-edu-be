@@ -1,8 +1,7 @@
 const QuestionExamServices = require("../services/question_exam.service")
-const ApiError = require("../utils/constants/api-error")
 
 const QuestionExamControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const {
             exam_Id,
             question_Id,
@@ -10,10 +9,7 @@ const QuestionExamControllers = {
         } = req.body
 
         if (!exam_Id || !question_Id || isNaN(+question_exam_score)) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -26,31 +22,26 @@ const QuestionExamControllers = {
             )
 
             if (newQuestionExam) {
-                return res.status(200).json({
-                    message: 'Thêm mới câu hỏi vào bài thi thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới câu hỏi vào bài thi thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới câu hỏi vào bài thi thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm mới câu hỏi vào bài thi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const { exam, question } = req.query
 
         const { question_exam_score } = req.body
 
         if (!exam || !question || isNaN(+question_exam_score)) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -63,29 +54,26 @@ const QuestionExamControllers = {
             )
 
             if (questionExam) {
-                return res.status(200).json({
-                    message: 'Cập nhật câu hỏi vào bài thi thành công!'
-                })
+                return res.successNoData(
+                    'Cập nhật câu hỏi vào bài thi thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật câu hỏi vào bài thi thất bại!'
-            })
+            return res.error(
+                404,
+                'Cập nhật câu hỏi vào bài thi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit, exam, question } = req.query
 
         if (!exam || !question) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id bài thi hoặc câu hỏi không tồn tại!'
-            ))
+            )
         }
 
         try {
@@ -94,30 +82,27 @@ const QuestionExamControllers = {
             })
 
             if (questionExams) {
-                return res.status(201).json({
-                    data: questionExams,
-                    message: 'Lấy tất cả câu hỏi vào bài thi thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả câu hỏi vào bài thi thành công!',
+                    questionExams
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả câu hỏi vào bài thi thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy tất cả câu hỏi vào bài thi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res) {
         const { exam, question } = req.query
 
         if (!(exam || question)) {
-            return next(new ApiError(
-                400,
-                'Id bài thi và Id câu hỏi không tồn tại!'
-            ))
+            return res.errorValid(
+                'Id bài thi hoặc câu hỏi không tồn tại!'
+            )
         }
 
         try {
@@ -126,19 +111,17 @@ const QuestionExamControllers = {
             })
 
             if (questionExam) {
-                return res.status(200).json({
-                    message: 'Xóa câu hỏi vào bài thi thành công!'
-                })
+                return res.successNoData(
+                    'Xóa câu hỏi vào bài thi thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Xóa câu hỏi vào bài thi thất bại!'
-            })
+            return res.error(
+                404,
+                'Xóa câu hỏi vào bài thi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     }
 }

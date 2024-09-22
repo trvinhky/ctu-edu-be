@@ -18,7 +18,7 @@ const PostServices = {
                 },
                 {
                     model: db.Account,
-                    as: 'teacher',
+                    as: 'auth',
                     attributes: {
                         exclude: [
                             'account_password',
@@ -64,7 +64,7 @@ const PostServices = {
                 },
                 {
                     model: db.Account,
-                    as: 'teacher',
+                    as: 'auth',
                     attributes: {
                         exclude: [
                             'account_password',

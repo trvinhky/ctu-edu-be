@@ -1,8 +1,7 @@
 const QuestionResourceServices = require("../services/question_resource.service")
-const ApiError = require("../utils/constants/api-error")
 
 const QuestionResourceControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const {
             question_resource_url,
             category_Id,
@@ -10,10 +9,7 @@ const QuestionResourceControllers = {
         } = req.body
 
         if (!question_resource_url || !category_Id || !question_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -26,22 +22,20 @@ const QuestionResourceControllers = {
             )
 
             if (newQuestionResource) {
-                return res.status(200).json({
-                    message: 'Thêm mới tài nguyên câu hỏi thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới tài nguyên câu hỏi thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới tài nguyên câu hỏi thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm mới tài nguyên câu hỏi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const {
             question_resource_url,
             category_Id,
@@ -51,10 +45,7 @@ const QuestionResourceControllers = {
         const { id } = req.params
 
         if (!question_resource_url || !category_Id || !question_Id || !id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -68,52 +59,48 @@ const QuestionResourceControllers = {
             )
 
             if (questionResource) {
-                return res.status(200).json({
-                    message: 'Cập nhật tài nguyên câu hỏi thành công!'
-                })
+                return res.successNoData(
+                    'Cập nhật tài nguyên câu hỏi thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật tài nguyên câu hỏi thất bại!'
-            })
+            return res.error(
+                404,
+                'Cập nhật tài nguyên câu hỏi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id tài nguyên câu hỏi không tồn tại!'
-            ))
+            )
         }
 
         try {
             const questionResource = await QuestionResourceServices.getOne(id)
 
             if (questionResource) {
-                return res.status(201).json({
-                    data: questionResource,
-                    message: 'Lấy tài nguyên câu hỏi thành công!'
-                })
+                return res.success(
+                    'Lấy tài nguyên câu hỏi thành công!',
+                    questionResource
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tài nguyên câu hỏi thất bại!'
-            })
+
+            return res.error(
+                404,
+                'Lấy tài nguyên câu hỏi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit } = req.query
 
         try {
@@ -122,49 +109,44 @@ const QuestionResourceControllers = {
             })
 
             if (questionResources) {
-                return res.status(201).json({
-                    data: questionResources,
-                    message: 'Lấy tất cả tài nguyên câu hỏi thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả tài nguyên câu hỏi thành công!',
+                    questionResources
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả tài nguyên câu hỏi thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy tất cả tài nguyên câu hỏi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id tài nguyên câu hỏi không tồn tại!'
-            ))
+            )
         }
 
         try {
             const questionResource = await QuestionResourceServices.delete(id)
 
             if (questionResource) {
-                return res.status(200).json({
-                    message: 'Xóa tài nguyên câu hỏi thành công!'
-                })
+                return res.successNoData(
+                    'Xóa tài nguyên câu hỏi thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Xóa tài nguyên câu hỏi thất bại!'
-            })
+            return res.error(
+                404,
+                'Xóa tài nguyên câu hỏi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
 }

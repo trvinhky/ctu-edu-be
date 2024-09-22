@@ -1,8 +1,7 @@
 const OptionServices = require("../services/option.service")
-const ApiError = require("../utils/constants/api-error")
 
 const OptionControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const {
             option_content,
             option_is_correct,
@@ -10,10 +9,7 @@ const OptionControllers = {
         } = req.body
 
         if (!option_content || !question_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -26,22 +22,20 @@ const OptionControllers = {
             )
 
             if (newOption) {
-                return res.status(200).json({
-                    message: 'Thêm mới lựa chọn thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới lựa chọn thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới lựa chọn thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm mới lựa chọn thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const {
             option_content,
             option_is_correct,
@@ -51,10 +45,7 @@ const OptionControllers = {
         const { id } = req.params
 
         if (!option_content || !id || !question_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -68,52 +59,47 @@ const OptionControllers = {
             )
 
             if (option) {
-                return res.status(200).json({
-                    message: 'Cập nhật lựa chọn thành công!'
-                })
+                return res.successNoData(
+                    'Cập nhật lựa chọn thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật lựa chọn thất bại!'
-            })
+            return res.error(
+                404,
+                'Cập nhật lựa chọn thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id lựa chọn không tồn tại!'
-            ))
+            )
         }
 
         try {
             const option = await OptionServices.getOne(id)
 
             if (option) {
-                return res.status(201).json({
-                    data: option,
-                    message: 'Lấy lựa chọn thành công!'
-                })
+                return res.success(
+                    'Lấy lựa chọn thành công!',
+                    option
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy lựa chọn thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy lựa chọn thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit } = req.query
 
         try {
@@ -122,49 +108,44 @@ const OptionControllers = {
             })
 
             if (options) {
-                return res.status(201).json({
-                    data: options,
-                    message: 'Lấy tất cả lựa chọn thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả lựa chọn thành công!',
+                    options
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả lựa chọn thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy tất cả lựa chọn thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id lựa chọn không tồn tại!'
-            ))
+            )
         }
 
         try {
             const option = await OptionServices.delete(id)
 
             if (option) {
-                return res.status(200).json({
-                    message: 'Xóa lựa chọn thành công!'
-                })
+                return res.successNoData(
+                    'Xóa lựa chọn thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Xóa lựa chọn thất bại!'
-            })
+            return res.error(
+                404,
+                'Xóa lựa chọn thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
 }

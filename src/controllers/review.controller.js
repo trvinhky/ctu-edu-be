@@ -1,8 +1,7 @@
 const ReviewServices = require("../services/review.service")
-const ApiError = require("../utils/constants/api-error")
 
 const ReviewControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const {
             review_rating,
             review_comment,
@@ -11,10 +10,7 @@ const ReviewControllers = {
         } = req.body
 
         if (isNaN(+review_rating) || !course_Id || !review_comment || !student_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -28,22 +24,20 @@ const ReviewControllers = {
             )
 
             if (newLesson) {
-                return res.status(200).json({
-                    message: 'Thêm mới review thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới review thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới review thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm mới review thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const {
             review_rating,
             review_comment,
@@ -54,10 +48,7 @@ const ReviewControllers = {
         const { id } = req.params
 
         if (isNaN(+review_rating) || !course_Id || !review_comment || !student_Id || !id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -72,52 +63,45 @@ const ReviewControllers = {
             )
 
             if (review) {
-                return res.status(200).json({
-                    message: 'Cập nhật review thành công!'
-                })
+                return res.successNoData(
+                    'Cập nhật review thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật review thất bại!'
-            })
+            return res.error(
+                404,
+                'Cập nhật review thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
-                'Id review không tồn tại!'
-            ))
+            return res.errorValid()
         }
 
         try {
             const review = await ReviewServices.getOne(id)
 
             if (review) {
-                return res.status(201).json({
-                    data: review,
-                    message: 'Lấy review thành công!'
-                })
+                return res.success(
+                    'Lấy review thành công!',
+                    review
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy review thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy review thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit, student, course } = req.query
 
         try {
@@ -126,49 +110,42 @@ const ReviewControllers = {
             })
 
             if (reviews) {
-                return res.status(201).json({
-                    data: reviews,
-                    message: 'Lấy tất cả review thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả review thành công!',
+                    reviews
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả review thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy tất cả review thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
-                'Id review không tồn tại!'
-            ))
+            return res.errorValid()
         }
 
         try {
             const review = await ReviewServices.delete(id)
 
             if (review) {
-                return res.status(200).json({
-                    message: 'Xóa review thành công!'
-                })
+                return res.successNoData(
+                    'Xóa review thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Xóa review thất bại!'
-            })
+            return res.error(
+                404,
+                'Xóa review thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
 }

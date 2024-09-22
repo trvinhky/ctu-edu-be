@@ -1,20 +1,46 @@
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
-const ApiError = require("../utils/constants/api-error")
 const AccountServices = require("../services/account.service")
 const AuthServices = require("../services/auth.service")
 const RoleServices = require("../services/role.service")
 const { ROLES } = require("../utils/constants")
+const sendEmail = require("../utils/lib/sendEmail")
+const { createVerificationCode, verifyCode, generateCaptcha, expirationTime } = require("../utils/constants/verify-code")
+const fs = require('fs');
 
 const AccountControllers = {
-    async create(req, res, next) {
-        const { password, email, role, name } = req.body
+    async getCaptCha(req, res) {
+        const captcha = generateCaptcha(req, res)
+        return res.success('OK!', {
+            url: captcha.captchaUrl
+        })
+    },
+    async sendEmailCode(req, res) {
+        const { email } = req.body
+        if (!email) {
+            return res.errorValid('Email không tồn tại!')
+        }
 
-        if (!password || !email || !name) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+        const code = createVerificationCode(req)
+
+        await sendEmail(
+            email,
+            'Mã xác thực',
+            `Vui lòng nhập mã này trong vòng 5 phút: <br></br> <b style="color: red; font-size: 50px">${code}</b>`
+        )
+
+        return res.successNoData('OK!')
+    },
+    async create(req, res) {
+        const { password, email, role, name, code } = req.body
+
+        if (!password || !email || !name || !code) {
+            return res.errorValid()
+        }
+
+        const checkCode = verifyCode(req, code)
+        if (!checkCode.valid) {
+            return error(res, 403, checkCode.message)
         }
 
         try {
@@ -23,10 +49,7 @@ const AccountControllers = {
             const role_Id = role ?? (await RoleServices.getOne({ role_name: ROLES.USER })).role_Id
 
             if (!role_Id) {
-                return next(new ApiError(
-                    404,
-                    'Không tồn tại Id role!'
-                ))
+                return res.error(404, 'Thêm mới người dùng thất bại!')
             }
 
             const newAccount = await AccountServices.create(
@@ -39,29 +62,32 @@ const AccountControllers = {
             )
 
             if (newAccount) {
-                return res.status(200).json({
-                    message: 'Thêm mới người dùng thành công!'
-                })
+                return res.successNoData('Thêm mới người dùng thành công!')
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới người dùng thất bại!'
-            })
+            return res.error(404, 'Thêm mới người dùng thất bại!')
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async login(req, res, next) {
-        const { password, email } = req.body
+    async login(req, res) {
+        const { password, email, captcha } = req.body
+        const captchaSession = req.session.captcha;
 
-        if (!password || !email) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+        if (!password || !email || !captcha) {
+            return res.errorValid()
+        }
+
+        const { text, createdAt, filePath } = captchaSession;
+
+        // Kiểm tra nếu CAPTCHA đã hết hạn
+        if (Date.now() - createdAt > expirationTime) {
+            return res.error(400, 'CAPTCHA đã hết hạn, vui lòng thử lại!')
+        }
+
+        // Kiểm tra nếu CAPTCHA không khớp
+        if (captcha.toLowerCase() !== text.toLowerCase()) {
+            return res.error(400, 'CAPTCHA không đúng!')
         }
 
         try {
@@ -73,61 +99,53 @@ const AccountControllers = {
                 account.account_token = refreshToken
                 await account.save()
 
-                return res.status(201).json({
-                    data: {
-                        token: accessToken
-                    },
-                    message: 'Đăng nhập thành công!'
-                })
+                res.cookie('refreshToken', refreshToken, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'Lax',
+                    maxAge: 24 * 60 * 60 * 1000 // Thời hạn cookie (1 ngày)
+                });
+
+                // Xóa file ảnh CAPTCHA sau khi đã sử dụng
+                if (typeof filePath === 'string' && fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+
+                return res.success(
+                    'Đăng nhập thành công!',
+                    { token: accessToken }
+                )
             }
 
-            return res.status(404).json({
-                message: 'Email hoặc mật khẩu không khớp!'
-            })
+            return res.error(404, 'Email hoặc mật khẩu không khớp!')
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async logout(req, res, next) {
+    async logout(req, res) {
         const { account_Id } = req
 
         if (!account_Id) {
-            return next(new ApiError(
-                400,
-                'Id người dùng không tồn tại!'
-            ))
+            return res.errorValid('Id người dùng không tồn tại!')
         }
 
         try {
             const account = await AccountServices.logout(account_Id)
 
             if (account) {
-                return res.status(200).json({
-                    message: 'Đăng xuất thành công!'
-                })
+                return res.successNoData('Đăng xuất thành công!')
             }
 
-            return res.status(404).json({
-                message: 'refresh token không tồn tại!'
-            })
+            return res.error(404, 'refresh token không tồn tại!')
         } catch (error) {
-            return next(new ApiError(
-                500,
-                error
-            ))
+            return res.errorServer()
         }
     },
-    async updateAccessToken(req, res, next) {
-        const refreshToken = req.body.token
+    async updateAccessToken(req, res) {
+        const refreshToken = req?.cookies?.refreshToken
 
         if (!refreshToken) {
-            return next(new ApiError(
-                400,
-                'Refresh token không tồn tại!'
-            ))
+            return res.error(403, 'Refresh token chưa được cấp!')
         }
 
         jwt.verify(
@@ -135,9 +153,7 @@ const AccountControllers = {
             process.env.REFRESH_TOKEN_SECRET,
             (err, data) => {
                 if (err) {
-                    return res.status(403).json({
-                        message: 'Chưa đăng nhập!'
-                    })
+                    return res.error(403, 'Refresh token không tồn tại!')
                 }
 
                 const accessToken = AuthServices.generateAccessToken({
@@ -147,46 +163,38 @@ const AccountControllers = {
                     }
                 })
 
-                return res.status(201).json({
-                    data: {
+                return res.success(
+                    'Cập nhật token thành công!',
+                    {
                         token: accessToken
-                    },
-                    message: 'Cập nhật token thành công!'
-                })
+                    }
+                )
             }
         );
     },
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { account_Id } = req
 
         if (!account_Id) {
-            return next(new ApiError(
-                400,
-                'Id người dùng không tồn tại!'
-            ))
+            return res.errorValid('Id người dùng không tồn tại!')
         }
 
         try {
             const account = await AccountServices.getOne({ account_Id })
 
             if (account) {
-                return res.status(201).json({
-                    data: account,
-                    message: 'Lấy thông tin tài khoản thành công!'
-                })
+                return res.success(
+                    'Lấy thông tin tài khoản thành công!',
+                    account
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy thông tin tài khoản thất bại!'
-            })
+            return res.error(404, 'Lấy thông tin tài khoản thất bại!')
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit, role } = req.query
 
         try {
@@ -195,20 +203,60 @@ const AccountControllers = {
             })
 
             if (accounts) {
-                return res.status(201).json({
-                    data: accounts,
-                    message: 'Lấy tất cả tài khoản thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả tài khoản thành công!',
+                    accounts
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả tài khoản thất bại!'
-            })
+            return res.error(404, 'Lấy tất cả tài khoản thất bại!')
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
+        }
+    },
+    async changePassword(req, res) {
+        const { password, code, email } = req.body
+        const { account_Id } = req
+
+        if ((!email && !account_Id) || !password || !code) {
+            return res.errorValid()
+        }
+
+        const checkCode = verifyCode(req, code)
+        if (!checkCode.valid) {
+            return res.error(403, checkCode.message)
+        }
+
+        try {
+            const account = await AccountServices.update(
+                password,
+                { account_Id, account_email: email }
+            )
+
+            if (account) {
+                return res.successNoData('Thay đổi mật khẩu thành công!')
+            }
+
+            return res.error(404, 'Thay đổi mật khẩu thất bại!')
+        } catch (err) {
+            return res.errorServer()
+        }
+    },
+    async getOneByEmail(req, res) {
+        const { email } = req.body
+        if (!email) {
+            return res.errorValid('Email không tồn tại!')
+        }
+
+        try {
+            const account = await AccountServices.getOne({ account_email: email })
+            if (account) {
+                return res.success('Lấy thông tin tài khoản thành công!', account)
+            }
+
+            return res.error(404, 'Lấy thông tin tài khoản thất bại!')
+        } catch (err) {
+            return res.errorServer()
         }
     }
 }

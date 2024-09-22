@@ -1,15 +1,13 @@
 const CategoryServices = require("../services/category.service")
-const ApiError = require("../utils/constants/api-error")
 
 const CategoryControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const { category_name } = req.body
 
         if (!category_name) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Tên loại tài liệu không tồn tại!'
-            ))
+            )
         }
 
         try {
@@ -18,89 +16,71 @@ const CategoryControllers = {
             )
 
             if (newCategory) {
-                return res.status(200).json({
-                    message: 'Thêm mới loại tài liệu thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới loại tài liệu thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới loại tài liệu thất bại!'
-            })
+            return res.error(404, 'Thêm mới loại tài liệu thất bại!')
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id loại tài liệu không tồn tại!'
-            ))
+            )
         }
 
         try {
             const category = await CategoryServices.getOne(id)
 
             if (category) {
-                return res.status(201).json({
-                    data: category,
-                    message: 'Lấy loại tài liệu thành công!'
-                })
+                return res.success(
+                    'Lấy loại tài liệu thành công!',
+                    category
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy loại tài liệu thất bại!'
-            })
+            return res.error(404, 'Lấy loại tài liệu thất bại!')
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const {
             category_name
         } = req.body
         const { id } = req.params
 
         if (!id || !category_name) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường không được rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
             const category = await CategoryServices.update(
-                {
-                    category_name
-                },
+                category_name,
                 id
             )
 
             if (category) {
-                return res.status(200).json({
-                    message: 'Cập nhật loại tài liệu thành công!'
-                })
+                return res.successNoData(
+                    'Cập nhật loại tài liệu thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật loại tài liệu thất bại!'
-            })
+            return res.error(
+                404,
+                'Cập nhật loại tài liệu thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit } = req.query
 
         try {
@@ -109,20 +89,15 @@ const CategoryControllers = {
             })
 
             if (categories) {
-                return res.status(201).json({
-                    data: categories,
-                    message: 'Lấy tất cả loại tài liệu thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả loại tài liệu thành công!',
+                    categories
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả loại tài liệu thất bại!'
-            })
+            return res.error(404, 'Lấy tất cả loại tài liệu thất bại!')
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     }
 }

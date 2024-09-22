@@ -2,7 +2,7 @@ const db = require("../models")
 
 const CommentServices = {
     async create(comment) {
-        return await db.Discussion.create(comment)
+        return await db.Comment.create(comment)
     },
     async getOne(comment_Id) {
         return await db.Comment.findOne({

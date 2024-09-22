@@ -1,8 +1,8 @@
+const db = require("../models")
 const AnswerServices = require("../services/answer.service")
-const ApiError = require("../utils/constants/api-error")
 
 const AnswerControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const {
             option_Id,
             student_Id,
@@ -11,10 +11,7 @@ const AnswerControllers = {
         } = req.body
 
         if (!student_Id || !option_Id || !question_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -28,22 +25,15 @@ const AnswerControllers = {
             )
 
             if (newAnswer) {
-                return res.status(200).json({
-                    message: 'Thêm mới câu trả lời thành công!'
-                })
+                return res.successNoData('Thêm mới câu trả lời thành công!')
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới câu trả lời thất bại!'
-            })
+            return res.error(404, 'Thêm mới câu trả lời thất bại!')
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const {
             option_Id,
             student_Id,
@@ -53,11 +43,10 @@ const AnswerControllers = {
         const { id } = req.params
 
         if (!id || !option_Id || !student_Id || !question_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường không được rỗng!'
-            ))
+            return res.errorValid()
         }
+
+        const transaction = await db.sequelize.transaction()
 
         try {
             const answer = await AnswerServices.update(
@@ -67,33 +56,27 @@ const AnswerControllers = {
                     question_Id,
                     answer_correct: !!answer_correct
                 },
-                id
+                id,
+                transaction
             )
 
             if (answer) {
-                return res.status(200).json({
-                    message: 'Cập nhật câu trả lời thành công!'
-                })
+                await transaction.commit()
+                return res.successNoData('Cập nhật câu trả lời thành công!')
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật câu trả lời thất bại!'
-            })
+            await transaction.rollback()
+            return res.error(404, 'Cập nhật câu trả lời thất bại!')
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            await transaction.rollback()
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit, question, student, option } = req.query
 
         if (!(question || student || option)) {
-            return next(new ApiError(
-                400,
-                'Id câu hỏi, học viên hoặc lựa chọn không tồn tại!'
-            ))
+            return res.errorValid('Id câu hỏi, học viên hoặc lựa chọn không tồn tại!')
         }
 
         try {
@@ -102,20 +85,15 @@ const AnswerControllers = {
             })
 
             if (students) {
-                return res.status(201).json({
-                    data: students,
-                    message: 'Lấy tất cả câu trả lời thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả câu trả lời thành công!',
+                    students
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả câu trả lời thất bại!'
-            })
+            return res.error(404, 'Lấy tất cả câu trả lời thất bại!')
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     }
 }

@@ -1,8 +1,8 @@
+const db = require("../models")
 const CourseServices = require("../services/course.service")
-const ApiError = require("../utils/constants/api-error")
 
 const CourseControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const {
             course_name,
             course_content,
@@ -12,10 +12,7 @@ const CourseControllers = {
         } = req.body
 
         if (!course_name || !course_content || !teacher_Id || !subject_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -30,22 +27,20 @@ const CourseControllers = {
             )
 
             if (newCourse) {
-                return res.status(200).json({
-                    message: 'Thêm mới khóa học thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới khóa học thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới khóa học thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm mới khóa học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const {
             course_name,
             course_content,
@@ -56,11 +51,10 @@ const CourseControllers = {
         const { id } = req.params
 
         if (!id || !course_name || !course_content || !subject_Id || !teacher_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường không được rỗng!'
-            ))
+            return res.errorValid()
         }
+
+        const transaction = await db.sequelize.transaction()
 
         try {
             const course = await CourseServices.update(
@@ -71,56 +65,55 @@ const CourseControllers = {
                     course_image: course_image ?? null,
                     teacher_Id
                 },
-                id
+                id,
+                transaction
             )
 
             if (course) {
-                return res.status(200).json({
-                    message: 'Cập nhật khóa học thành công!'
-                })
+                await transaction.commit()
+                return res.successNoData(
+                    'Cập nhật khóa học thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật khóa học thất bại!'
-            })
+            await transaction.rollback()
+            return res.error(
+                404,
+                'Cập nhật khóa học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            await transaction.rollback()
+            return res.errorServer()
         }
     },
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id khóa học không tồn tại!'
-            ))
+            )
         }
 
         try {
             const course = await CourseServices.getOne({ course_Id: id })
 
             if (course) {
-                return res.status(201).json({
-                    data: course,
-                    message: 'Lấy khóa học thành công!'
-                })
+                return res.success(
+                    'Lấy khóa học thành công!',
+                    course
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy khóa học thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy khóa học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit, title, subject } = req.query
 
         try {
@@ -129,20 +122,18 @@ const CourseControllers = {
             })
 
             if (courses) {
-                return res.status(201).json({
-                    data: courses,
-                    message: 'Lấy tất cả khóa học thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả khóa học thành công!',
+                    courses
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả khóa học thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy tất cả khóa học thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     }
 }

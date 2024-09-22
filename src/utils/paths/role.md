@@ -31,7 +31,8 @@ required: "admin login"
 method: GET
 page: int /* option */
 limit: int /* option */
-path: `/role/all?page=${page}&limit=${limit}`
+child: boolean /* option */
+path: `/role/all?page=${page}&limit=${limit}&child=${child}`
 required: "admin login"
 ```
 

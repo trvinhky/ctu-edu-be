@@ -1,8 +1,7 @@
 const QuestionServices = require("../services/question.service")
-const ApiError = require("../utils/constants/api-error")
 
 const QuestionControllers = {
-    async create(req, res, next) {
+    async create(req, res) {
         const {
             question_content,
             type_Id,
@@ -10,10 +9,7 @@ const QuestionControllers = {
         } = req.body
 
         if (!question_content || !type_Id || !auth_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -26,22 +22,20 @@ const QuestionControllers = {
             )
 
             if (newQuestion) {
-                return res.status(200).json({
-                    message: 'Thêm mới câu hỏi thành công!'
-                })
+                return res.successNoData(
+                    'Thêm mới câu hỏi thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Thêm mới câu hỏi thất bại!'
-            })
+            return res.error(
+                404,
+                'Thêm mới câu hỏi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async update(req, res, next) {
+    async update(req, res) {
         const {
             question_content,
             type_Id,
@@ -51,10 +45,7 @@ const QuestionControllers = {
         const { id } = req.params
 
         if (!question_content || !type_Id || !id || !auth_Id) {
-            return next(new ApiError(
-                400,
-                'Tất cả các trường dữ liệu rỗng!'
-            ))
+            return res.errorValid()
         }
 
         try {
@@ -68,52 +59,47 @@ const QuestionControllers = {
             )
 
             if (question) {
-                return res.status(200).json({
-                    message: 'Cập nhật câu hỏi thành công!'
-                })
+                return res.successNoData(
+                    'Cập nhật câu hỏi thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Cập nhật câu hỏi thất bại!'
-            })
+            return res.error(
+                404,
+                'Cập nhật câu hỏi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getOne(req, res, next) {
+    async getOne(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id câu hỏi không tồn tại!'
-            ))
+            )
         }
 
         try {
             const question = await QuestionServices.getOne(id)
 
             if (question) {
-                return res.status(201).json({
-                    data: question,
-                    message: 'Lấy câu hỏi thành công!'
-                })
+                return res.success(
+                    'Lấy câu hỏi thành công!',
+                    question
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy câu hỏi thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy câu hỏi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { page, limit, id } = req.query
 
         try {
@@ -122,49 +108,44 @@ const QuestionControllers = {
             })
 
             if (questions) {
-                return res.status(201).json({
-                    data: questions,
-                    message: 'Lấy tất cả câu hỏi thành công!'
-                })
+                return res.success(
+                    'Lấy tất cả câu hỏi thành công!',
+                    questions
+                )
             }
 
-            return res.status(404).json({
-                message: 'Lấy tất cả câu hỏi thất bại!'
-            })
+            return res.error(
+                404,
+                'Lấy tất cả câu hỏi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
-    async delete(req, res, next) {
+    async delete(req, res) {
         const { id } = req.params
 
         if (!id) {
-            return next(new ApiError(
-                400,
+            return res.errorValid(
                 'Id câu hỏi không tồn tại!'
-            ))
+            )
         }
 
         try {
             const question = await QuestionServices.delete(id)
 
             if (question) {
-                return res.status(200).json({
-                    message: 'Xóa câu hỏi thành công!'
-                })
+                return res.successNoData(
+                    'Xóa câu hỏi thành công!'
+                )
             }
 
-            return res.status(404).json({
-                message: 'Xóa câu hỏi thất bại!'
-            })
+            return res.error(
+                404,
+                'Xóa câu hỏi thất bại!'
+            )
         } catch (err) {
-            return next(new ApiError(
-                500,
-                err
-            ))
+            return res.errorServer()
         }
     },
 }
