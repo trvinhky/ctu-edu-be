@@ -29,7 +29,11 @@ const StatusServices = {
 
         return await db.Status.findAndCountAll({
             limit,
-            offset
+            offset,
+            include: [{
+                model: db.Post,
+                as: 'posts'
+            }]
         })
     }
 }

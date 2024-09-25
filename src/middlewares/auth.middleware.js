@@ -43,7 +43,7 @@ const AuthMiddlewares = {
         next()
     },
     otherUser(req, res, next) {
-        if (req.role !== ROLES.ADMIN || req.role !== ROLES.TEACHER) {
+        if (!(req.role !== ROLES.ADMIN || req.role !== ROLES.TEACHER)) {
             return res.status(403).json({
                 message: 'Không đủ quyền!'
             })

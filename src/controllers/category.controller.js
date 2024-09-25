@@ -91,7 +91,10 @@ const CategoryControllers = {
             if (categories) {
                 return res.success(
                     'Lấy tất cả loại tài liệu thành công!',
-                    categories
+                    {
+                        count: categories.count,
+                        categories: categories.rows
+                    }
                 )
             }
 

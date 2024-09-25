@@ -4,11 +4,17 @@ const SubjectServices = {
     async create(subject) {
         return await db.Subject.create(subject)
     },
-    async update(subject, subject_Id) {
-        return await db.Subject.update(
-            subject,
+    async update(subject_name, subject_Id) {
+        const subject = await db.Subject.findOne(
             { where: { subject_Id } }
         )
+
+        if (subject) {
+            subject.subject_name = subject_name
+            return await subject.save()
+        }
+
+        return null
     },
     async getOne(subject_Id) {
         return await db.Subject.findOne({
@@ -32,7 +38,17 @@ const SubjectServices = {
 
         return await db.Subject.findAndCountAll({
             limit,
-            offset
+            offset,
+            include: [
+                {
+                    model: db.Course,
+                    as: 'courses'
+                },
+                {
+                    model: db.Post,
+                    as: 'posts'
+                }
+            ]
         })
     }
 }

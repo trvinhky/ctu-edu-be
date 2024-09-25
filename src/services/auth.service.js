@@ -8,7 +8,7 @@ const AuthServices = {
             { account_Id, role: role?.role_name },
             process.env.ACCESS_TOKEN_SECRET,
             {
-                expiresIn: '15m'
+                expiresIn: '1d'
             }
         )
     },
@@ -19,7 +19,7 @@ const AuthServices = {
             { account_Id, role: role?.role_name },
             process.env.REFRESH_TOKEN_SECRET,
             {
-                expiresIn: '1d'
+                expiresIn: '7d'
             }
         )
     }

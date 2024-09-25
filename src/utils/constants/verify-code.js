@@ -36,7 +36,7 @@ function verifyCode(req, code) {
 const expirationTime = 2 * 60 * 1000; // 2 phút
 const generateCaptcha = (req, res) => {
     try {
-        const captchaText = crypto.randomBytes(+process.env.CODE_TOTAL).toString('hex');
+        const captchaText = crypto.randomBytes(Number(process.env.CODE_TOTAL) || 3).toString('hex');
         const canvas = createCanvas(200, 80);
         const ctx = canvas.getContext('2d');
 
@@ -74,8 +74,12 @@ const generateCaptcha = (req, res) => {
             ctx.stroke();
         }
 
-        const fileName = `${crypto.randomBytes(+process.env.CODE_TOTAL).toString('hex')}.png`;
+        const fileName = `${crypto.randomBytes(Number(process.env.CODE_TOTAL) || 3).toString('hex')}.png`;
         const captchasDir = path.join(__dirname, '../../captchas');
+        if (!fs.existsSync(captchasDir)) {
+            fs.mkdirSync(captchasDir, { recursive: true });
+        }
+
         const filePath = path.join(captchasDir, fileName);
 
         // Lưu ảnh vào thư mục "captchas"

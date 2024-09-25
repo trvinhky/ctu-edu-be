@@ -51,10 +51,10 @@ const AccountServices = {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
-        const role_Id = params.role ?? ''
+        const where = params.role ? { role_Id: params.role } : {}
 
         return await db.Account.findAndCountAll({
-            where: { role_Id },
+            where,
             limit,
             offset,
             include: [

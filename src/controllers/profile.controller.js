@@ -47,15 +47,20 @@ const ProfileControllers = {
 
         const transaction = await db.sequelize.transaction()
 
+        const data = {
+            profile_name,
+            profile_address: profile_address ?? null,
+            profile_phone: profile_phone ?? null,
+            profile_birthday: profile_birthday ?? null,
+            profile_info: profile_info ?? null
+        }
+
+        if (profile_avatar) {
+            data.profile_avatar = profile_avatar
+        }
+
         try {
-            const profile = await ProfileServices.update({
-                profile_name,
-                profile_address: profile_address ?? null,
-                profile_phone: profile_phone ?? null,
-                profile_avatar: profile_avatar ?? null,
-                profile_birthday: profile_birthday ?? null,
-                profile_info: profile_info ?? null
-            }, id, transaction)
+            const profile = await ProfileServices.update(data, id, transaction)
 
             if (profile) {
                 await transaction.commit()

@@ -20,7 +20,11 @@ const TypeServices = {
 
         return await db.Type.findAndCountAll({
             limit,
-            offset
+            offset,
+            include: [{
+                model: db.Question,
+                as: 'questions'
+            }]
         })
     },
 }

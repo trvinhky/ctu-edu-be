@@ -50,16 +50,22 @@ const CourseServices = {
         const offset = (page - 1) * limit;
         const title = params.title ?? ''
         const subject_Id = params.subject ?? ''
+        const where = {}
+
+        if (title) {
+            where.course_name = {
+                [db.Sequelize.Op.like]: `%${title}%`
+            }
+        }
+
+        if (subject_Id) {
+            where.subject_Id = subject_Id
+        }
 
         return await db.Course.findAndCountAll({
             limit,
             offset,
-            where: {
-                course_name: {
-                    [db.Sequelize.Op.like]: `%${title}%`
-                },
-                subject_Id
-            },
+            where,
             include: [
                 {
                     model: db.Account,

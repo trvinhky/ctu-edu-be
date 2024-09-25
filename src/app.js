@@ -74,7 +74,6 @@ app.use((req, res, next) => {
     next();
 });
 
-
 // Server folder 
 app.use('/captchas', express.static(path.join(__dirname, 'captchas')))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))

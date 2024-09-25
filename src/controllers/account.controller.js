@@ -80,6 +80,10 @@ const AccountControllers = {
 
         const { text, createdAt, filePath } = captchaSession;
 
+        if (!captchaSession) {
+            return res.error(500, 'Lỗi server, vui lòng thử lại!')
+        }
+
         // Kiểm tra nếu CAPTCHA đã hết hạn
         if (Date.now() - createdAt > expirationTime) {
             return res.error(400, 'CAPTCHA đã hết hạn, vui lòng thử lại!')
@@ -205,7 +209,10 @@ const AccountControllers = {
             if (accounts) {
                 return res.success(
                     'Lấy tất cả tài khoản thành công!',
-                    accounts
+                    {
+                        count: accounts.count,
+                        accounts: accounts.rows
+                    }
                 )
             }
 

@@ -66,7 +66,10 @@ const StatusControllers = {
             if (status) {
                 return res.success(
                     'Lấy tất cả trạng thái thành công!',
-                    status
+                    {
+                        count: status.count,
+                        status: status.rows
+                    }
                 )
             }
 

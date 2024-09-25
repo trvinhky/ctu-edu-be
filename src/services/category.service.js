@@ -38,7 +38,17 @@ const CategoryServices = {
 
         return await db.Category.findAndCountAll({
             limit,
-            offset
+            offset,
+            include: [
+                {
+                    model: db.Resource,
+                    as: 'resources'
+                },
+                {
+                    model: db.QuestionResource,
+                    as: 'questions'
+                }
+            ]
         })
     },
     async delete(category_Id) {

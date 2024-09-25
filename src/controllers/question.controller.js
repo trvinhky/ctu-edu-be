@@ -1,3 +1,4 @@
+const db = require("../models")
 const QuestionServices = require("../services/question.service")
 
 const QuestionControllers = {
@@ -48,6 +49,8 @@ const QuestionControllers = {
             return res.errorValid()
         }
 
+        const transaction = await db.sequelize.transaction()
+
         try {
             const question = await QuestionServices.update(
                 {
@@ -55,20 +58,24 @@ const QuestionControllers = {
                     type_Id,
                     auth_Id
                 },
-                id
+                id,
+                transaction
             )
 
             if (question) {
+                await transaction.commit()
                 return res.successNoData(
                     'Cập nhật câu hỏi thành công!'
                 )
             }
 
+            await transaction.rollback()
             return res.error(
                 404,
                 'Cập nhật câu hỏi thất bại!'
             )
         } catch (err) {
+            await transaction.rollback()
             return res.errorServer()
         }
     },
@@ -110,7 +117,10 @@ const QuestionControllers = {
             if (questions) {
                 return res.success(
                     'Lấy tất cả câu hỏi thành công!',
-                    questions
+                    {
+                        count: questions.count,
+                        questions: questions.rows
+                    }
                 )
             }
 

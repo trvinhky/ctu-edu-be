@@ -23,22 +23,31 @@ const QuestionServices = {
             ]
         })
     },
-    async update(question, question_Id) {
-        return await db.Question.update(
+    async update(question, question_Id, transaction) {
+        await db.Question.update(
             question,
-            { where: { question_Id } }
+            { where: { question_Id } },
+            transaction
         )
+
+        return await db.Question.findOne({
+            where: { question_Id },
+            transaction
+        })
     },
     async getAll(params) {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
         const auth_Id = params.id ?? ''
+        const where = {}
+
+        if (auth_Id) where.auth_Id = auth_Id
 
         return await db.Question.findAndCountAll({
             limit,
             offset,
-            where: { auth_Id },
+            where,
             include: [
                 {
                     model: db.Type,

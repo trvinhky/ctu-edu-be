@@ -65,7 +65,10 @@ const TypeControllers = {
             if (types) {
                 return res.success(
                     'Lấy tất cả kiểu câu hỏi thành công!',
-                    types
+                    {
+                        count: types.count,
+                        types: types.rows
+                    }
                 )
             }
 

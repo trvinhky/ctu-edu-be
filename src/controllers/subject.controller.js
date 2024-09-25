@@ -39,7 +39,7 @@ const SubjectControllers = {
 
         try {
             const subject = await SubjectServices.update(
-                { subject_name },
+                subject_name,
                 id
             )
 
@@ -95,7 +95,10 @@ const SubjectControllers = {
             if (subjects) {
                 return res.success(
                     'Lấy tất cả môn học thành công!',
-                    subjects
+                    {
+                        count: subjects.count,
+                        subjects: subjects.rows
+                    }
                 )
             }
 

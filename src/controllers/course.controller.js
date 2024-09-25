@@ -1,5 +1,6 @@
 const db = require("../models")
 const CourseServices = require("../services/course.service")
+const path = require('path');
 
 const CourseControllers = {
     async create(req, res) {
@@ -7,7 +8,6 @@ const CourseControllers = {
             course_name,
             course_content,
             teacher_Id,
-            course_image,
             subject_Id
         } = req.body
 
@@ -16,12 +16,17 @@ const CourseControllers = {
         }
 
         try {
+            let filePath
+            if (req.file) {
+                filePath = path.join('uploads', req.file.filename)
+            }
+
             const newCourse = await CourseServices.create(
                 {
                     course_name,
                     course_content,
                     teacher_Id,
-                    course_image: course_image ?? null,
+                    course_image: filePath ?? null,
                     subject_Id
                 }
             )
@@ -44,7 +49,6 @@ const CourseControllers = {
         const {
             course_name,
             course_content,
-            course_image,
             subject_Id,
             teacher_Id
         } = req.body
@@ -57,14 +61,24 @@ const CourseControllers = {
         const transaction = await db.sequelize.transaction()
 
         try {
+            let filePath
+            if (req.file) {
+                filePath = path.join('uploads', req.file.filename)
+            }
+
+            const data = {
+                course_name,
+                course_content,
+                subject_Id,
+                teacher_Id
+            }
+
+            if (filePath) {
+                data.course_image = filePath
+            }
+
             const course = await CourseServices.update(
-                {
-                    course_name,
-                    course_content,
-                    subject_Id,
-                    course_image: course_image ?? null,
-                    teacher_Id
-                },
+                data,
                 id,
                 transaction
             )
@@ -124,7 +138,10 @@ const CourseControllers = {
             if (courses) {
                 return res.success(
                     'Lấy tất cả khóa học thành công!',
-                    courses
+                    {
+                        count: courses.count,
+                        courses: courses.rows
+                    }
                 )
             }
 
