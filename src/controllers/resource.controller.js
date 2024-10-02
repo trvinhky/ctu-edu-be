@@ -1,18 +1,23 @@
 const ResourceServices = require("../services/resource.service")
+const path = require('path');
+const fs = require('fs');
 
 const ResourceControllers = {
     async create(req, res) {
-        const { resource_url, lesson_Id, category_Id } = req.body
+        const { lesson_Id, category_Id, resource_score } = req.body
 
-        if (!resource_url || !lesson_Id || !category_Id) {
+        if (!req.file || !lesson_Id || !category_Id || (resource_score && isNaN(+resource_score))) {
             return res.errorValid()
         }
 
         try {
+            let filePath
+            filePath = path.join('uploads', req.file.filename)
             const newResource = await ResourceServices.create({
-                resource_url,
+                resource_url: filePath,
                 lesson_Id,
-                category_Id
+                category_Id,
+                resource_score: +resource_score ?? 0
             })
 
             if (newResource) {
@@ -24,35 +29,6 @@ const ResourceControllers = {
             return res.error(
                 404,
                 'Thêm mới tài liệu thất bại!'
-            )
-        } catch (err) {
-            return res.errorServer()
-        }
-    },
-    async update(req, res) {
-        const { resource_url, lesson_Id, category_Id } = req.body
-        const { id } = req.params
-
-        if (!resource_url || !lesson_Id || !category_Id || !id) {
-            return res.errorValid()
-        }
-
-        try {
-            const resource = await ResourceServices.update({
-                resource_url,
-                lesson_Id,
-                category_Id
-            }, id)
-
-            if (resource) {
-                return res.successNoData(
-                    'Cập nhật tài liệu thành công!'
-                )
-            }
-
-            return res.error(
-                404,
-                'Cập nhật tài liệu thất bại!'
             )
         } catch (err) {
             return res.errorServer()
@@ -95,7 +71,10 @@ const ResourceControllers = {
             if (resources) {
                 return res.success(
                     'Lấy tất cả tài liệu thành công!',
-                    resources
+                    {
+                        count: resources.count,
+                        resources: resources.rows
+                    }
                 )
             }
 
@@ -117,12 +96,19 @@ const ResourceControllers = {
         }
 
         try {
-            const resource = await ResourceServices.delete(id)
+            const data = await ResourceServices.getOne(id)
+            if (data) {
+                const filePath = path.join(__dirname, '../' + data.resource_url);
+                if (typeof filePath === 'string' && fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                    const resource = await ResourceServices.delete(id)
 
-            if (resource) {
-                return res.successNoData(
-                    'Xóa tài liệu thành công!'
-                )
+                    if (resource) {
+                        return res.successNoData(
+                            'Xóa tài liệu thành công!'
+                        )
+                    }
+                }
             }
 
             return res.error(

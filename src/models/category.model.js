@@ -1,6 +1,6 @@
 'use strict';
 const { Model } = require('sequelize');
-const { CATEGORY } = require('../utils/constants');
+const { CATEGORY, ACCEPT, DESCRIPTION } = require('../utils/constants');
 
 module.exports = (sequelize, DataTypes) => {
     class Category extends Model {
@@ -26,6 +26,14 @@ module.exports = (sequelize, DataTypes) => {
         category_name: {
             type: DataTypes.STRING,
             defaultValue: CATEGORY.IMAGE
+        },
+        category_accept: {
+            type: DataTypes.STRING,
+            defaultValue: ACCEPT.IMAGE
+        },
+        category_description: {
+            type: DataTypes.STRING,
+            defaultValue: DESCRIPTION.IMAGE
         }
     }, {
         sequelize,

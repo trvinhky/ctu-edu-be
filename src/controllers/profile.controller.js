@@ -1,5 +1,6 @@
 const db = require("../models")
 const ProfileServices = require("../services/profile.service")
+const path = require('path');
 
 const ProfileControllers = {
     async getOne(req, res) {
@@ -34,7 +35,6 @@ const ProfileControllers = {
             profile_name,
             profile_address,
             profile_phone,
-            profile_avatar,
             profile_birthday,
             profile_info
         } = req.body
@@ -43,6 +43,11 @@ const ProfileControllers = {
 
         if (!profile_name || !id) {
             return res.errorValid()
+        }
+
+        let filePath
+        if (req.file) {
+            filePath = path.join('uploads', req.file.filename)
         }
 
         const transaction = await db.sequelize.transaction()
@@ -55,8 +60,8 @@ const ProfileControllers = {
             profile_info: profile_info ?? null
         }
 
-        if (profile_avatar) {
-            data.profile_avatar = profile_avatar
+        if (filePath) {
+            data.profile_avatar = filePath
         }
 
         try {

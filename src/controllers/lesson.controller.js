@@ -1,3 +1,4 @@
+const db = require("../models")
 const LessonServices = require("../services/lesson.service")
 
 const LessonControllers = {
@@ -48,6 +49,7 @@ const LessonControllers = {
             return res.errorValid()
         }
 
+        const transaction = await db.sequelize.transaction()
         try {
             const lesson = await LessonServices.update(
                 {
@@ -55,7 +57,8 @@ const LessonControllers = {
                     lesson_content: lesson_content ?? '',
                     course_Id
                 },
-                id
+                id,
+                transaction
             )
 
             if (lesson) {
@@ -110,7 +113,10 @@ const LessonControllers = {
             if (lessons) {
                 return res.success(
                     'Lấy tất cả bài học thành công!',
-                    lessons
+                    {
+                        count: lessons.count,
+                        lessons: lessons.rows
+                    }
                 )
             }
 

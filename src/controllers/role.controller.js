@@ -10,6 +10,12 @@ const RoleControllers = {
             )
         }
 
+        if (role_name && role_name.length > 15) {
+            return res.errorValid(
+                'Tên role quá dài (nhỏ hơn 15 kí tự)!'
+            )
+        }
+
         try {
             const newRole = await RoleServices.create({ role_name })
 

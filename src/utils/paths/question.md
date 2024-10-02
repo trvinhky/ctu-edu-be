@@ -32,7 +32,8 @@ method: GET
 page: int /* option */
 limit: int /* option */
 id: string /* account_Id */
-path: `/question/all?page=${page}&limit=${limit}&id=${id}`
+type: string /* type_Id */
+path: `/question/all?page=${page}&limit=${limit}&id=${id}&type=${type}`
 ```
 
 ## **Delete Question**

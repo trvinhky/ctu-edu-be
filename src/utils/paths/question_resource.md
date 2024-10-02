@@ -4,17 +4,7 @@
 method: POST
 path: `/question-resource/create`
 required: "teacher or admin login"
-body: (question_resource_url, resource_type, question_Id)<string>
-```
-
-## **Update Question Resource**
-
-```ts
-method: PUT
-id: string
-path: `/question-resource/${id}`
-required: "teacher or admin login"
-body: (question_resource_url, resource_type, question_Id)<string>
+body: (question_resource_url, category_Id, question_Id)<string>
 ```
 
 ## **Get One Question Resource**

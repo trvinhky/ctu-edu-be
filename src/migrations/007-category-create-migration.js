@@ -8,9 +8,17 @@ module.exports = {
                 type: Sequelize.UUID
             },
             category_name: {
-                type: Sequelize.STRING(15),
+                type: Sequelize.STRING,
                 allowNull: false,
                 unique: true
+            },
+            category_accept: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
+            category_description: {
+                type: Sequelize.STRING,
+                allowNull: false,
             }
         })
     },

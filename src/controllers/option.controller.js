@@ -1,6 +1,30 @@
+const db = require("../models")
 const OptionServices = require("../services/option.service")
+const { TYPE } = require("../utils/constants")
 
 const OptionControllers = {
+    async checkQuestion(question) {
+        try {
+            const options = await OptionServices.findByCorrect({
+                question, correct: true
+            })
+            if (options && options.count > 0) {
+                const check = options.rows.find(
+                    (option) => {
+                        return option.option_is_correct === true
+                            && option.question.type.type_name.includes(TYPE.ONE)
+                    }
+                )
+                if (check) {
+                    return false
+                }
+                return true
+            }
+            return false
+        } catch (err) {
+            return false
+        }
+    },
     async create(req, res) {
         const {
             option_content,
@@ -13,6 +37,15 @@ const OptionControllers = {
         }
 
         try {
+            if (!!option_is_correct) {
+                const check = await OptionControllers.checkQuestion(question_Id)
+                if (!check) {
+                    return res.errorValid(
+                        'Lựa chọn không hợp lệ!'
+                    )
+                }
+            }
+
             const newOption = await OptionServices.create(
                 {
                     option_content,
@@ -48,26 +81,74 @@ const OptionControllers = {
             return res.errorValid()
         }
 
+        const transaction = await db.sequelize.transaction()
+
         try {
+            if (!!option_is_correct) {
+                const check = await OptionControllers.checkQuestion(question_Id)
+                if (!check) {
+                    return res.errorValid(
+                        'Lựa chọn không hợp lệ!'
+                    )
+                }
+            }
+
             const option = await OptionServices.update(
                 {
                     option_content,
-                    option_is_correct: !!option_is_correct,
+                    option_is_correct: !!(option_is_correct),
                     question_Id
                 },
-                id
+                id,
+                transaction
             )
 
             if (option) {
+                await transaction.commit()
                 return res.successNoData(
                     'Cập nhật lựa chọn thành công!'
                 )
             }
 
+            await transaction.rollback()
             return res.error(
                 404,
                 'Cập nhật lựa chọn thất bại!'
             )
+        } catch (err) {
+            await transaction.rollback()
+            return res.errorServer()
+        }
+    },
+    async getOptionByQuestionId(req, res) {
+        const { question, correct } = req.query
+
+        if (!id) {
+            return res.errorValid(
+                'Id câu hỏi không tồn tại!'
+            )
+        }
+
+        try {
+            const options = await OptionServices.findByCorrect({
+                question, correct
+            })
+
+            if (options) {
+                return res.success(
+                    'Lấy tất cả lựa chọn thành công!',
+                    {
+                        count: options.count,
+                        options: options.rows
+                    }
+                )
+            }
+
+            return res.error(
+                404,
+                'Lấy tất cả lựa chọn thất bại!'
+            )
+
         } catch (err) {
             return res.errorServer()
         }
@@ -100,17 +181,20 @@ const OptionControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit } = req.query
+        const { page, limit, id } = req.query
 
         try {
             const options = await OptionServices.getAll({
-                page, limit
+                page, limit, id
             })
 
             if (options) {
                 return res.success(
                     'Lấy tất cả lựa chọn thành công!',
-                    options
+                    {
+                        count: options.count,
+                        options: options.rows
+                    }
                 )
             }
 

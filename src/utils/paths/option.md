@@ -34,7 +34,8 @@ required: "login"
 method: GET
 page: int /* option */
 limit: int /* option */
-path: `/option/all?page=${page}&limit=${limit}`
+id: string /* question_Id */
+path: `/option/all?page=${page}&limit=${limit}&id=${id}`
 required: "login"
 ```
 

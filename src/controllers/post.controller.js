@@ -1,3 +1,4 @@
+const db = require("../models")
 const PostServices = require("../services/post.service")
 const StatusServices = require("../services/status.service")
 const { STATUS } = require("../utils/constants")
@@ -62,6 +63,8 @@ const PostControllers = {
             return res.errorValid()
         }
 
+        const transaction = await db.sequelize.transaction()
+
         try {
             const status_Id = (await StatusServices.getOne({ status_name: STATUS.PENDING })).status_Id
 
@@ -79,41 +82,42 @@ const PostControllers = {
                     subject_Id,
                     status_Id
                 },
-                id
+                id,
+                transaction
             )
 
             if (post) {
+                await transaction.commit()
                 return res.successNoData(
                     'Cập nhật bài đăng thành công!'
                 )
             }
 
+            await transaction.rollback()
             return res.error(
                 404,
                 'Cập nhật trạng thái thất bại!'
             )
         } catch (err) {
+            await transaction.rollback()
             return res.errorServer()
         }
     },
     async getAll(req, res) {
-        const { page, limit, status, auth } = req.query
-
-        if (!auth) {
-            return res.errorValid(
-                'Id người dùng không tồn tại!'
-            )
-        }
+        const { page, limit, status, auth, title, subject } = req.query
 
         try {
             const posts = await PostServices.getAll({
-                page, limit, status, auth
+                page, limit, status, auth, title, subject
             })
 
             if (posts) {
                 return res.success(
                     'Lấy tất cả bài đăng thành công!',
-                    posts
+                    {
+                        count: posts.count,
+                        posts: posts.rows
+                    }
                 )
             }
 
@@ -153,27 +157,25 @@ const PostControllers = {
         }
     },
     async delete(req, res) {
-        const { status, id } = req.query
+        const { id } = req.params
 
-        if (!(status || id)) {
+        if (!id) {
             return res.errorValid(
                 'Id bài thi và Id câu hỏi không tồn tại!'
             )
         }
 
         try {
-            const status_Id = (await StatusServices.getOne({ status_name: STATUS.PENDING })).status_Id
+            const info = await PostServices.getOne(id)
 
-            if (status_Id !== status) {
+            if (!info || (info && info?.status?.status_name?.includes(STATUS.CONFIRM))) {
                 return res.error(
                     404,
                     'Trạng thái bài đăng không hợp lệ!'
                 )
             }
 
-            const post = await PostServices.delete({
-                status, id
-            })
+            const post = await PostServices.delete(id)
 
             if (post) {
                 return res.successNoData(
@@ -198,23 +200,29 @@ const PostControllers = {
             return res.errorValid()
         }
 
+        const transaction = await db.sequelize.transaction()
+
         try {
             const post = await PostServices.update(
                 { status_Id },
-                id
+                id,
+                transaction
             )
 
             if (post) {
+                await transaction.commit()
                 return res.successNoData(
                     'Cập nhật trạng thái bài đăng thành công!'
                 )
             }
 
+            await transaction.rollback()
             return res.error(
                 404,
                 'Cập nhật trạng thái bài đăng thất bại!'
             )
         } catch (err) {
+            await transaction.rollback()
             return res.errorServer()
         }
     }

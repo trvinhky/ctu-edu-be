@@ -15,20 +15,19 @@ const QuestionResourceServices = {
             ]
         })
     },
-    async update(resource, question_resource_Id) {
-        return await db.QuestionResource.update(
-            resource,
-            { where: { question_resource_Id } }
-        )
-    },
     async getAll(params) {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
+        const question_Id = params.question ?? ''
+        const where = {}
+
+        if (question_Id) where.question_Id = question_Id
 
         return await db.QuestionResource.findAndCountAll({
             limit,
             offset,
+            where,
             include: [
                 {
                     model: db.Category,

@@ -13,23 +13,30 @@ const ResourceServices = {
             }]
         })
     },
-    async update(resource, resource_Id) {
-        return await db.Resource.update(
+    async update(resource, resource_Id, transaction) {
+        await db.Resource.update(
             resource,
-            { where: { resource_Id } }
+            { where: { resource_Id } },
+            transaction
         )
+
+        return await db.Resource.findOne({
+            where: { resource_Id },
+            transaction
+        })
     },
     async getAll(params) {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
         const lesson_Id = params.lesson ?? ''
-        const category_Id = params.category ?? ''
+        const where = {}
+        if (lesson_Id) where.lesson_Id = lesson_Id
 
         return await db.Resource.findAndCountAll({
             limit,
             offset,
-            where: { lesson_Id, category_Id },
+            where,
             include: [{
                 model: db.Category,
                 as: 'category'

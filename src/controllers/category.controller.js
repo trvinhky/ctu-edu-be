@@ -1,19 +1,24 @@
+const db = require("../models")
 const CategoryServices = require("../services/category.service")
 
 const CategoryControllers = {
     async create(req, res) {
-        const { category_name } = req.body
+        const {
+            category_name,
+            category_accept,
+            category_description
+        } = req.body
 
-        if (!category_name) {
-            return res.errorValid(
-                'Tên loại tài liệu không tồn tại!'
-            )
+        if (!category_name || !category_accept || !category_description) {
+            return res.errorValid()
         }
 
         try {
-            const newCategory = await CategoryServices.create(
-                { category_name }
-            )
+            const newCategory = await CategoryServices.create({
+                category_name,
+                category_accept,
+                category_description
+            })
 
             if (newCategory) {
                 return res.successNoData(
@@ -52,31 +57,43 @@ const CategoryControllers = {
     },
     async update(req, res) {
         const {
-            category_name
+            category_name,
+            category_accept,
+            category_description
         } = req.body
         const { id } = req.params
 
-        if (!id || !category_name) {
+        if (!id || !category_name || !category_accept || !category_description) {
             return res.errorValid()
         }
 
+        const transaction = await db.sequelize.transaction()
+
         try {
             const category = await CategoryServices.update(
-                category_name,
-                id
+                {
+                    category_name,
+                    category_accept,
+                    category_description
+                },
+                id,
+                transaction
             )
 
             if (category) {
+                await transaction.commit()
                 return res.successNoData(
                     'Cập nhật loại tài liệu thành công!'
                 )
             }
 
+            await transaction.rollback()
             return res.error(
                 404,
                 'Cập nhật loại tài liệu thất bại!'
             )
         } catch (err) {
+            await transaction.rollback()
             return res.errorServer()
         }
     },

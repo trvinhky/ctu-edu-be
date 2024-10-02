@@ -4,7 +4,7 @@
 method: POST
 path: `/category/create`
 required: "admin or teacher login"
-body: category_name<string>
+body: (category_name, category_accept, category_description)<string>
 ```
 
 ## **Get One Category**
@@ -23,7 +23,7 @@ method: PUT
 id: string
 path: `/category/${id}`
 required: "admin or teacher login"
-body: category_name<string>
+body: (category_name, category_accept, category_description)<string>
 ```
 
 ## **Get All Category**

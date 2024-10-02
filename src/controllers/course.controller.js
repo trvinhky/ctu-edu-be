@@ -128,11 +128,11 @@ const CourseControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit, title, subject } = req.query
+        const { page, limit, title, subject, teacher } = req.query
 
         try {
             const courses = await CourseServices.getAll({
-                page, limit, title, subject
+                page, limit, title, subject, teacher
             })
 
             if (courses) {

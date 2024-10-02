@@ -40,9 +40,11 @@ const QuestionServices = {
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
         const auth_Id = params.id ?? ''
+        const type_Id = params.type ?? ''
         const where = {}
 
         if (auth_Id) where.auth_Id = auth_Id
+        if (type_Id) where.type_Id = type_Id
 
         return await db.Question.findAndCountAll({
             limit,

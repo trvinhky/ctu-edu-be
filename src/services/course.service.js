@@ -50,6 +50,7 @@ const CourseServices = {
         const offset = (page - 1) * limit;
         const title = params.title ?? ''
         const subject_Id = params.subject ?? ''
+        const teacher_Id = params.teacher ?? ''
         const where = {}
 
         if (title) {
@@ -60,6 +61,10 @@ const CourseServices = {
 
         if (subject_Id) {
             where.subject_Id = subject_Id
+        }
+
+        if (teacher_Id) {
+            where.teacher_Id = teacher_Id
         }
 
         return await db.Course.findAndCountAll({

@@ -4,11 +4,17 @@ const LessonServices = {
     async create(lesson) {
         return await db.Lesson.create(lesson)
     },
-    async update(lesson, lesson_Id) {
-        return await db.Lesson.update(
+    async update(lesson, lesson_Id, transaction) {
+        await db.Lesson.update(
             lesson,
-            { where: { lesson_Id } }
+            { where: { lesson_Id } },
+            transaction
         )
+
+        return await db.Lesson.findOne({
+            where: { lesson_Id },
+            transaction
+        })
     },
     async getOne(lesson_Id) {
         return await db.Lesson.findOne({
@@ -25,12 +31,15 @@ const LessonServices = {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
-        const course_Id = params.id ?? ''
+        const course_Id = params.id
+        const where = {}
+
+        if (course_Id) where.course_Id = course_Id
 
         return await db.Lesson.findAndCountAll({
             limit,
             offset,
-            where: { course_Id },
+            where,
             include: [
                 {
                     model: db.Resource,

@@ -32,13 +32,11 @@ const SubjectServices = {
         })
     },
     async getAll(params) {
-        const page = parseInt(params?.page) || 1;
+        const page = parseInt(params?.page);
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
 
-        return await db.Subject.findAndCountAll({
-            limit,
-            offset,
+        const role = {
             include: [
                 {
                     model: db.Course,
@@ -49,7 +47,14 @@ const SubjectServices = {
                     as: 'posts'
                 }
             ]
-        })
+        }
+
+        if (params.page) {
+            role.limit = limit
+            role.offset = offset
+        }
+
+        return await db.Subject.findAndCountAll(role)
     }
 }
 

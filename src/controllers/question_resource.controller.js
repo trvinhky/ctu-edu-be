@@ -1,21 +1,25 @@
 const QuestionResourceServices = require("../services/question_resource.service")
+const path = require('path');
+const fs = require('fs');
 
 const QuestionResourceControllers = {
     async create(req, res) {
         const {
-            question_resource_url,
             category_Id,
             question_Id
         } = req.body
 
-        if (!question_resource_url || !category_Id || !question_Id) {
+        if (!category_Id || !question_Id || !req.file) {
             return res.errorValid()
         }
 
         try {
+            let filePath
+            filePath = path.join('uploads', req.file.filename)
+
             const newQuestionResource = await QuestionResourceServices.create(
                 {
-                    question_resource_url,
+                    question_resource_url: filePath,
                     category_Id,
                     question_Id
                 }
@@ -30,43 +34,6 @@ const QuestionResourceControllers = {
             return res.error(
                 404,
                 'Thêm mới tài nguyên câu hỏi thất bại!'
-            )
-        } catch (err) {
-            return res.errorServer()
-        }
-    },
-    async update(req, res) {
-        const {
-            question_resource_url,
-            category_Id,
-            question_Id
-        } = req.body
-
-        const { id } = req.params
-
-        if (!question_resource_url || !category_Id || !question_Id || !id) {
-            return res.errorValid()
-        }
-
-        try {
-            const questionResource = await QuestionResourceServices.update(
-                {
-                    question_resource_url,
-                    category_Id,
-                    question_Id
-                },
-                id
-            )
-
-            if (questionResource) {
-                return res.successNoData(
-                    'Cập nhật tài nguyên câu hỏi thành công!'
-                )
-            }
-
-            return res.error(
-                404,
-                'Cập nhật tài nguyên câu hỏi thất bại!'
             )
         } catch (err) {
             return res.errorServer()
@@ -101,17 +68,20 @@ const QuestionResourceControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit } = req.query
+        const { page, limit, question } = req.query
 
         try {
             const questionResources = await QuestionResourceServices.getAll({
-                page, limit
+                page, limit, question
             })
 
             if (questionResources) {
                 return res.success(
                     'Lấy tất cả tài nguyên câu hỏi thành công!',
-                    questionResources
+                    {
+                        count: questionResources.count,
+                        questionResources: questionResources.rows
+                    }
                 )
             }
 
@@ -133,13 +103,21 @@ const QuestionResourceControllers = {
         }
 
         try {
-            const questionResource = await QuestionResourceServices.delete(id)
+            const data = await QuestionResourceServices.getOne(id)
+            if (data) {
+                const filePath = path.join(__dirname, '../' + data.question_resource_url);
+                if (typeof filePath === 'string' && fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                    const questionResource = await QuestionResourceServices.delete(id)
 
-            if (questionResource) {
-                return res.successNoData(
-                    'Xóa tài nguyên câu hỏi thành công!'
-                )
+                    if (questionResource) {
+                        return res.successNoData(
+                            'Xóa tài nguyên câu hỏi thành công!'
+                        )
+                    }
+                }
             }
+
 
             return res.error(
                 404,

@@ -48,15 +48,13 @@ const AccountServices = {
         return null
     },
     async getAll(params) {
-        const page = parseInt(params?.page) || 1;
+        const page = parseInt(params?.page);
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
         const where = params.role ? { role_Id: params.role } : {}
 
-        return await db.Account.findAndCountAll({
+        const check = {
             where,
-            limit,
-            offset,
             include: [
                 {
                     model: db.Profile,
@@ -67,7 +65,14 @@ const AccountServices = {
                     as: 'role'
                 }
             ]
-        })
+        }
+
+        if (page) {
+            check.offset = offset
+            check.limit = limit
+        }
+
+        return await db.Account.findAndCountAll(check)
     },
     async update(account_password, params) {
         const account_Id = params.account_Id ?? ''
