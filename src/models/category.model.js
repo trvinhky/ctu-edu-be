@@ -5,12 +5,12 @@ const { CATEGORY, ACCEPT, DESCRIPTION } = require('../utils/constants');
 module.exports = (sequelize, DataTypes) => {
     class Category extends Model {
         static associate(models) {
-            this.hasMany(models.Resource, {
+            this.hasMany(models.Lesson, {
                 foreignKey: 'category_Id',
-                as: 'resources'
+                as: 'lessons'
             })
 
-            this.hasMany(models.QuestionResource, {
+            this.hasMany(models.Question, {
                 foreignKey: 'category_Id',
                 as: 'questions'
             })

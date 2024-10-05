@@ -2,13 +2,13 @@
 module.exports = {
     up: async (queryInterface, Sequelize) => {
         await queryInterface.createTable('buy', {
-            resource_Id: {
+            lesson_Id: {
                 allowNull: false,
                 primaryKey: true,
                 type: Sequelize.UUID,
                 references: {
-                    model: 'resources',
-                    key: 'resource_Id'
+                    model: 'lessons',
+                    key: 'lesson_Id'
                 }
             },
             student_Id: {

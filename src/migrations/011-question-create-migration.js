@@ -11,6 +11,9 @@ module.exports = {
                 type: Sequelize.TEXT,
                 allowNull: false
             },
+            question_url: {
+                type: Sequelize.STRING
+            },
             type_Id: {
                 type: Sequelize.UUID,
                 allowNull: false,
@@ -25,6 +28,13 @@ module.exports = {
                 references: {
                     model: 'account',
                     key: 'account_Id'
+                }
+            },
+            category_Id: {
+                type: Sequelize.UUID,
+                references: {
+                    model: 'categories',
+                    key: 'category_Id'
                 }
             }
         })

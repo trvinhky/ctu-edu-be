@@ -45,10 +45,10 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'course_Id'
             })
 
-            this.belongsToMany(models.Resource, {
+            this.belongsToMany(models.Lesson, {
                 through: models.Buy,
                 foreignKey: 'student_Id',
-                otherKey: 'resource_Id'
+                otherKey: 'lesson_Id'
             })
 
             this.belongsToMany(models.Exam, {
@@ -60,11 +60,6 @@ module.exports = (sequelize, DataTypes) => {
             this.hasMany(models.Discussion, {
                 foreignKey: 'account_Id',
                 as: 'discussions'
-            })
-
-            this.hasMany(models.Review, {
-                foreignKey: 'student_Id',
-                as: 'reviews'
             })
         }
     }

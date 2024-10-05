@@ -8,14 +8,20 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'course'
             })
 
-            this.hasMany(models.Resource, {
-                foreignKey: 'lesson_Id',
-                as: 'resources'
+            this.belongsTo(models.Category, {
+                foreignKey: 'category_Id',
+                as: 'category'
             })
 
             this.hasMany(models.Discussion, {
                 foreignKey: 'lesson_Id',
                 as: 'discussions'
+            })
+
+            this.belongsToMany(models.Account, {
+                through: models.Buy,
+                foreignKey: 'lesson_Id',
+                otherKey: 'student_Id'
             })
         }
     }
@@ -28,7 +34,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         lesson_title: DataTypes.STRING,
         lesson_content: DataTypes.TEXT,
-        course_Id: DataTypes.STRING
+        lesson_url: DataTypes.STRING,
+        lesson_score: DataTypes.INTEGER,
+        course_Id: DataTypes.STRING,
+        category_Id: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'Lesson',

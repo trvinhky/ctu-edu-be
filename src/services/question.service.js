@@ -13,12 +13,12 @@ const QuestionServices = {
                     as: 'type'
                 },
                 {
-                    model: db.QuestionResource,
-                    as: 'resources'
-                },
-                {
                     model: db.Option,
                     as: 'options'
+                },
+                {
+                    model: db.Category,
+                    as: 'category'
                 }
             ]
         })
@@ -54,6 +54,10 @@ const QuestionServices = {
                 {
                     model: db.Type,
                     as: 'type'
+                },
+                {
+                    model: db.Category,
+                    as: 'category'
                 }
             ]
         })

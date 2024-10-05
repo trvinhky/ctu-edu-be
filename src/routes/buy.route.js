@@ -5,5 +5,6 @@ const router = require("express").Router();
 
 router.post('/create', AuthMiddlewares.verifyToken, BuyControllers.create)
 router.get('/all', AuthMiddlewares.verifyToken, BuyControllers.getAll)
+router.get('/info', AuthMiddlewares.verifyToken, BuyControllers.getOne)
 
 module.exports = router;

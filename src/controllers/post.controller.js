@@ -56,19 +56,21 @@ const PostControllers = {
         const {
             post_title,
             post_content,
-            subject_Id
+            subject_Id,
+            status_Id
         } = req.body
 
-        if (!id || !post_title || !post_content || !subject_Id) {
+        if (!id || !post_title || !post_content || !subject_Id || !status_Id) {
             return res.errorValid()
         }
 
         const transaction = await db.sequelize.transaction()
 
         try {
-            const status_Id = (await StatusServices.getOne({ status_name: STATUS.PENDING })).status_Id
+            const pendingId = (await StatusServices.getOne({ status_name: STATUS.PENDING })).status_Id
+            const confirmId = (await StatusServices.getOne({ status_name: STATUS.CONFIRM })).status_Id
 
-            if (!status_Id) {
+            if (!pendingId || confirmId !== status_Id) {
                 return res.error(
                     404,
                     'Cập nhật trạng thái thất bại!'
@@ -96,7 +98,7 @@ const PostControllers = {
             await transaction.rollback()
             return res.error(
                 404,
-                'Cập nhật trạng thái thất bại!'
+                'Cập nhật bài đăng thất bại!'
             )
         } catch (err) {
             await transaction.rollback()

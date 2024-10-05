@@ -28,11 +28,6 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'course_Id',
                 as: 'exams'
             })
-
-            this.hasMany(models.Review, {
-                foreignKey: 'course_Id',
-                as: 'reviews'
-            })
         }
     }
     Course.init({

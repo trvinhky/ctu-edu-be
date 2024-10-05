@@ -26,7 +26,24 @@ const SubjectServices = {
                 },
                 {
                     model: db.Post,
-                    as: 'posts'
+                    as: 'posts',
+                    include: [{
+                        model: db.Account,
+                        as: 'auth',
+                        attributes: {
+                            exclude: [
+                                'account_password',
+                                'account_token',
+                                'role_Id'
+                            ]
+                        },
+                        include: [
+                            {
+                                model: db.Profile,
+                                as: 'profile'
+                            }
+                        ]
+                    }]
                 }
             ]
         })
@@ -44,7 +61,24 @@ const SubjectServices = {
                 },
                 {
                     model: db.Post,
-                    as: 'posts'
+                    as: 'posts',
+                    include: [{
+                        model: db.Account,
+                        as: 'auth',
+                        attributes: {
+                            exclude: [
+                                'account_password',
+                                'account_token',
+                                'role_Id'
+                            ]
+                        },
+                        include: [
+                            {
+                                model: db.Profile,
+                                as: 'profile'
+                            }
+                        ]
+                    }]
                 }
             ]
         }

@@ -9,11 +9,11 @@ const CategoryServices = {
             where: { category_Id },
             include: [
                 {
-                    model: db.Resource,
-                    as: 'resources'
+                    model: db.Lesson,
+                    as: 'lessons'
                 },
                 {
-                    model: db.QuestionResource,
+                    model: db.Question,
                     as: 'questions'
                 }
             ]
@@ -32,24 +32,29 @@ const CategoryServices = {
         })
     },
     async getAll(params) {
-        const page = parseInt(params?.page) || 1;
+        const page = parseInt(params?.page);
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
 
-        return await db.Category.findAndCountAll({
-            limit,
-            offset,
+        const check = {
             include: [
                 {
-                    model: db.Resource,
-                    as: 'resources'
+                    model: db.Lesson,
+                    as: 'lessons'
                 },
                 {
-                    model: db.QuestionResource,
+                    model: db.Question,
                     as: 'questions'
                 }
             ]
-        })
+        }
+
+        if (page) {
+            check.limit = limit
+            check.offset = offset
+        }
+
+        return await db.Category.findAndCountAll(check)
     },
     async delete(category_Id) {
         return await db.Category.destroy({

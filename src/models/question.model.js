@@ -14,11 +14,6 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'auth'
             })
 
-            this.hasMany(models.QuestionResource, {
-                foreignKey: 'question_Id',
-                as: 'resources'
-            })
-
             this.hasMany(models.Option, {
                 foreignKey: 'question_Id',
                 as: 'options'
@@ -34,6 +29,11 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'question_Id',
                 otherKey: 'exam_Id'
             })
+
+            this.belongsTo(models.Category, {
+                foreignKey: 'category_Id',
+                as: 'category'
+            })
         }
     }
     Question.init({
@@ -44,8 +44,10 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true
         },
         question_content: DataTypes.TEXT,
+        question_url: DataTypes.STRING,
         type_Id: DataTypes.STRING,
-        auth_Id: DataTypes.STRING
+        auth_Id: DataTypes.STRING,
+        category_Id: DataTypes.STRING,
     }, {
         sequelize,
         modelName: 'Question',

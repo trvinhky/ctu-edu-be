@@ -9,14 +9,14 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'student'
             })
 
-            this.belongsTo(models.Resource, {
-                foreignKey: 'resource_Id',
-                as: 'resource'
+            this.belongsTo(models.Lesson, {
+                foreignKey: 'lesson_Id',
+                as: 'lesson'
             })
         }
     }
     Buy.init({
-        resource_Id: {
+        lesson_Id: {
             type: DataTypes.STRING,
             allowNull: false,
             primaryKey: true

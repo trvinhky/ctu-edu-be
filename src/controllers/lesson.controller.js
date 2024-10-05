@@ -1,24 +1,35 @@
-const db = require("../models")
+const db = require("../models");
+const BuyServices = require("../services/buy.service");
 const LessonServices = require("../services/lesson.service")
+const path = require('path');
+const fs = require('fs');
 
 const LessonControllers = {
     async create(req, res) {
         const {
             lesson_title,
             lesson_content,
-            course_Id
+            course_Id,
+            lesson_score,
+            category_Id
         } = req.body
 
-        if (!lesson_title || !course_Id) {
+        if (!lesson_title || !course_Id || isNaN(+lesson_score) || !category_Id || !req.file) {
             return res.errorValid()
         }
 
         try {
+            let filePath
+            filePath = path.join('uploads', req.file.filename)
+
             const newLesson = await LessonServices.create(
                 {
                     lesson_title,
                     lesson_content: lesson_content ?? '',
-                    course_Id
+                    course_Id,
+                    lesson_score: +lesson_score,
+                    category_Id,
+                    lesson_url: filePath
                 }
             )
 
@@ -40,38 +51,44 @@ const LessonControllers = {
         const {
             lesson_title,
             lesson_content,
-            course_Id
+            course_Id,
+            lesson_score
         } = req.body
 
         const { id } = req.params
 
-        if (!lesson_title || !id) {
+        if (!lesson_title || !id || isNaN(+lesson_score)) {
             return res.errorValid()
         }
 
         const transaction = await db.sequelize.transaction()
         try {
+
             const lesson = await LessonServices.update(
                 {
                     lesson_title,
                     lesson_content: lesson_content ?? '',
-                    course_Id
+                    course_Id,
+                    lesson_score: +lesson_score,
                 },
                 id,
                 transaction
             )
 
             if (lesson) {
+                await transaction.commit()
                 return res.successNoData(
                     'Cập nhật bài học thành công!'
                 )
             }
 
+            await transaction.rollback()
             return res.error(
                 404,
                 'Cập nhật bài học thất bại!'
             )
         } catch (err) {
+            await transaction.rollback()
             return res.errorServer()
         }
     },
@@ -138,12 +155,30 @@ const LessonControllers = {
         }
 
         try {
-            const lesson = await LessonServices.delete(id)
+            const checkValid = await BuyServices.getAll({
+                lesson: id
+            })
 
-            if (lesson) {
-                return res.successNoData(
-                    'Xóa bài học thành công!'
+            if (checkValid) {
+                return res.errorValid(
+                    'Bài học không thể xóa!'
                 )
+            }
+
+            const data = await LessonServices.getOne(id)
+
+            if (data) {
+                const filePath = path.join(__dirname, '../' + data.lesson_url);
+                if (typeof filePath === 'string' && fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                    const lesson = await LessonServices.delete(id)
+
+                    if (lesson) {
+                        return res.successNoData(
+                            'Xóa bài học thành công!'
+                        )
+                    }
+                }
             }
 
             return res.error(

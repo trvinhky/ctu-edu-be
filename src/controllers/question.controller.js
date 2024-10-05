@@ -1,12 +1,15 @@
 const db = require("../models")
 const QuestionServices = require("../services/question.service")
+const path = require('path');
+const fs = require('fs');
 
 const QuestionControllers = {
     async create(req, res) {
         const {
             question_content,
             type_Id,
-            auth_Id
+            auth_Id,
+            category_Id
         } = req.body
 
         if (!question_content || !type_Id || !auth_Id) {
@@ -14,11 +17,21 @@ const QuestionControllers = {
         }
 
         try {
+            let filePath
+            if (req.file) {
+                if (!category_Id) {
+                    return res.errorValid()
+                }
+                filePath = path.join('uploads', req.file.filename)
+            }
+
             const newQuestion = await QuestionServices.create(
                 {
                     question_content,
                     type_Id,
-                    auth_Id
+                    auth_Id,
+                    question_url: filePath ?? null,
+                    category_Id: category_Id ?? null
                 }
             )
 
@@ -40,7 +53,8 @@ const QuestionControllers = {
         const {
             question_content,
             type_Id,
-            auth_Id
+            auth_Id,
+            category_Id
         } = req.body
 
         const { id } = req.params
@@ -52,11 +66,20 @@ const QuestionControllers = {
         const transaction = await db.sequelize.transaction()
 
         try {
+            let filePath
+            if (req.file) {
+                if (!category_Id) {
+                    return res.errorValid()
+                }
+                filePath = path.join('uploads', req.file.filename)
+            }
             const question = await QuestionServices.update(
                 {
                     question_content,
                     type_Id,
-                    auth_Id
+                    auth_Id,
+                    question_url: filePath ?? null,
+                    category_Id: category_Id ?? null
                 },
                 id,
                 transaction
@@ -142,12 +165,20 @@ const QuestionControllers = {
         }
 
         try {
-            const question = await QuestionServices.delete(id)
+            const data = await QuestionServices.getOne(id)
+            if (data) {
+                const filePath = path.join(__dirname, '../' + data.question_url);
+                if (typeof filePath === 'string' && fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                    const question = await QuestionServices.delete(id)
 
-            if (question) {
-                return res.successNoData(
-                    'Xóa câu hỏi thành công!'
-                )
+                    if (question) {
+                        return res.successNoData(
+                            'Xóa câu hỏi thành công!'
+                        )
+                    }
+                }
+
             }
 
             return res.error(

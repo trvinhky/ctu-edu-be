@@ -1,4 +1,5 @@
 const ExamServices = require("../services/exam.service")
+const db = require("../models")
 
 const ExamControllers = {
     async create(req, res) {
@@ -29,13 +30,13 @@ const ExamControllers = {
 
             if (newExam) {
                 return res.successNoData(
-                    'Thêm mới bài tập / bài thi thành công!'
+                    'Thêm mới bài thi thành công!'
                 )
             }
 
             return res.error(
                 404,
-                'Thêm mới bài tập / bài thi thất bại!'
+                'Thêm mới bài thi thất bại!'
             )
         } catch (err) {
             return res.errorServer()
@@ -47,8 +48,7 @@ const ExamControllers = {
             exam_description,
             exam_total_score,
             exam_start_time,
-            exam_limit,
-            course_Id
+            exam_limit
         } = req.body
 
         const { id } = req.params
@@ -57,6 +57,7 @@ const ExamControllers = {
             return res.errorValid()
         }
 
+        const transaction = await db.sequelize.transaction()
         try {
             const exam = await ExamServices.update(
                 {
@@ -64,23 +65,26 @@ const ExamControllers = {
                     exam_description: exam_description ?? '',
                     exam_total_score: +exam_total_score,
                     exam_start_time,
-                    exam_limit: isNaN(+exam_limit) ? 0 : +exam_limit,
-                    course_Id
+                    exam_limit: isNaN(+exam_limit) ? 0 : +exam_limit
                 },
-                id
+                id,
+                transaction
             )
 
             if (exam) {
+                await transaction.commit()
                 return res.successNoData(
-                    'Cập nhật bài tập / bài thi thành công!'
+                    'Cập nhật bài thi thành công!'
                 )
             }
 
+            await transaction.rollback()
             return res.error(
                 404,
-                'Cập nhật bài tập / bài thi thất bại!'
+                'Cập nhật bài thi thất bại!'
             )
         } catch (err) {
+            await transaction.rollback()
             return res.errorServer()
         }
     },
@@ -89,7 +93,7 @@ const ExamControllers = {
 
         if (!id) {
             return res.errorValid(
-                'Id bài tập / bài thi không tồn tại!'
+                'Id bài thi không tồn tại!'
             )
         }
 
@@ -98,37 +102,40 @@ const ExamControllers = {
 
             if (exam) {
                 return res.success(
-                    'Lấy bài tập / bài thi thành công!',
+                    'Lấy bài thi thành công!',
                     exam
                 )
             }
 
             return res.error(
                 404,
-                'Lấy bài tập / bài thi thất bại!'
+                'Lấy bài thi thất bại!'
             )
         } catch (err) {
             return res.errorServer()
         }
     },
     async getAll(req, res) {
-        const { page, limit } = req.query
+        const { page, limit, course } = req.query
 
         try {
             const exams = await ExamServices.getAll({
-                page, limit
+                page, limit, course
             })
 
             if (exams) {
                 return res.success(
-                    'Lấy tất cả bài tập / bài thi thành công!',
-                    exams
+                    'Lấy tất cả bài thi thành công!',
+                    {
+                        count: exams.count,
+                        exams: exams.rows
+                    }
                 )
             }
 
             return res.error(
                 404,
-                'Lấy tất cả bài tập / bài thi thất bại!'
+                'Lấy tất cả bài thi thất bại!'
             )
         } catch (err) {
             return res.errorServer()
@@ -139,7 +146,7 @@ const ExamControllers = {
 
         if (!id) {
             return res.errorValid(
-                'Id bài tập / bài thi không tồn tại!'
+                'Id bài thi không tồn tại!'
             )
         }
 
@@ -148,13 +155,13 @@ const ExamControllers = {
 
             if (exam) {
                 return res.successNoData(
-                    'Xóa bài tập / bài thi thành công!'
+                    'Xóa bài thi thành công!'
                 )
             }
 
             return res.error(
                 404,
-                'Xóa bài tập / bài thi thất bại!'
+                'Xóa bài thi thất bại!'
             )
         } catch (err) {
             return res.errorServer()

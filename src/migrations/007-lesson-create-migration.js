@@ -1,27 +1,26 @@
 'use strict'
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable('reviews', {
-            review_Id: {
+        await queryInterface.createTable('lessons', {
+            lesson_Id: {
                 allowNull: false,
                 primaryKey: true,
                 type: Sequelize.UUID
             },
-            review_rating: {
-                type: Sequelize.FLOAT,
+            lesson_title: {
+                type: Sequelize.STRING,
                 allowNull: false
             },
-            review_comment: {
-                type: Sequelize.TEXT,
+            lesson_url: {
+                type: Sequelize.STRING(500),
                 allowNull: false
             },
-            createdAt: {
-                allowNull: false,
-                type: Sequelize.DATE
+            lesson_score: {
+                type: Sequelize.INTEGER,
+                allowNull: false
             },
-            updatedAt: {
-                allowNull: false,
-                type: Sequelize.DATE
+            lesson_content: {
+                type: Sequelize.TEXT
             },
             course_Id: {
                 type: Sequelize.UUID,
@@ -31,17 +30,17 @@ module.exports = {
                     key: 'course_Id'
                 }
             },
-            student_Id: {
+            category_Id: {
                 type: Sequelize.UUID,
                 allowNull: false,
                 references: {
-                    model: 'account',
-                    key: 'account_Id'
+                    model: 'categories',
+                    key: 'category_Id'
                 }
             }
         })
     },
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable('reviews')
+        await queryInterface.dropTable('lessons')
     }
 }
