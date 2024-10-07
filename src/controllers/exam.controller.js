@@ -7,12 +7,11 @@ const ExamControllers = {
             exam_title,
             exam_description,
             exam_total_score,
-            exam_start_time,
             exam_limit,
             course_Id
         } = req.body
 
-        if (!exam_title || !course_Id || !exam_start_time || isNaN(+exam_total_score)) {
+        if (!exam_title || !course_Id || isNaN(+exam_total_score)) {
             return res.errorValid()
         }
 
@@ -22,7 +21,6 @@ const ExamControllers = {
                     exam_title,
                     exam_description: exam_description ?? '',
                     exam_total_score: +exam_total_score,
-                    exam_start_time,
                     exam_limit: isNaN(+exam_limit) ? 0 : +exam_limit,
                     course_Id
                 }
@@ -47,13 +45,12 @@ const ExamControllers = {
             exam_title,
             exam_description,
             exam_total_score,
-            exam_start_time,
             exam_limit
         } = req.body
 
         const { id } = req.params
 
-        if (!exam_title || !id || !exam_start_time || isNaN(+exam_total_score)) {
+        if (!exam_title || !id || isNaN(+exam_total_score)) {
             return res.errorValid()
         }
 
@@ -64,7 +61,6 @@ const ExamControllers = {
                     exam_title,
                     exam_description: exam_description ?? '',
                     exam_total_score: +exam_total_score,
-                    exam_start_time,
                     exam_limit: isNaN(+exam_limit) ? 0 : +exam_limit
                 },
                 id,

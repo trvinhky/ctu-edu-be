@@ -18,10 +18,6 @@ module.exports = {
                 type: Sequelize.DOUBLE,
                 allowNull: false
             },
-            exam_start_time: {
-                type: Sequelize.DATE,
-                allowNull: false,
-            },
             exam_limit: {
                 type: Sequelize.INTEGER,
                 allowNull: false

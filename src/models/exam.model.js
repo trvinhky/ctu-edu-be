@@ -31,7 +31,6 @@ module.exports = (sequelize, DataTypes) => {
         exam_title: DataTypes.STRING,
         exam_description: DataTypes.TEXT,
         exam_total_score: DataTypes.DOUBLE,
-        exam_start_time: DataTypes.DATE,
         exam_limit: DataTypes.INTEGER,
         course_Id: DataTypes.STRING
     }, {
