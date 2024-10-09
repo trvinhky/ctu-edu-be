@@ -1,8 +1,8 @@
 const db = require("../models")
 
 const BuyServices = {
-    async create(buy) {
-        return await db.Buy.create(buy)
+    async create(buy, transaction) {
+        return await db.Buy.create(buy, { transaction })
     },
     async getOne(student_Id, lesson_Id) {
         return await db.Buy.findOne({

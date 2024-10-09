@@ -1,20 +1,33 @@
 const db = require("../models")
 
 const ProfileServices = {
-    async getOne(profile_Id) {
+    async getOne(id, isProfile = true) {
+        const where = {}
+        if (isProfile) {
+            where.profile_Id = id
+        } else {
+            where.account_Id = id
+        }
+
         return await db.Profile.findOne({
-            where: { profile_Id }
+            where
         })
     },
-    async update(profile, profile_Id, transaction) {
+    async update(profile, id, transaction, isProfile = true) {
+        const where = {}
+        if (isProfile) {
+            where.profile_Id = id
+        } else {
+            where.account_Id = id
+        }
         await db.Profile.update(
             profile,
-            { where: { profile_Id } },
+            { where },
             transaction
         )
 
         return await db.Profile.findOne({
-            where: { profile_Id },
+            where,
             transaction
         })
     },

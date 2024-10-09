@@ -44,22 +44,52 @@ const EnrollmentControllers = {
         }
 
         try {
-            const courses = await EnrollmentServices.getAll({
+            const enrollments = await EnrollmentServices.getAll({
                 page, limit, student, course
             })
 
-            if (courses) {
+            if (enrollments) {
                 return res.success(
-                    'Lấy tất cả đăng ký khóa học thành công!',
-                    courses
+                    'Lấy tất cả khóa học đăng ký thành công!',
+                    {
+                        count: enrollments.count,
+                        enrollments: enrollments.rows
+                    }
                 )
             }
 
-            return res.error(404, 'Lấy tất cả đăng ký khóa học thất bại!')
+            return res.error(404, 'Lấy tất cả khóa học đăng ký thất bại!')
         } catch (err) {
             return res.errorServer()
         }
-    }
+    },
+    async delete(req, res) {
+        const { student, course } = req.query
+
+        if (!student || !course) {
+            return res.errorValid()
+        }
+
+        try {
+            const enrollment = await EnrollmentServices.delete(
+                student,
+                course
+            )
+
+            if (enrollment) {
+                return res.successNoData(
+                    'Rời lớp học thành công!'
+                )
+            }
+
+            return res.error(
+                404,
+                'Rời lớp học thất bại!'
+            )
+        } catch (err) {
+            return res.errorServer()
+        }
+    },
 }
 
 module.exports = EnrollmentControllers

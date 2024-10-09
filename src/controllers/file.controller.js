@@ -4,25 +4,33 @@ const { PDFDocument } = require('pdf-lib');
 
 const FileControllers = {
     async download(req, res) {
-        const { filename } = req.params
+        const { fileName } = req.body
 
-        if (!filename) {
+        if (!fileName) {
             return res.errorValid(
                 'Tên file không tồn tại!'
             )
         }
 
-        const filePath = path.join(__dirname, '../uploads', req.params.filename);
-        const stat = fs.statSync(filePath);
+        try {
+            const filePath = path.join(__dirname, '../', fileName);
+            if (!fs.existsSync(filePath)) {
+                return res.status(404).send('Không tồn tại file!')
+            }
 
-        res.writeHead(200, {
-            'Content-Length': stat.size,
-            'Content-Type': 'application/octet-stream',
-            'Content-Disposition': `attachment; filename=${req.params.filename}`
-        });
+            const stat = fs.statSync(filePath);
 
-        const readStream = fs.createReadStream(filePath);
-        readStream.pipe(res);
+            res.writeHead(200, {
+                'Content-Length': stat.size,
+                'Content-Type': 'application/octet-stream',
+                'Content-Disposition': `attachment; filename=${fileName}`
+            });
+
+            const readStream = fs.createReadStream(filePath);
+            readStream.pipe(res);
+        } catch (err) {
+            return res.status(500).send('Error download file');
+        }
     },
     async readFilePDF(req, res) {
         const { fileName } = req.body
