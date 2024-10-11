@@ -130,11 +130,11 @@ const QuestionControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit, id, type } = req.query
+        const { page, limit, id, type, title } = req.query
 
         try {
             const questions = await QuestionServices.getAll({
-                page, limit, id, type
+                page, limit, id, type, title
             })
 
             if (questions) {

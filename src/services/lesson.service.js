@@ -36,7 +36,7 @@ const LessonServices = {
         const where = {}
 
         if (course_Id) where.course_Id = course_Id
-        if (lesson_score) where.lesson_score = { [db.Sequelize.Op.lt]: lesson_score }
+        if (lesson_score) where.lesson_score = { [db.Sequelize.Op.lte]: lesson_score }
 
         const check = {
             where,

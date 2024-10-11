@@ -10,11 +10,25 @@ const EnrollmentServices = {
         const offset = (page - 1) * limit;
         const student_Id = params.student
         const course_Id = params.course
+        const title = params.title ?? ''
+        const subject_Id = params.subject ?? ''
 
         const where = {}
 
         if (student_Id) where.student_Id = student_Id
         if (course_Id) where.course_Id = course_Id
+
+        const whereSub = {}
+
+        if (title) {
+            whereSub.course_name = {
+                [db.Sequelize.Op.like]: `%${title}%`
+            }
+        }
+
+        if (subject_Id) {
+            whereSub.subject_Id = subject_Id
+        }
 
         return await db.Enrollment.findAndCountAll({
             where,
@@ -24,6 +38,7 @@ const EnrollmentServices = {
                 {
                     model: db.Course,
                     as: 'course',
+                    where: whereSub,
                     include: [
                         {
                             model: db.Account,

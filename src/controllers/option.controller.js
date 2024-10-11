@@ -11,14 +11,13 @@ const OptionControllers = {
             if (options && options.count > 0) {
                 const check = options.rows.find(
                     (option) => {
-                        return option.option_is_correct === true
-                            && option.question.type.type_name.includes(TYPE.ONE)
+                        return option.question.type.type_name.includes(TYPE.ONE)
                     }
                 )
                 if (check) {
-                    return false
+                    return true
                 }
-                return true
+                return false
             }
             return false
         } catch (err) {
@@ -39,7 +38,7 @@ const OptionControllers = {
         try {
             if (!!option_is_correct) {
                 const check = await OptionControllers.checkQuestion(question_Id)
-                if (!check) {
+                if (check) {
                     return res.errorValid(
                         'Lựa chọn không hợp lệ!'
                     )

@@ -26,6 +26,7 @@ const QuestionExamServices = {
             where: { exam_Id, question_Id },
             limit,
             offset,
+            order: Sequelize.literal('RAND()'), // Dùng 'RANDOM()' nếu là PostgreSQL
             include: [
                 {
                     model: db.Exam,
@@ -34,7 +35,6 @@ const QuestionExamServices = {
                 {
                     model: db.Question,
                     as: 'question',
-                    order: Sequelize.literal('RAND()') // Dùng 'RANDOM()' nếu là PostgreSQL
                 }
             ]
         })

@@ -79,7 +79,7 @@ const BuyControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit, lesson, student } = req.query
+        const { page, limit, lesson, student, title, score } = req.query
 
         if (!(lesson || student)) {
             return res.errorValid(
@@ -89,7 +89,7 @@ const BuyControllers = {
 
         try {
             const buy = await BuyServices.getAll({
-                page, limit, lesson, student
+                page, limit, lesson, student, score, title
             })
 
             if (buy) {

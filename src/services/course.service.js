@@ -51,8 +51,10 @@ const CourseServices = {
         const title = params.title ?? ''
         const subject_Id = params.subject ?? ''
         const teacher_Id = params.teacher ?? ''
+        const course_Id = params.id ?? ''
         const where = {}
 
+        // tìm kiếm gần đúng
         if (title) {
             where.course_name = {
                 [db.Sequelize.Op.like]: `%${title}%`
@@ -65,6 +67,13 @@ const CourseServices = {
 
         if (teacher_Id) {
             where.teacher_Id = teacher_Id
+        }
+
+        // so sánh khác
+        if (course_Id) {
+            where.course_Id = {
+                [db.Sequelize.Op.ne]: course_Id
+            }
         }
 
         return await db.Course.findAndCountAll({

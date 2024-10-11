@@ -10,7 +10,13 @@ const BuyServices = {
             include: [
                 {
                     model: db.Lesson,
-                    as: 'lesson'
+                    as: 'lesson',
+                    include: [
+                        {
+                            model: db.Category,
+                            as: 'category'
+                        }
+                    ]
                 },
                 {
                     model: db.Account,
@@ -32,11 +38,25 @@ const BuyServices = {
         const offset = (page - 1) * limit;
         const student_Id = params.student
         const lesson_Id = params.lesson
+        const title = params.title
+        const score = isNaN(+params.score) && +params.score
 
         const where = {}
 
         if (student_Id) where.student_Id = student_Id
         if (lesson_Id) where.lesson_Id = lesson_Id
+
+        const whereSub = {}
+
+        if (title) {
+            whereSub.lesson_title = {
+                [db.Sequelize.Op.like]: `%${title}%`
+            }
+        }
+
+        if (score) {
+            whereSub.lesson_score = { [db.Sequelize.Op.lte]: score }
+        }
 
         return await db.Buy.findAndCountAll({
             where,
@@ -45,7 +65,14 @@ const BuyServices = {
             include: [
                 {
                     model: db.Lesson,
-                    as: 'lesson'
+                    as: 'lesson',
+                    where: whereSub,
+                    include: [
+                        {
+                            model: db.Category,
+                            as: 'category'
+                        }
+                    ]
                 },
                 {
                     model: db.Account,

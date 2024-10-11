@@ -39,12 +39,18 @@ const QuestionServices = {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
-        const auth_Id = params.id ?? ''
-        const type_Id = params.type ?? ''
+        const auth_Id = params.id
+        const type_Id = params.type
+        const title = params.title
         const where = {}
 
         if (auth_Id) where.auth_Id = auth_Id
         if (type_Id) where.type_Id = type_Id
+        if (title) {
+            where.question_content = {
+                [db.Sequelize.Op.like]: `%${title}%`
+            }
+        }
 
         return await db.Question.findAndCountAll({
             limit,

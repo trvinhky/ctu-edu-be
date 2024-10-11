@@ -35,7 +35,7 @@ const EnrollmentControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit, student, course } = req.query
+        const { page, limit, student, course, title, subject } = req.query
 
         if (!(student || course)) {
             return res.errorValid(
@@ -45,7 +45,7 @@ const EnrollmentControllers = {
 
         try {
             const enrollments = await EnrollmentServices.getAll({
-                page, limit, student, course
+                page, limit, student, course, title, subject
             })
 
             if (enrollments) {

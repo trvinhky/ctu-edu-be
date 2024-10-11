@@ -78,23 +78,22 @@ const AccountControllers = {
             return res.errorValid()
         }
 
-        const { text, createdAt, filePath } = captchaSession;
-
-        if (!captchaSession) {
-            return res.error(500, 'Lỗi server, vui lòng thử lại!')
-        }
-
-        // Kiểm tra nếu CAPTCHA đã hết hạn
-        if (Date.now() - createdAt > expirationTime) {
-            return res.error(400, 'CAPTCHA đã hết hạn, vui lòng thử lại!')
-        }
-
-        // Kiểm tra nếu CAPTCHA không khớp
-        if (captcha.toLowerCase() !== text.toLowerCase()) {
-            return res.error(400, 'CAPTCHA không đúng!')
-        }
-
         try {
+            const { text, createdAt, filePath } = captchaSession;
+
+            if (!captchaSession) {
+                return res.error(500, 'Lỗi server, vui lòng thử lại!')
+            }
+
+            // Kiểm tra nếu CAPTCHA đã hết hạn
+            if (Date.now() - createdAt > expirationTime) {
+                return res.error(400, 'CAPTCHA đã hết hạn, vui lòng thử lại!')
+            }
+
+            // Kiểm tra nếu CAPTCHA không khớp
+            if (captcha.toLowerCase() !== text.toLowerCase()) {
+                return res.error(400, 'CAPTCHA không đúng!')
+            }
             const account = await AccountServices.getOne({ account_email: email }, true)
             if (account && (await bcrypt.compare(password, account.account_password))) {
                 const refreshToken = AuthServices.generateRefreshToken(account)
