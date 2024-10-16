@@ -4,11 +4,6 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Question extends Model {
         static associate(models) {
-            this.belongsTo(models.Type, {
-                foreignKey: 'type_Id',
-                as: 'type'
-            })
-
             this.belongsTo(models.Account, {
                 foreignKey: 'auth_Id',
                 as: 'auth'
@@ -45,7 +40,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         question_content: DataTypes.TEXT,
         question_url: DataTypes.STRING,
-        type_Id: DataTypes.STRING,
         auth_Id: DataTypes.STRING,
         category_Id: DataTypes.STRING,
     }, {

@@ -87,7 +87,10 @@ const AnswerControllers = {
             if (students) {
                 return res.success(
                     'Lấy tất cả câu trả lời thành công!',
-                    students
+                    {
+                        count: students.count,
+                        students: students.rows
+                    }
                 )
             }
 

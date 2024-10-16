@@ -4,11 +4,6 @@ const ROLES = {
     ADMIN: 'admin'
 }
 
-const TYPE = {
-    MULTIPLE: "multiple",
-    ONE: "one"
-}
-
 const CATEGORY = {
     OTHER: "other",
     IMAGE: "image",
@@ -54,4 +49,4 @@ const ACCEPT = {
     PRE_SHEET: ".pptx,.xlsx,.ods"
 }
 
-module.exports = { ROLES, CATEGORY, TYPE, STATUS, ACCEPT, DESCRIPTION }
+module.exports = { ROLES, CATEGORY, STATUS, ACCEPT, DESCRIPTION }

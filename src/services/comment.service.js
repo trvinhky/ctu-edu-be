@@ -46,12 +46,16 @@ const CommentServices = {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
-        const post_Id = params.id ?? ''
+        const post_Id = params.id
+
+        const where = {}
+
+        if (post_Id) where.post_Id = post_Id
 
         return await db.Comment.findAndCountAll({
             limit,
             offset,
-            where: { post_Id },
+            where,
             include: [
                 {
                     model: db.Account,

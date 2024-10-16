@@ -93,7 +93,6 @@ app.use('/lesson', require('./routes/lesson.route'))
 app.use('/category', require('./routes/category.route'))
 app.use('/buy', require('./routes/buy.route'))
 
-app.use('/type', require('./routes/type.route'))
 app.use('/exam', require('./routes/exam.route'))
 app.use('/question', require('./routes/question.route'))
 app.use('/question-exam', require('./routes/question_exam.route'))

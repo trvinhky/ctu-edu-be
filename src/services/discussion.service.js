@@ -48,10 +48,14 @@ const DiscussionServices = {
         const offset = (page - 1) * limit;
         const lesson_Id = params.id ?? ''
 
+        const where = {}
+
+        if (lesson_Id) where.lesson_Id = lesson_Id
+
         return await db.Discussion.findAndCountAll({
             limit,
             offset,
-            where: { lesson_Id },
+            where,
             include: [
                 {
                     model: db.Account,

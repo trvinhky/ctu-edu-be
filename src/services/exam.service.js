@@ -31,7 +31,7 @@ const ExamServices = {
         const page = parseInt(params?.page);
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
-        const course_Id = params.course ?? ''
+        const course_Id = params.course
         const where = {}
 
         if (course_Id) {

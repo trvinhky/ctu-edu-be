@@ -14,10 +14,6 @@ module.exports = {
             exam_description: {
                 type: Sequelize.TEXT
             },
-            exam_total_score: {
-                type: Sequelize.DOUBLE,
-                allowNull: false
-            },
             exam_limit: {
                 type: Sequelize.INTEGER,
                 allowNull: false

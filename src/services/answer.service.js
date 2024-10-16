@@ -20,12 +20,18 @@ const AnswerServices = {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
-        const question_Id = params.question ?? ''
-        const student_Id = params.student ?? ''
-        const option_Id = params.option ?? ''
+        const question_Id = params.question
+        const student_Id = params.student
+        const option_Id = params.option
+
+        const where = {}
+
+        if (question_Id) where.question_Id = question_Id
+        if (student_Id) where.student_Id = student_Id
+        if (option_Id) where.option_Id = option_Id
 
         return await db.Answer.findAndCountAll({
-            where: { question_Id, student_Id, option_Id },
+            where,
             limit,
             offset,
             include: [

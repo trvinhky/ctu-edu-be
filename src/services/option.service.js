@@ -26,13 +26,7 @@ const OptionServices = {
             include: [
                 {
                     model: db.Question,
-                    as: 'question',
-                    include: [
-                        {
-                            model: db.Type,
-                            as: 'type'
-                        }
-                    ]
+                    as: 'question'
                 }
             ]
         })

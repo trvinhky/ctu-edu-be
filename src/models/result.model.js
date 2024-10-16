@@ -17,18 +17,15 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
     Result.init({
-        student_Id: {
-            type: DataTypes.STRING,
+        result_Id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
             allowNull: false,
             primaryKey: true
         },
-        exam_Id: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            primaryKey: true
-        },
-        result_score: DataTypes.DOUBLE,
-        result_completed: DataTypes.DATE
+        result_completed: DataTypes.DATE,
+        student_Id: DataTypes.STRING,
+        exam_Id: DataTypes.STRING,
     }, {
         sequelize,
         modelName: 'Result',

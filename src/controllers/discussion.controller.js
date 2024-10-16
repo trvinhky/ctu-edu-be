@@ -113,7 +113,10 @@ const DiscussionControllers = {
             if (discussions) {
                 return res.success(
                     'Lấy tất cả thảo luận thành công!',
-                    discussions
+                    {
+                        count: discussions.count,
+                        discussions: discussions.rows
+                    }
                 )
             }
 

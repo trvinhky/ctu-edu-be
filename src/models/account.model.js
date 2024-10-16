@@ -51,10 +51,9 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'lesson_Id'
             })
 
-            this.belongsToMany(models.Exam, {
-                through: models.Result,
+            this.hasMany(models.Result, {
                 foreignKey: 'student_Id',
-                otherKey: 'exam_Id'
+                as: 'results'
             })
 
             this.hasMany(models.Discussion, {

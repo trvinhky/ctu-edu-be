@@ -1,5 +1,6 @@
 const db = require("../models")
 const PostServices = require("../services/post.service")
+const ProfileServices = require("../services/profile.service")
 const StatusServices = require("../services/status.service")
 const { STATUS } = require("../utils/constants")
 
@@ -195,21 +196,63 @@ const PostControllers = {
     },
     async updateStatus(req, res) {
         const { id } = req.params
-
         const { status_Id } = req.body
+        const { account_Id } = req
 
         if (!id || !status_Id) {
             return res.errorValid()
         }
 
+        if (!account_Id) {
+            return res.errorValid('Id người dùng không tồn tại!')
+        }
+
         const transaction = await db.sequelize.transaction()
 
         try {
+            const confirmId = (await StatusServices.getOne({ status_name: STATUS.CONFIRM })).status_Id
+
+            if (!confirmId) {
+                return res.error(
+                    404,
+                    'Không kiểm tra được trạng thái!'
+                )
+            }
+
             const post = await PostServices.update(
                 { status_Id },
                 id,
                 transaction
             )
+
+            if (confirmId === status_Id) {
+                const profile = await ProfileServices.getOne(account_Id, false)
+                if (!profile) {
+                    await transaction.rollback()
+                    return res.error(404, 'Không tồn tại tài khoản!')
+                }
+
+                const isUpdate = await ProfileServices.update(
+                    {
+                        profile_score: profile.profile_score + 100
+                    },
+                    account_Id,
+                    false
+                )
+
+                if (isUpdate) {
+                    await transaction.commit()
+                    return res.successNoData(
+                        'Cập nhật trạng thái bài đăng thành công!'
+                    )
+                }
+
+                await transaction.rollback()
+                return res.error(
+                    404,
+                    'Cập nhật trạng thái bài đăng thất bại!'
+                )
+            }
 
             if (post) {
                 await transaction.commit()

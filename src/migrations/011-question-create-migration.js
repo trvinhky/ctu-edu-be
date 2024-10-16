@@ -14,14 +14,6 @@ module.exports = {
             question_url: {
                 type: Sequelize.STRING
             },
-            type_Id: {
-                type: Sequelize.UUID,
-                allowNull: false,
-                references: {
-                    model: 'types',
-                    key: 'type_Id'
-                }
-            },
             auth_Id: {
                 type: Sequelize.UUID,
                 allowNull: false,

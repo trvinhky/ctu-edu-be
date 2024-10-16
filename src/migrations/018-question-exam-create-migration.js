@@ -17,10 +17,6 @@ module.exports = {
                     model: 'questions',
                     key: 'question_Id'
                 }
-            },
-            question_exam_score: {
-                type: Sequelize.DOUBLE,
-                allowNull: false
             }
         })
     },

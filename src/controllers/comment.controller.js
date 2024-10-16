@@ -101,7 +101,10 @@ const CommentControllers = {
             if (comments) {
                 return res.success(
                     'Lấy tất cả bình luận thành công!',
-                    comments
+                    {
+                        count: comments.count,
+                        comments: comments.rows
+                    }
                 )
             }
 

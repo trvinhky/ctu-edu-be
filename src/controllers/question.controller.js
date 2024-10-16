@@ -7,12 +7,11 @@ const QuestionControllers = {
     async create(req, res) {
         const {
             question_content,
-            type_Id,
             auth_Id,
             category_Id
         } = req.body
 
-        if (!question_content || !type_Id || !auth_Id) {
+        if (!question_content || !auth_Id) {
             return res.errorValid()
         }
 
@@ -28,7 +27,6 @@ const QuestionControllers = {
             const newQuestion = await QuestionServices.create(
                 {
                     question_content,
-                    type_Id,
                     auth_Id,
                     question_url: filePath ?? null,
                     category_Id: category_Id ?? null
@@ -52,14 +50,13 @@ const QuestionControllers = {
     async update(req, res) {
         const {
             question_content,
-            type_Id,
             auth_Id,
             category_Id
         } = req.body
 
         const { id } = req.params
 
-        if (!question_content || !type_Id || !id || !auth_Id) {
+        if (!question_content || !id || !auth_Id) {
             return res.errorValid()
         }
 
@@ -76,7 +73,6 @@ const QuestionControllers = {
             const question = await QuestionServices.update(
                 {
                     question_content,
-                    type_Id,
                     auth_Id,
                     question_url: filePath ?? null,
                     category_Id: category_Id ?? null
@@ -130,11 +126,11 @@ const QuestionControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit, id, type, title } = req.query
+        const { page, limit, id, title } = req.query
 
         try {
             const questions = await QuestionServices.getAll({
-                page, limit, id, type, title
+                page, limit, id, title
             })
 
             if (questions) {

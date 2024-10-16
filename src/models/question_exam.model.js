@@ -25,8 +25,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
             primaryKey: true
-        },
-        question_exam_score: DataTypes.DOUBLE
+        }
     }, {
         sequelize,
         modelName: 'QuestionExam',

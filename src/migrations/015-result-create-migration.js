@@ -2,9 +2,17 @@
 module.exports = {
     up: async (queryInterface, Sequelize) => {
         await queryInterface.createTable('results', {
-            student_Id: {
+            result_Id: {
                 allowNull: false,
                 primaryKey: true,
+                type: Sequelize.UUID
+            },
+            result_completed: {
+                type: Sequelize.DATE,
+                allowNull: false
+            },
+            student_Id: {
+                allowNull: false,
                 type: Sequelize.UUID,
                 references: {
                     model: 'account',
@@ -13,21 +21,12 @@ module.exports = {
             },
             exam_Id: {
                 allowNull: false,
-                primaryKey: true,
                 type: Sequelize.UUID,
                 references: {
                     model: 'exams',
                     key: 'exam_Id'
                 }
             },
-            result_score: {
-                type: Sequelize.DOUBLE,
-                allowNull: false
-            },
-            result_completed: {
-                type: Sequelize.DATE,
-                allowNull: false
-            }
         })
     },
     down: async (queryInterface, Sequelize) => {

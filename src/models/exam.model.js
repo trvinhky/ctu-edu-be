@@ -8,10 +8,9 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'course'
             })
 
-            this.belongsToMany(models.Account, {
-                through: models.Result,
+            this.hasMany(models.Result, {
                 foreignKey: 'exam_Id',
-                otherKey: 'student_Id'
+                as: 'results'
             })
 
             this.belongsToMany(models.Question, {
@@ -30,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         exam_title: DataTypes.STRING,
         exam_description: DataTypes.TEXT,
-        exam_total_score: DataTypes.DOUBLE,
         exam_limit: DataTypes.INTEGER,
         course_Id: DataTypes.STRING
     }, {

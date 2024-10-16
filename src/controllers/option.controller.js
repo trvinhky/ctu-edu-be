@@ -1,6 +1,5 @@
 const db = require("../models")
 const OptionServices = require("../services/option.service")
-const { TYPE } = require("../utils/constants")
 
 const OptionControllers = {
     async checkQuestion(question) {
@@ -8,16 +7,8 @@ const OptionControllers = {
             const options = await OptionServices.findByCorrect({
                 question, correct: true
             })
-            if (options && options.count > 0) {
-                const check = options.rows.find(
-                    (option) => {
-                        return option.question.type.type_name.includes(TYPE.ONE)
-                    }
-                )
-                if (check) {
-                    return true
-                }
-                return false
+            if (options?.count > 0) {
+                return true
             }
             return false
         } catch (err) {

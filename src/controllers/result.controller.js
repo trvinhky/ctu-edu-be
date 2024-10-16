@@ -5,11 +5,10 @@ const ResultControllers = {
         const {
             student_Id,
             exam_Id,
-            result_score,
             result_completed
         } = req.body
 
-        if (!student_Id || !exam_Id || !result_completed || isNaN(+result_score)) {
+        if (!student_Id || !exam_Id || !result_completed) {
             return res.errorValid()
         }
 
@@ -18,7 +17,6 @@ const ResultControllers = {
                 {
                     student_Id,
                     exam_Id,
-                    result_score: +result_score,
                     result_completed
                 }
             )

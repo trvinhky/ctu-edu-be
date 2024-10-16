@@ -21,6 +21,12 @@ const AccountControllers = {
             return res.errorValid('Email không tồn tại!')
         }
 
+        const account = await AccountServices.getOne({ account_email: email })
+
+        if (account) {
+            return res.error(404, 'Email đã tồn tại!')
+        }
+
         const code = createVerificationCode(req)
 
         await sendEmail(
