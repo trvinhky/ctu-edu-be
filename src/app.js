@@ -92,6 +92,7 @@ app.use('/recharge', require('./routes/recharge.route'))
 app.use('/lesson', require('./routes/lesson.route'))
 app.use('/category', require('./routes/category.route'))
 app.use('/buy', require('./routes/buy.route'))
+app.use('/history', require('./routes/history.route'))
 
 app.use('/exam', require('./routes/exam.route'))
 app.use('/question', require('./routes/question.route'))
@@ -101,8 +102,6 @@ app.use('/answer', require('./routes/answer.route'))
 app.use('/result', require('./routes/result.route'))
 app.use('/status', require('./routes/status.route'))
 
-app.use('/discussion', require('./routes/discussion.route'))
-app.use('/comment', require('./routes/comment.route'))
 app.use('/post', require('./routes/post.route'))
 
 app.use('/file', require('./routes/file.route'))

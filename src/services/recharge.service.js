@@ -1,8 +1,8 @@
 const db = require("../models")
 
 const RechargeServices = {
-    async create(recharge) {
-        return await db.Recharge.create(recharge)
+    async create(recharge, transaction) {
+        return await db.Recharge.create(recharge, { transaction })
     },
     async update(recharge, recharge_Id, transaction) {
         await db.Recharge.update(
@@ -16,9 +16,18 @@ const RechargeServices = {
             transaction
         })
     },
-    async getOne(recharge_Id) {
+    async getOne(params) {
+        const where = {}
+        if (params.recharge_Id) {
+            where.recharge_Id = params.recharge_Id
+        }
+
+        if (params.recharge_money) {
+            where.recharge_money = +params.recharge_money
+        }
+
         return await db.Recharge.findOne({
-            where: { recharge_Id },
+            where,
         })
     },
     async getAll(params) {
@@ -26,7 +35,9 @@ const RechargeServices = {
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
 
-        const role = {}
+        const role = {
+            order: [['recharge_score', 'ASC']],
+        }
 
         if (params.page) {
             role.limit = limit

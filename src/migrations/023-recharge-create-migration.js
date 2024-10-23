@@ -9,7 +9,8 @@ module.exports = {
             },
             recharge_money: {
                 allowNull: false,
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                unique: true,
             },
             recharge_score: {
                 allowNull: false,

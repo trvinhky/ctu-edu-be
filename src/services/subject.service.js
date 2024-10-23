@@ -16,7 +16,10 @@ const SubjectServices = {
 
         return null
     },
-    async getOne(subject_Id) {
+    async getOne(subject_Id, status_Id = null) {
+        let whereSub = {}
+        if (status_Id) whereSub.status_Id = status_Id
+
         return await db.Subject.findOne({
             where: { subject_Id },
             include: [
@@ -27,6 +30,7 @@ const SubjectServices = {
                 {
                     model: db.Post,
                     as: 'posts',
+                    where: whereSub,
                     include: [{
                         model: db.Account,
                         as: 'auth',
@@ -52,6 +56,10 @@ const SubjectServices = {
         const page = parseInt(params?.page);
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
+        const status_Id = params.status
+
+        let whereSub = {}
+        if (status_Id) whereSub.status_Id = status_Id
 
         const role = {
             include: [
@@ -62,6 +70,7 @@ const SubjectServices = {
                 {
                     model: db.Post,
                     as: 'posts',
+                    where: whereSub,
                     include: [{
                         model: db.Account,
                         as: 'auth',

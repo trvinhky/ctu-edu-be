@@ -6,8 +6,7 @@ const AnswerControllers = {
         const {
             option_Id,
             student_Id,
-            question_Id,
-            answer_correct
+            question_Id
         } = req.body
 
         if (!student_Id || !option_Id || !question_Id) {
@@ -19,8 +18,7 @@ const AnswerControllers = {
                 {
                     option_Id,
                     student_Id,
-                    question_Id,
-                    answer_correct: !!answer_correct
+                    question_Id
                 }
             )
 
@@ -37,8 +35,7 @@ const AnswerControllers = {
         const {
             option_Id,
             student_Id,
-            question_Id,
-            answer_correct
+            question_Id
         } = req.body
         const { id } = req.params
 
@@ -53,8 +50,7 @@ const AnswerControllers = {
                 {
                     option_Id,
                     student_Id,
-                    question_Id,
-                    answer_correct: !!answer_correct
+                    question_Id
                 },
                 id,
                 transaction

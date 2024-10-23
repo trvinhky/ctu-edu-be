@@ -46,7 +46,7 @@ const AccountControllers = {
 
         const checkCode = verifyCode(req, code)
         if (!checkCode.valid) {
-            return error(res, 403, checkCode.message)
+            return res.error(403, checkCode.message)
         }
 
         try {

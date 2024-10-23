@@ -1,4 +1,6 @@
+const StatusServices = require("../services/status.service")
 const SubjectServices = require("../services/subject.service")
+const { STATUS } = require("../utils/constants")
 
 const SubjectControllers = {
     async create(req, res) {
@@ -59,6 +61,7 @@ const SubjectControllers = {
     },
     async getOne(req, res) {
         const { id } = req.params
+        const { isview } = req.query
 
         if (!id) {
             return res.errorValid(
@@ -67,7 +70,18 @@ const SubjectControllers = {
         }
 
         try {
-            const subject = await SubjectServices.getOne(id)
+            let status
+            if (JSON.parse(isview)) {
+                status = (await StatusServices.getOne({ status_name: STATUS.CONFIRM })).status_Id
+
+                if (!status) {
+                    return res.error(
+                        404,
+                        'Cập nhật trạng thái thất bại!'
+                    )
+                }
+            }
+            const subject = await SubjectServices.getOne(id, status)
 
             if (subject) {
                 return res.success(
@@ -85,11 +99,22 @@ const SubjectControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit } = req.query
+        const { page, limit, isview } = req.query
 
         try {
+            let status
+            if (JSON.parse(isview)) {
+                status = (await StatusServices.getOne({ status_name: STATUS.CONFIRM })).status_Id
+
+                if (!status) {
+                    return res.error(
+                        404,
+                        'Cập nhật trạng thái thất bại!'
+                    )
+                }
+            }
             const subjects = await SubjectServices.getAll({
-                page, limit
+                page, limit, status
             })
 
             if (subjects) {

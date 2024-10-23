@@ -7,10 +7,6 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.UUID
             },
-            answer_correct: {
-                type: Sequelize.BOOLEAN,
-                allowNull: false
-            },
             option_Id: {
                 allowNull: false,
                 type: Sequelize.UUID,

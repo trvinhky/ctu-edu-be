@@ -5,8 +5,9 @@ const router = require("express").Router();
 
 router.post('/create', AuthMiddlewares.verifyToken, AuthMiddlewares.adminRole, RechargeControllers.create)
 router.put('/:id', AuthMiddlewares.verifyToken, AuthMiddlewares.adminRole, RechargeControllers.update)
-router.get('/info/:id', AuthMiddlewares.verifyToken, RechargeControllers.getOne)
-router.get('/all', AuthMiddlewares.verifyToken, RechargeControllers.getAll)
+router.get('/info/:id', RechargeControllers.getOne)
+router.get('/all', RechargeControllers.getAll)
 router.delete('/:id', AuthMiddlewares.verifyToken, RechargeControllers.delete)
+router.post('/payment', AuthMiddlewares.verifyToken, RechargeControllers.payment)
 
 module.exports = router;

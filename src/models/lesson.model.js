@@ -13,11 +13,6 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'category'
             })
 
-            this.hasMany(models.Discussion, {
-                foreignKey: 'lesson_Id',
-                as: 'discussions'
-            })
-
             this.belongsToMany(models.Account, {
                 through: models.Buy,
                 foreignKey: 'lesson_Id',

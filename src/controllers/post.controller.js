@@ -107,11 +107,22 @@ const PostControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit, status, auth, title, subject } = req.query
+        const { page, limit, status, auth, title, subject, isview } = req.query
 
         try {
+            let statusId = status
+            if (JSON.parse(isview)) {
+                statusId = (await StatusServices.getOne({ status_name: STATUS.CONFIRM })).status_Id
+
+                if (!statusId) {
+                    return res.error(
+                        404,
+                        'Cập nhật trạng thái thất bại!'
+                    )
+                }
+            }
             const posts = await PostServices.getAll({
-                page, limit, status, auth, title, subject
+                page, limit, status: statusId, auth, title, subject
             })
 
             if (posts) {
@@ -234,7 +245,7 @@ const PostControllers = {
 
                 const isUpdate = await ProfileServices.update(
                     {
-                        profile_score: profile.profile_score + 100
+                        profile_score: profile.profile_score + 50
                     },
                     account_Id,
                     false

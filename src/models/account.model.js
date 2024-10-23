@@ -14,14 +14,14 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'courses'
             })
 
+            this.hasMany(models.History, {
+                foreignKey: 'account_Id',
+                as: 'histories'
+            })
+
             this.hasMany(models.Post, {
                 foreignKey: 'auth_Id',
                 as: 'posts'
-            })
-
-            this.hasMany(models.Comment, {
-                foreignKey: 'account_Id',
-                as: 'comments'
             })
 
             this.hasMany(models.Question, {
@@ -54,11 +54,6 @@ module.exports = (sequelize, DataTypes) => {
             this.hasMany(models.Result, {
                 foreignKey: 'student_Id',
                 as: 'results'
-            })
-
-            this.hasMany(models.Discussion, {
-                foreignKey: 'account_Id',
-                as: 'discussions'
             })
         }
     }
