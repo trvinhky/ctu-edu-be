@@ -17,7 +17,7 @@ const HistoryServices = {
         if (recharge_Id) where.recharge_Id = recharge_Id
 
         const role = {
-            where,
+            ...(Object.keys(where).length > 0 && { where }),
             include: [
                 {
                     model: db.Recharge,
@@ -30,7 +30,7 @@ const HistoryServices = {
                         exclude: [
                             'account_password',
                             'account_token',
-                            'role_Id'
+                            'account_admin'
                         ]
                     },
                     include: [
@@ -63,7 +63,7 @@ const HistoryServices = {
                     as: 'recharge'
                 }
             ],
-            where,
+            ...(Object.keys(where).length > 0 && { where }),
             attributes: [
                 [db.Sequelize.fn('SUM', db.Sequelize.col('recharge.recharge_money')), 'total'] // tính tổng tiền từ Recharge với alias đúng
             ],

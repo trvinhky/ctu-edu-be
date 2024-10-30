@@ -5,17 +5,8 @@ const StatusServices = {
         return await db.Status.create(status)
     },
     async getOne(params) {
-        let where = params
-        if (params.status_name) {
-            where = {
-                status_name: {
-                    [db.Sequelize.Op.like]: `%${params.status_name}%`
-                }
-            }
-        }
-
         return await db.Status.findOne({
-            where,
+            where: params,
             include: [{
                 model: db.Post,
                 as: 'posts'

@@ -2,8 +2,6 @@ const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
 const AccountServices = require("../services/account.service")
 const AuthServices = require("../services/auth.service")
-const RoleServices = require("../services/role.service")
-const { ROLES } = require("../utils/constants")
 const sendEmail = require("../utils/lib/sendEmail")
 const { createVerificationCode, verifyCode, generateCaptcha, expirationTime } = require("../utils/constants/verify-code")
 const fs = require('fs');
@@ -38,7 +36,7 @@ const AccountControllers = {
         return res.successNoData('OK!')
     },
     async create(req, res) {
-        const { password, email, role, name, code } = req.body
+        const { password, email, isAdmin, name, code } = req.body
 
         if (!password || !email || !name || !code) {
             return res.errorValid()
@@ -52,20 +50,17 @@ const AccountControllers = {
         try {
             const hashedPassword = await bcrypt.hash(password, +process.env.SALT)
 
-            const role_Id = role ?? (await RoleServices.getOne({ role_name: ROLES.USER })).role_Id
-
-            if (!role_Id) {
-                return res.error(404, 'Thêm mới người dùng thất bại!')
+            const data = {
+                account_email: email,
+                account_password: hashedPassword,
+                name
             }
 
-            const newAccount = await AccountServices.create(
-                {
-                    account_email: email,
-                    account_password: hashedPassword,
-                    role_Id: role_Id,
-                    name
-                }
-            )
+            if (isAdmin && JSON.parse(isAdmin)) {
+                data.account_admin = JSON.parse(isAdmin)
+            }
+
+            const newAccount = await AccountServices.create(data)
 
             if (newAccount) {
                 return res.successNoData('Thêm mới người dùng thành công!')
@@ -165,12 +160,7 @@ const AccountControllers = {
                     return res.error(403, 'Refresh token không tồn tại!')
                 }
 
-                const accessToken = AuthServices.generateAccessToken({
-                    account_Id: data.account_Id,
-                    role: {
-                        role_name: data.role
-                    }
-                })
+                const accessToken = AuthServices.generateAccessToken(data)
 
                 return res.success(
                     'Cập nhật token thành công!',
@@ -240,8 +230,10 @@ const AccountControllers = {
         }
 
         try {
+            const hashedPassword = await bcrypt.hash(password, +process.env.SALT)
+
             const account = await AccountServices.update(
-                password,
+                { account_password: hashedPassword },
                 { account_Id, account_email: email }
             )
 

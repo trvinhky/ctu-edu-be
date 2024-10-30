@@ -1,10 +1,4 @@
-const ROLES = {
-    USER: 'user',
-    TEACHER: 'teacher',
-    ADMIN: 'admin'
-}
-
-const CATEGORY = {
+const FORMATS = {
     OTHER: "other",
     IMAGE: "image",
     VIDEO: "video",
@@ -17,7 +11,7 @@ const CATEGORY = {
     PRE_SHEET: "Presentations and spreadsheets"
 }
 
-const DESCRIPTION = {
+const DESCRIPTIONS = {
     OTHER: "khác",
     IMAGE: "hình ảnh",
     VIDEO: "video",
@@ -49,4 +43,4 @@ const ACCEPT = {
     PRE_SHEET: ".pptx,.xlsx,.ods"
 }
 
-module.exports = { ROLES, CATEGORY, STATUS, ACCEPT, DESCRIPTION }
+module.exports = { FORMATS, STATUS, ACCEPT, DESCRIPTIONS }

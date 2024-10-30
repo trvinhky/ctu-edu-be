@@ -23,11 +23,7 @@ const AccountServices = {
                 {
                     model: db.Profile,
                     as: 'profile'
-                },
-                {
-                    model: db.Role,
-                    as: 'role'
-                },
+                }
             ]
         })
     },
@@ -51,18 +47,19 @@ const AccountServices = {
         const page = parseInt(params?.page);
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
-        const where = params.role ? { role_Id: params.role } : {}
+        const account_admin = typeof params.role !== 'undefined' ? JSON.parse(params.role) : undefined
+
+        const where = {}
+        if (typeof account_admin !== 'undefined') {
+            where.account_admin = account_admin
+        }
 
         const check = {
-            where,
+            ...(Object.keys(where).length > 0 && { where }),
             include: [
                 {
                     model: db.Profile,
                     as: 'profile'
-                },
-                {
-                    model: db.Role,
-                    as: 'role'
                 }
             ]
         }
@@ -74,12 +71,22 @@ const AccountServices = {
 
         return await db.Account.findAndCountAll(check)
     },
-    async update(account_password, params) {
-        const account_Id = params.account_Id ?? ''
-        const account_email = params.account_email ?? ''
+    async update(data, params) {
+        const account_Id = params.account_Id
+        const account_email = params.account_email
+        const where = {}
+
+        if (account_Id) where.account_Id = account_Id
+        if (account_email) where.account_email = account_email
+
         const account = await db.Account.findOne({ where: { account_Id, account_email } })
         if (account) {
-            account.account_password = account_password
+            if (data.account_password) {
+                account.account_password = data.account_password
+            }
+            if (typeof data.account_admin !== 'undefined') {
+                account.account_admin = data.account_admin
+            }
             return await account.save()
         }
         return null

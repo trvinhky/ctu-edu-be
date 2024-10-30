@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             primaryKey: true
         },
+        status_index: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
+        },
         status_name: {
             type: DataTypes.ENUM,
             values: Object.values(STATUS),

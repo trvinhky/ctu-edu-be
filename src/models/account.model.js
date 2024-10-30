@@ -9,51 +9,20 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'profile'
             })
 
-            this.hasMany(models.Course, {
-                foreignKey: 'teacher_Id',
-                as: 'courses'
+            this.hasMany(models.Post, {
+                foreignKey: 'account_Id',
+                as: 'posts'
+            })
+
+            this.belongsToMany(models.Document, {
+                through: models.Buy,
+                foreignKey: 'account_Id',
+                otherKey: 'document_Id'
             })
 
             this.hasMany(models.History, {
                 foreignKey: 'account_Id',
                 as: 'histories'
-            })
-
-            this.hasMany(models.Post, {
-                foreignKey: 'auth_Id',
-                as: 'posts'
-            })
-
-            this.hasMany(models.Question, {
-                foreignKey: 'auth_Id',
-                as: 'questions'
-            })
-
-            this.belongsTo(models.Role, {
-                foreignKey: 'role_Id',
-                as: 'role'
-            })
-
-            this.hasMany(models.Answer, {
-                foreignKey: 'student_Id',
-                as: 'answers'
-            })
-
-            this.belongsToMany(models.Course, {
-                through: models.Enrollment,
-                foreignKey: 'student_Id',
-                otherKey: 'course_Id'
-            })
-
-            this.belongsToMany(models.Lesson, {
-                through: models.Buy,
-                foreignKey: 'student_Id',
-                otherKey: 'lesson_Id'
-            })
-
-            this.hasMany(models.Result, {
-                foreignKey: 'student_Id',
-                as: 'results'
             })
         }
     }
@@ -77,11 +46,14 @@ module.exports = (sequelize, DataTypes) => {
             unique: true,
             allowNull: true
         },
-        role_Id: DataTypes.STRING
+        account_admin: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        }
     }, {
         sequelize,
         modelName: 'Account',
-        tableName: 'account',
+        tableName: 'accounts',
         timestamps: true,
     });
     return Account;

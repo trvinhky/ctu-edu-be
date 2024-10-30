@@ -13,17 +13,17 @@ const PostServices = {
                     as: 'status'
                 },
                 {
-                    model: db.Subject,
-                    as: 'subject'
+                    model: db.Format,
+                    as: 'format'
                 },
                 {
                     model: db.Account,
-                    as: 'auth',
+                    as: 'account',
                     attributes: {
                         exclude: [
                             'account_password',
                             'account_token',
-                            'role_Id'
+                            'account_admin'
                         ]
                     },
                     include: [
@@ -53,42 +53,46 @@ const PostServices = {
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
         const status_Id = params.status
-        const auth_Id = params.auth
-        const subject_Id = params.subject
+        const account_Id = params.account
+        const format_Id = params.format
         const title = params.title
+        const status_index = isNaN(+params.index) && +params.index
 
         const where = {}
+        const whereSub = {}
 
         if (status_Id) where.status_Id = status_Id
-        if (auth_Id) where.auth_Id = auth_Id
+        if (account_Id) where.account_Id = account_Id
         if (title) {
             where.post_title = {
                 [db.Sequelize.Op.like]: `%${title}%`
             }
         }
-        if (subject_Id) where.subject_Id = subject_Id
+        if (format_Id) where.format_Id = format_Id
+        if (status_index) whereSub.status_index = status_index
 
         return await db.Post.findAndCountAll({
             limit,
             offset,
-            where,
+            ...(Object.keys(where).length > 0 && { where }),
             include: [
                 {
                     model: db.Status,
-                    as: 'status'
+                    as: 'status',
+                    ...(Object.keys(whereSub).length > 0 && { where: whereSub }),
                 },
                 {
-                    model: db.Subject,
-                    as: 'subject'
+                    model: db.Format,
+                    as: 'format'
                 },
                 {
                     model: db.Account,
-                    as: 'auth',
+                    as: 'account',
                     attributes: {
                         exclude: [
                             'account_password',
                             'account_token',
-                            'role_Id'
+                            'account_admin'
                         ]
                     },
                     include: [

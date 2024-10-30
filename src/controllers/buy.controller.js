@@ -1,16 +1,16 @@
 const BuyServices = require("../services/buy.service")
 const db = require("../models")
-const LessonServices = require("../services/lesson.service")
+const DocumentServices = require("../services/document.service")
 const ProfileServices = require("../services/profile.service")
 
 const BuyControllers = {
     async create(req, res) {
         const {
-            student_Id,
-            lesson_Id
+            account_Id,
+            document_Id
         } = req.body
 
-        if (!lesson_Id || !student_Id) {
+        if (!document_Id || !account_Id) {
             return res.errorValid()
         }
 
@@ -18,28 +18,28 @@ const BuyControllers = {
 
         try {
 
-            const lesson = await LessonServices.getOne(lesson_Id)
-            if (!lesson) {
-                return res.error(404, 'Không tồn tại bài học!')
+            const document = await DocumentServices.getOne(document_Id)
+            if (!document) {
+                return res.error(404, 'Không tồn tại tài liệu!')
             }
 
-            const profile = await ProfileServices.getOne(student_Id, false)
+            const profile = await ProfileServices.getOne(account_Id, false)
             if (!profile) {
                 return res.error(404, 'Không tồn tại tài khoản!')
             }
 
-            if (profile.profile_score < lesson.lesson_score) {
+            if (profile.profile_score < document.document_score) {
                 return res.error(403, 'Mua thất bại! Số điểm không đủ!')
             }
 
             const updateInfo = await ProfileServices.update({
-                profile_score: profile.profile_score - lesson.lesson_score
+                profile_score: profile.profile_score - document.document_score
             }, profile.profile_Id, transaction)
 
             const newBuy = await BuyServices.create(
                 {
-                    student_Id,
-                    lesson_Id,
+                    account_Id,
+                    document_Id,
                     buy_date: new Date()
                 },
                 transaction
@@ -47,28 +47,28 @@ const BuyControllers = {
 
             if (newBuy && updateInfo) {
                 await transaction.commit()
-                return res.successNoData('Mua bài học thành công!')
+                return res.successNoData('Mua tài liệu thành công!')
             }
 
             await transaction.rollback()
-            return res.error(404, 'Mua bài học thất bại!')
+            return res.error(404, 'Mua tài liệu thất bại!')
         } catch (err) {
             await transaction.rollback()
             return res.errorServer()
         }
     },
     async getOne(req, res) {
-        const { lesson, student } = req.query
-        if (!lesson || !student) {
+        const { document, account } = req.query
+        if (!document || !account) {
             return res.errorValid()
         }
 
         try {
-            const buy = await BuyServices.getOne(student, lesson)
+            const buy = await BuyServices.getOne(account, document)
 
             if (buy) {
                 return res.success(
-                    'Đã mua bài học này!',
+                    'Đã mua tài liệu này!',
                     buy
                 )
             }
@@ -79,22 +79,22 @@ const BuyControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit, lesson, student, title, score } = req.query
+        const { page, limit, account, document, title, score } = req.query
 
-        if (!(lesson || student)) {
+        if (!(account || document)) {
             return res.errorValid(
-                'Id tài khoản hoặc bài học không tồn tại!'
+                'Id tài khoản hoặc tài liệu không tồn tại!'
             )
         }
 
         try {
             const buy = await BuyServices.getAll({
-                page, limit, lesson, student, score, title
+                page, limit, account, document, score, title
             })
 
             if (buy) {
                 return res.success(
-                    'Lấy tất cả bài học đã mua thành công!',
+                    'Lấy tất cả tài liệu đã mua thành công!',
                     {
                         count: buy.count,
                         buy: buy.rows
@@ -102,7 +102,7 @@ const BuyControllers = {
                 )
             }
 
-            return res.error('Lấy tất cả bài học đã mua thất bại!')
+            return res.error('Lấy tất cả tài liệu đã mua thất bại!')
         } catch (err) {
             return res.errorServer()
         }

@@ -5,23 +5,23 @@ module.exports = (sequelize, DataTypes) => {
     class Buy extends Model {
         static associate(models) {
             this.belongsTo(models.Account, {
-                foreignKey: 'student_Id',
-                as: 'student'
+                foreignKey: 'account_Id',
+                as: 'account'
             })
 
-            this.belongsTo(models.Lesson, {
-                foreignKey: 'lesson_Id',
-                as: 'lesson'
+            this.belongsTo(models.Document, {
+                foreignKey: 'document_Id',
+                as: 'document'
             })
         }
     }
     Buy.init({
-        lesson_Id: {
+        document_Id: {
             type: DataTypes.STRING,
             allowNull: false,
             primaryKey: true
         },
-        student_Id: {
+        account_Id: {
             type: DataTypes.STRING,
             allowNull: false,
             primaryKey: true

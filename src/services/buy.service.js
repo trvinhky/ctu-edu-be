@@ -4,28 +4,28 @@ const BuyServices = {
     async create(buy, transaction) {
         return await db.Buy.create(buy, { transaction })
     },
-    async getOne(student_Id, lesson_Id) {
+    async getOne(account_Id, document_Id) {
         return await db.Buy.findOne({
-            where: { student_Id, lesson_Id },
+            where: { account_Id, document_Id },
             include: [
                 {
-                    model: db.Lesson,
-                    as: 'lesson',
+                    model: db.Document,
+                    as: 'document',
                     include: [
                         {
-                            model: db.Category,
-                            as: 'category'
+                            model: db.Format,
+                            as: 'format'
                         }
                     ]
                 },
                 {
                     model: db.Account,
-                    as: 'student',
+                    as: 'account',
                     attributes: {
                         exclude: [
                             'account_password',
                             'account_token',
-                            'role_Id'
+                            'account_admin'
                         ]
                     },
                 }
@@ -36,52 +36,52 @@ const BuyServices = {
         const page = parseInt(params?.page) || 1;
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
-        const student_Id = params.student
-        const lesson_Id = params.lesson
+        const account_Id = params.account
+        const document_Id = params.document
         const title = params.title
         const score = isNaN(+params.score) && +params.score
 
         const where = {}
 
-        if (student_Id) where.student_Id = student_Id
-        if (lesson_Id) where.lesson_Id = lesson_Id
+        if (account_Id) where.account_Id = account_Id
+        if (document_Id) where.document_Id = document_Id
 
         const whereSub = {}
 
         if (title) {
-            whereSub.lesson_title = {
+            whereSub.document_title = {
                 [db.Sequelize.Op.like]: `%${title}%`
             }
         }
 
         if (score) {
-            whereSub.lesson_score = { [db.Sequelize.Op.lte]: score }
+            whereSub.document_score = { [db.Sequelize.Op.lte]: score }
         }
 
         return await db.Buy.findAndCountAll({
-            where,
+            ...(Object.keys(where).length > 0 && { where }),
             limit,
             offset,
             include: [
                 {
-                    model: db.Lesson,
-                    as: 'lesson',
-                    where: whereSub,
+                    model: db.Document,
+                    as: 'document',
+                    ...(Object.keys(whereSub).length > 0 && { where: whereSub }),
                     include: [
                         {
-                            model: db.Category,
-                            as: 'category'
+                            model: db.Format,
+                            as: 'format'
                         }
                     ]
                 },
                 {
                     model: db.Account,
-                    as: 'student',
+                    as: 'account',
                     attributes: {
                         exclude: [
                             'account_password',
                             'account_token',
-                            'role_Id'
+                            'account_admin'
                         ]
                     },
                 }

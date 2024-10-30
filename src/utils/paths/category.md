@@ -1,4 +1,4 @@
-## **Create New Category**
+## **Create New Format**
 
 ```ts
 method: POST
@@ -7,7 +7,7 @@ required: "admin or teacher login"
 body: (category_name, category_accept, category_description)<string>
 ```
 
-## **Get One Category**
+## **Get One Format**
 
 ```ts
 method: GET
@@ -16,7 +16,7 @@ path: `/category/info/${id}`
 required: "admin or teacher login"
 ```
 
-## **Update Category**
+## **Update Format**
 
 ```ts
 method: PUT
@@ -26,7 +26,7 @@ required: "admin or teacher login"
 body: (category_name, category_accept, category_description)<string>
 ```
 
-## **Get All Category**
+## **Get All Format**
 
 ```ts
 method: GET

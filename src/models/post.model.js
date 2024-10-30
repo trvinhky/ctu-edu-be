@@ -9,14 +9,14 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'status'
             })
 
-            this.belongsTo(models.Subject, {
-                foreignKey: 'subject_Id',
-                as: 'subject'
+            this.belongsTo(models.Format, {
+                foreignKey: 'format_Id',
+                as: 'format'
             })
 
             this.belongsTo(models.Account, {
-                foreignKey: 'auth_Id',
-                as: 'auth'
+                foreignKey: 'account_Id',
+                as: 'account'
             })
         }
     }
@@ -29,9 +29,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         post_title: DataTypes.STRING,
         post_content: DataTypes.TEXT,
+        post_url: DataTypes.STRING,
         status_Id: DataTypes.STRING,
-        subject_Id: DataTypes.STRING,
-        auth_Id: DataTypes.STRING
+        format_Id: DataTypes.STRING,
+        account_Id: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'Post',

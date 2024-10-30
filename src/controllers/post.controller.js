@@ -2,23 +2,27 @@ const db = require("../models")
 const PostServices = require("../services/post.service")
 const ProfileServices = require("../services/profile.service")
 const StatusServices = require("../services/status.service")
-const { STATUS } = require("../utils/constants")
+const path = require('path');
+const fs = require('fs');
 
 const PostControllers = {
     async create(req, res) {
         const {
             post_title,
             post_content,
-            subject_Id,
-            auth_Id
+            format_Id,
+            account_Id
         } = req.body
 
-        if (!post_title || !post_content || !subject_Id || !auth_Id) {
+        if (!post_title || !post_content || !format_Id || !account_Id || !req.file) {
             return res.errorValid()
         }
 
         try {
-            const status_Id = (await StatusServices.getOne({ status_name: STATUS.PENDING })).status_Id
+            const status_Id = (await StatusServices.getOne({ status_index: 0 })).status_Id
+
+            let filePath
+            filePath = path.join('uploads', req.file.filename)
 
             if (!status_Id) {
                 return res.error(
@@ -32,8 +36,9 @@ const PostControllers = {
                     post_title,
                     post_content,
                     status_Id,
-                    subject_Id,
-                    auth_Id
+                    format_Id,
+                    account_Id,
+                    post_url: filePath
                 }
             )
 
@@ -57,19 +62,18 @@ const PostControllers = {
         const {
             post_title,
             post_content,
-            subject_Id,
             status_Id
         } = req.body
 
-        if (!id || !post_title || !post_content || !subject_Id || !status_Id) {
+        if (!id || !post_title || !post_content || !status_Id) {
             return res.errorValid()
         }
 
         const transaction = await db.sequelize.transaction()
 
         try {
-            const pendingId = (await StatusServices.getOne({ status_name: STATUS.PENDING })).status_Id
-            const confirmId = (await StatusServices.getOne({ status_name: STATUS.CONFIRM })).status_Id
+            const pendingId = (await StatusServices.getOne({ status_index: 0 })).status_Id
+            const confirmId = (await StatusServices.getOne({ status_index: 1 })).status_Id
 
             if (!pendingId || confirmId !== status_Id) {
                 return res.error(
@@ -82,7 +86,6 @@ const PostControllers = {
                 {
                     post_title,
                     post_content,
-                    subject_Id,
                     status_Id
                 },
                 id,
@@ -107,22 +110,11 @@ const PostControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit, status, auth, title, subject, isview } = req.query
+        const { page, limit, status, account, title, format, index } = req.query
 
         try {
-            let statusId = status
-            if (JSON.parse(isview)) {
-                statusId = (await StatusServices.getOne({ status_name: STATUS.CONFIRM })).status_Id
-
-                if (!statusId) {
-                    return res.error(
-                        404,
-                        'Cập nhật trạng thái thất bại!'
-                    )
-                }
-            }
             const posts = await PostServices.getAll({
-                page, limit, status: statusId, auth, title, subject
+                page, limit, status, account, title, format, index
             })
 
             if (posts) {
@@ -182,19 +174,26 @@ const PostControllers = {
         try {
             const info = await PostServices.getOne(id)
 
-            if (!info || (info && info?.status?.status_name?.includes(STATUS.CONFIRM))) {
+            if (!info || (info && info?.status?.status_index === 1)) {
                 return res.error(
                     404,
                     'Trạng thái bài đăng không hợp lệ!'
                 )
             }
 
-            const post = await PostServices.delete(id)
-
+            const post = await PostServices.getOne(id)
             if (post) {
-                return res.successNoData(
-                    'Xóa bài đăng thành công!'
-                )
+                const filePath = path.join(__dirname, '../' + data.post_url);
+                if (typeof filePath === 'string' && fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                    const check = await PostServices.delete(id)
+
+                    if (check) {
+                        return res.successNoData(
+                            'Xóa bài đăng thành công!'
+                        )
+                    }
+                }
             }
 
             return res.error(
@@ -207,10 +206,14 @@ const PostControllers = {
     },
     async updateStatus(req, res) {
         const { id } = req.params
-        const { status_Id } = req.body
+        const { status_index, score } = req.body
         const { account_Id } = req
 
-        if (!id || !status_Id) {
+        if (!id || ![0, 1, -1].includes(+status_index)) {
+            return res.errorValid()
+        }
+
+        if (!(status_index && +status_index === 1)) {
             return res.errorValid()
         }
 
@@ -221,12 +224,20 @@ const PostControllers = {
         const transaction = await db.sequelize.transaction()
 
         try {
-            const confirmId = (await StatusServices.getOne({ status_name: STATUS.CONFIRM })).status_Id
+            const confirmId = (await StatusServices.getOne({ status_index: 0 })).status_Id
+            const status_Id = await StatusServices.getOne({ status_index: +status_index })
 
             if (!confirmId) {
                 return res.error(
                     404,
                     'Không kiểm tra được trạng thái!'
+                )
+            }
+
+            if (!status_Id) {
+                return res.error(
+                    404,
+                    'Lấy Id trạng thái bài đăng thất bại!'
                 )
             }
 
@@ -245,7 +256,7 @@ const PostControllers = {
 
                 const isUpdate = await ProfileServices.update(
                     {
-                        profile_score: profile.profile_score + 50
+                        profile_score: profile.profile_score + parseInt(score)
                     },
                     account_Id,
                     false

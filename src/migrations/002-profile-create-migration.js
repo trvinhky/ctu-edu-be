@@ -33,7 +33,7 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.UUID,
                 references: {
-                    model: 'account',
+                    model: 'accounts',
                     key: 'account_Id'
                 }
             }

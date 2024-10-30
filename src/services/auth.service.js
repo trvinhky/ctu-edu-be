@@ -2,10 +2,10 @@ const jwt = require('jsonwebtoken')
 
 const AuthServices = {
     generateAccessToken(payload) {
-        const { account_Id, role } = payload
+        const { account_Id, account_admin } = payload
 
         return jwt.sign(
-            { account_Id, role: role?.role_name },
+            { account_Id, account_admin },
             process.env.ACCESS_TOKEN_SECRET,
             {
                 expiresIn: '1d'
@@ -13,10 +13,10 @@ const AuthServices = {
         )
     },
     generateRefreshToken(payload) {
-        const { account_Id, role } = payload
+        const { account_Id, account_admin } = payload
 
         return jwt.sign(
-            { account_Id, role: role?.role_name },
+            { account_Id, account_admin },
             process.env.REFRESH_TOKEN_SECRET,
             {
                 expiresIn: '7d'

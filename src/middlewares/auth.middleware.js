@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken')
-const { ROLES } = require('../utils/constants')
 
 const AuthMiddlewares = {
     verifyToken(req, res, next) {
@@ -21,29 +20,13 @@ const AuthMiddlewares = {
                 }
 
                 req.account_Id = data.account_Id
-                req.role = data.role
+                req.account_admin = data.account_admin
                 next();
             }
         );
     },
     adminRole(req, res, next) {
-        if (req.role !== ROLES.ADMIN) {
-            return res.status(403).json({
-                message: 'Không đủ quyền!'
-            })
-        }
-        next()
-    },
-    teacherRole(req, res, next) {
-        if (req.role !== ROLES.TEACHER) {
-            return res.status(403).json({
-                message: 'Không đủ quyền!'
-            })
-        }
-        next()
-    },
-    otherUser(req, res, next) {
-        if (!(req.role !== ROLES.ADMIN || req.role !== ROLES.TEACHER)) {
+        if (!req.account_admin) {
             return res.status(403).json({
                 message: 'Không đủ quyền!'
             })
