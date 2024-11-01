@@ -225,7 +225,7 @@ const PostControllers = {
 
         try {
             const confirmId = (await StatusServices.getOne({ status_index: 0 })).status_Id
-            const status_Id = await StatusServices.getOne({ status_index: +status_index })
+            const status_Id = (await StatusServices.getOne({ status_index: +status_index })).status_Id
 
             if (!confirmId) {
                 return res.error(

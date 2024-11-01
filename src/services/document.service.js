@@ -26,7 +26,7 @@ const DocumentServices = {
                 },
                 {
                     model: db.Store,
-                    as: 'stores'
+                    as: 'store'
                 }
             ]
         })
