@@ -3,6 +3,7 @@ const BuyServices = require("../services/buy.service");
 const DocumentServices = require("../services/document.service")
 const path = require('path');
 const fs = require('fs');
+const { PDFDocument } = require('pdf-lib');
 
 const DocumentControllers = {
     async create(req, res) {
@@ -19,8 +20,62 @@ const DocumentControllers = {
         }
 
         try {
-            let filePath
-            filePath = path.join('uploads', req.file.filename)
+            //const filePath = path.join('uploads', req.file.filename)
+            const filePath = path.resolve(__dirname, '../uploads', req.file.filename)
+            // Kiểm tra sự tồn tại của file
+            if (!fs.existsSync(filePath)) {
+                return res.error(
+                    404,
+                    'File không tồn tại!'
+                )
+            }
+
+            const logoPath = path.join(__dirname, '../uploads/', 'logo_512.png');
+            // Kiểm tra sự tồn tại của file
+            if (!fs.existsSync(logoPath)) {
+                return res.error(
+                    404,
+                    'Logo không tồn tại!'
+                )
+            }
+
+            // Đọc file PDF gốc
+            const existingPdfBytes = fs.readFileSync(filePath);
+            const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+            // Đọc file logo
+            const logoBytes = fs.readFileSync(logoPath);
+            const logoImage = await pdfDoc.embedPng(logoBytes);
+
+            const logoWidth = logoImage.width;
+            const logoHeight = logoImage.height;
+
+            // Lấy tất cả các trang của PDF
+            const pages = pdfDoc.getPages();
+            for (const page of pages) {
+                const { width, height } = page.getSize();
+
+                // Tính vị trí và kích thước của logo
+                const scaledLogoWidth = width / 4;  // Điều chỉnh kích thước logo cho phù hợp
+                const scaledLogoHeight = (logoHeight / logoWidth) * scaledLogoWidth;
+
+                // Thêm logo vào mỗi trang với độ mờ 0.2 (20% opacity)
+                page.drawImage(logoImage, {
+                    x: width - scaledLogoWidth - 50,  // Căn góc phải
+                    y: height - scaledLogoHeight - 50, // Căn góc trên
+                    width: scaledLogoWidth,
+                    height: scaledLogoHeight,
+                    opacity: 0.2 // Điều chỉnh độ mờ
+                });
+            }
+
+            // Lưu PDF mới có logo
+            const modifiedPdfBytes = await pdfDoc.save();
+            const uploadFolder = path.join(__dirname, '../uploads');
+            const modifiedFilePath = path.join(uploadFolder, `modified_${req.file.filename}`);
+            const modifiedFileSave = path.join('uploads', `modified_${req.file.filename}`);
+            fs.writeFileSync(modifiedFilePath, modifiedPdfBytes);
+            fs.unlinkSync(filePath);
 
             const newDocument = await DocumentServices.create(
                 {
@@ -29,7 +84,7 @@ const DocumentControllers = {
                     store_Id,
                     document_score: +document_score,
                     format_Id,
-                    document_url: filePath
+                    document_url: modifiedFileSave
                 }
             )
 
@@ -44,6 +99,7 @@ const DocumentControllers = {
                 'Thêm mới tài liệu thất bại!'
             )
         } catch (err) {
+            console.log(err)
             return res.errorServer()
         }
     },
@@ -159,7 +215,7 @@ const DocumentControllers = {
                 document: id
             })
 
-            if (checkValid) {
+            if (checkValid?.count > 0) {
                 return res.errorValid(
                     'Bài học không thể xóa!'
                 )

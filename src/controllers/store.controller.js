@@ -1,5 +1,6 @@
 const StoreServices = require("../services/store.service")
 const path = require('path');
+const fs = require('fs');
 
 const StoreControllers = {
     async create(req, res) {
@@ -64,9 +65,7 @@ const StoreControllers = {
         }
     },
     async update(req, res) {
-        const {
-            store_title
-        } = req.body
+        const { store_title } = req.body
         const { id } = req.params
 
         if (!id || !store_title) {
@@ -88,12 +87,19 @@ const StoreControllers = {
                 data.store_image = filePath
             }
 
+            const old = await StoreServices.getOne(id)
             const store = await StoreServices.update(data)
 
             if (store) {
-                return res.successNoData(
-                    'Cập nhật kho thành công!'
-                )
+                if (old.store_image) {
+                    const filePath = path.join(__dirname, '../' + old.store_image);
+                    if (typeof filePath === 'string' && fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                        return res.successNoData(
+                            'Cập nhật kho thành công!'
+                        )
+                    }
+                }
             }
 
             return res.error(

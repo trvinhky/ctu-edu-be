@@ -27,7 +27,11 @@ const StoreServices = {
         })
 
         if (store) {
-            store.store_title = store_title
+            store.store_title = data.store_title
+
+            if (data.store_image) {
+                store.store_image = data.store_image
+            }
             return await store.save()
         }
 

@@ -206,8 +206,7 @@ const PostControllers = {
     },
     async updateStatus(req, res) {
         const { id } = req.params
-        const { status_index, score } = req.body
-        const { account_Id } = req
+        const { status_index, score, account_Id } = req.body
 
         if (!id || ![0, 1, -1].includes(+status_index)) {
             return res.errorValid()
@@ -217,14 +216,10 @@ const PostControllers = {
             return res.errorValid()
         }
 
-        if (!account_Id) {
-            return res.errorValid('Id người dùng không tồn tại!')
-        }
-
         const transaction = await db.sequelize.transaction()
 
         try {
-            const confirmId = (await StatusServices.getOne({ status_index: 0 })).status_Id
+            const confirmId = (await StatusServices.getOne({ status_index: 1 })).status_Id
             const status_Id = (await StatusServices.getOne({ status_index: +status_index })).status_Id
 
             if (!confirmId) {
@@ -241,13 +236,13 @@ const PostControllers = {
                 )
             }
 
-            const post = await PostServices.update(
-                { status_Id },
-                id,
-                transaction
-            )
+            let flag = 0
 
             if (confirmId === status_Id) {
+                if (!account_Id) {
+                    await transaction.rollback()
+                    return res.errorValid('Không tồn tại Id tài khoản!')
+                }
                 const profile = await ProfileServices.getOne(account_Id, false)
                 if (!profile) {
                     await transaction.rollback()
@@ -259,28 +254,25 @@ const PostControllers = {
                         profile_score: profile.profile_score + parseInt(score)
                     },
                     account_Id,
+                    transaction,
                     false
                 )
 
-                if (isUpdate) {
+                if (isUpdate) flag = 1
+            }
+            if (flag === 1) {
+                const post = await PostServices.update(
+                    { status_Id },
+                    id,
+                    transaction
+                )
+
+                if (post) {
                     await transaction.commit()
                     return res.successNoData(
                         'Cập nhật trạng thái bài đăng thành công!'
                     )
                 }
-
-                await transaction.rollback()
-                return res.error(
-                    404,
-                    'Cập nhật trạng thái bài đăng thất bại!'
-                )
-            }
-
-            if (post) {
-                await transaction.commit()
-                return res.successNoData(
-                    'Cập nhật trạng thái bài đăng thành công!'
-                )
             }
 
             await transaction.rollback()

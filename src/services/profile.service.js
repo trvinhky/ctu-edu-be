@@ -20,6 +20,7 @@ const ProfileServices = {
         } else {
             where.account_Id = id
         }
+
         await db.Profile.update(
             profile,
             { where },

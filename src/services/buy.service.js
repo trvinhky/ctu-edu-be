@@ -33,7 +33,7 @@ const BuyServices = {
         })
     },
     async getAll(params) {
-        const page = parseInt(params?.page) || 1;
+        const page = parseInt(params?.page);
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
         const account_Id = params.account
@@ -58,10 +58,8 @@ const BuyServices = {
             whereSub.document_score = { [db.Sequelize.Op.lte]: score }
         }
 
-        return await db.Buy.findAndCountAll({
+        const roleObj = {
             ...(Object.keys(where).length > 0 && { where }),
-            limit,
-            offset,
             include: [
                 {
                     model: db.Document,
@@ -86,7 +84,14 @@ const BuyServices = {
                     },
                 }
             ]
-        })
+        }
+
+        if (page) {
+            roleObj.limit = limit
+            roleObj.offset = offset
+        }
+
+        return await db.Buy.findAndCountAll(roleObj)
     }
 }
 
