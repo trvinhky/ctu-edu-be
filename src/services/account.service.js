@@ -2,38 +2,13 @@ const db = require("../models")
 
 const AccountServices = {
     async create(account) {
-        return await db.Account.create({
-            ...account,
-            profile: [{
-                profile_name: account.name,
-                profile_score: 50
-            }]
-        }, {
-            include: [{
-                model: db.Profile,
-                as: 'profile'
-            }]
-        })
+        return await db.Account.create(account)
     },
     async getOne(params, isPassword = false) {
         return await db.Account.findOne({
             where: params,
-            attributes: { exclude: !isPassword ? ['account_password'] : [] },
-            include: [
-                {
-                    model: db.Profile,
-                    as: 'profile'
-                }
-            ]
+            attributes: { exclude: !isPassword ? ['account_password'] : [] }
         })
-    },
-    async setToken(account_email, refreshToken) {
-        return await db.Account.update(
-            {
-                account_token: refreshToken
-            },
-            { where: { account_email } }
-        )
     },
     async logout(account_Id) {
         const account = await db.Account.findOne({ where: { account_Id } })
@@ -48,20 +23,19 @@ const AccountServices = {
         const limit = parseInt(params?.limit) || 10;
         const offset = (page - 1) * limit;
         const account_admin = typeof params.role !== 'undefined' ? JSON.parse(params.role) : undefined
+        const account_band = typeof params.active !== 'undefined' ? JSON.parse(params.active) : undefined
 
         const where = {}
         if (typeof account_admin !== 'undefined') {
             where.account_admin = account_admin
         }
 
+        if (typeof account_band !== 'undefined') {
+            where.account_band = account_band
+        }
+
         const check = {
             ...(Object.keys(where).length > 0 && { where }),
-            include: [
-                {
-                    model: db.Profile,
-                    as: 'profile'
-                }
-            ]
         }
 
         if (page) {
@@ -71,7 +45,45 @@ const AccountServices = {
 
         return await db.Account.findAndCountAll(check)
     },
-    async update(data, params) {
+    async update(data, params, transaction) {
+        const account_Id = params.account_Id
+        const account_email = params.account_email
+        const where = {}
+
+        const account_admin = typeof data.account_admin !== 'undefined' ? JSON.parse(data.account_admin) : undefined
+        const account_band = typeof data.account_band !== 'undefined' ? JSON.parse(data.account_band) : undefined
+
+        if (account_Id) where.account_Id = account_Id
+        if (account_email) where.account_email = account_email
+        const account = {}
+        if (data.account_password) {
+            account.account_password = data.account_password
+        }
+
+        if (typeof account_admin !== 'undefined') {
+            account.account_admin = account_admin
+        }
+
+        if (typeof account_band !== 'undefined') {
+            account.account_band = account_band
+        }
+
+        if (data.account_name) {
+            account.account_name = data.account_name
+        }
+
+        await db.Account.update(
+            account,
+            { where },
+            transaction
+        )
+
+        return await db.Account.findOne({
+            where,
+            transaction
+        })
+    },
+    async updateScore(account_score, params) {
         const account_Id = params.account_Id
         const account_email = params.account_email
         const where = {}
@@ -79,18 +91,17 @@ const AccountServices = {
         if (account_Id) where.account_Id = account_Id
         if (account_email) where.account_email = account_email
 
-        const account = await db.Account.findOne({ where: { account_Id, account_email } })
+        const account = await db.Account.findOne({
+            where
+        })
+
         if (account) {
-            if (data.account_password) {
-                account.account_password = data.account_password
-            }
-            if (typeof data.account_admin !== 'undefined') {
-                account.account_admin = data.account_admin
-            }
+            account.account_score += account_score
             return await account.save()
         }
+
         return null
-    }
+    },
 }
 
 module.exports = AccountServices

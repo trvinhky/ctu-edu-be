@@ -5,6 +5,7 @@ const AuthServices = require("../services/auth.service")
 const sendEmail = require("../utils/lib/sendEmail")
 const { createVerificationCode, verifyCode, generateCaptcha, expirationTime } = require("../utils/constants/verify-code")
 const fs = require('fs');
+const db = require("../models");
 
 const AccountControllers = {
     async getCaptCha(req, res) {
@@ -14,15 +15,17 @@ const AccountControllers = {
         })
     },
     async sendEmailCode(req, res) {
-        const { email } = req.body
+        const { email, isForgot } = req.body
         if (!email) {
             return res.errorValid('Email không tồn tại!')
         }
 
-        const account = await AccountServices.getOne({ account_email: email })
+        if (typeof isForgot === 'undefined') {
+            const account = await AccountServices.getOne({ account_email: email })
 
-        if (account) {
-            return res.error(404, 'Email đã tồn tại!')
+            if (account) {
+                return res.error(404, 'Email đã tồn tại!')
+            }
         }
 
         const code = createVerificationCode(req)
@@ -53,10 +56,11 @@ const AccountControllers = {
             const data = {
                 account_email: email,
                 account_password: hashedPassword,
-                name
+                account_name: name,
+                account_score: 50
             }
 
-            if (isAdmin && JSON.parse(isAdmin)) {
+            if (typeof isAdmin !== 'undefined') {
                 data.account_admin = JSON.parse(isAdmin)
             }
 
@@ -96,7 +100,12 @@ const AccountControllers = {
                 return res.error(400, 'CAPTCHA không đúng!')
             }
             const account = await AccountServices.getOne({ account_email: email }, true)
+
             if (account && (await bcrypt.compare(password, account.account_password))) {
+                if (account.account_band) {
+                    return res.error(400, 'Tài khoản đã bị khóa!')
+                }
+
                 const refreshToken = AuthServices.generateRefreshToken(account)
                 const accessToken = AuthServices.generateAccessToken(account)
 
@@ -106,8 +115,8 @@ const AccountControllers = {
                 res.cookie('refreshToken', refreshToken, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'Lax',
-                    maxAge: 24 * 60 * 60 * 1000 // Thời hạn cookie (1 ngày)
+                    sameSite: 'strict',
+                    maxAge: 7 * 24 * 60 * 60 * 1000 // Thời hạn cookie (7 ngày)
                 });
 
                 // Xóa file ảnh CAPTCHA sau khi đã sử dụng
@@ -137,6 +146,7 @@ const AccountControllers = {
             const account = await AccountServices.logout(account_Id)
 
             if (account) {
+                res.clearCookie('refreshToken')
                 return res.successNoData('Đăng xuất thành công!')
             }
 
@@ -149,25 +159,36 @@ const AccountControllers = {
         const refreshToken = req?.cookies?.refreshToken
 
         if (!refreshToken) {
-            return res.error(403, 'Refresh token chưa được cấp!')
+            return res.error(404, 'Refresh token chưa được cấp!')
         }
 
         jwt.verify(
             refreshToken,
             process.env.REFRESH_TOKEN_SECRET,
-            (err, data) => {
-                if (err) {
-                    return res.error(403, 'Refresh token không tồn tại!')
+            async (err, data) => {
+                if (err || !data) {
+                    return res.error(404, 'Refresh token không tồn tại!')
                 }
+                try {
+                    const accessToken = AuthServices.generateAccessToken(data)
+                    const refreshToken = AuthServices.generateRefreshToken(data)
 
-                const accessToken = AuthServices.generateAccessToken(data)
-
-                return res.success(
-                    'Cập nhật token thành công!',
-                    {
-                        token: accessToken
+                    const account = await AccountServices.getOne({ account_Id: data?.account_Id })
+                    account.account_token = refreshToken
+                    await account.save()
+                    if (account) {
+                        return res.success(
+                            'Cập nhật token thành công!',
+                            {
+                                token: accessToken
+                            }
+                        )
                     }
-                )
+
+                    return res.error(404, 'Cập nhật token thất bại!')
+                } catch (e) {
+                    return res.errorServer()
+                }
             }
         );
     },
@@ -175,7 +196,7 @@ const AccountControllers = {
         const { account_Id } = req
 
         if (!account_Id) {
-            return res.errorValid('Id người dùng không tồn tại!')
+            return res.errorValid('Id tài khoản không tồn tại!')
         }
 
         try {
@@ -194,11 +215,11 @@ const AccountControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit, role } = req.query
+        const { page, limit, role, active } = req.query
 
         try {
             const accounts = await AccountServices.getAll({
-                page, limit, role
+                page, limit, role, active
             })
 
             if (accounts) {
@@ -216,6 +237,7 @@ const AccountControllers = {
             return res.errorServer()
         }
     },
+    /* Chức năng của đổi mật khẩu và quên mật khẩu */
     async changePassword(req, res) {
         const { password, code, email } = req.body
         const { account_Id } = req
@@ -229,20 +251,26 @@ const AccountControllers = {
             return res.error(403, checkCode.message)
         }
 
+        const transaction = await db.sequelize.transaction()
+
         try {
             const hashedPassword = await bcrypt.hash(password, +process.env.SALT)
 
             const account = await AccountServices.update(
                 { account_password: hashedPassword },
-                { account_Id, account_email: email }
+                { account_Id, account_email: email },
+                transaction
             )
 
             if (account) {
+                await transaction.commit()
                 return res.successNoData('Thay đổi mật khẩu thành công!')
             }
 
+            await transaction.rollback()
             return res.error(404, 'Thay đổi mật khẩu thất bại!')
         } catch (err) {
+            await transaction.rollback()
             return res.errorServer()
         }
     },
@@ -260,6 +288,99 @@ const AccountControllers = {
 
             return res.error(404, 'Lấy thông tin tài khoản thất bại!')
         } catch (err) {
+            return res.errorServer()
+        }
+    },
+    async update(req, res) {
+        const { account_admin, account_Id, account_band } = req.body
+
+        if (!account_Id) {
+            return res.errorValid(
+                'Không tồn tại account_Id!'
+            )
+        }
+
+        const transaction = await db.sequelize.transaction()
+
+        try {
+            const data = {}
+            if (typeof account_admin !== 'undefined') {
+                data.account_admin = JSON.parse(account_admin)
+            }
+
+            if (typeof account_band !== 'undefined') {
+                data.account_band = JSON.parse(account_band)
+            }
+
+            const account = await AccountServices.update(
+                data,
+                { account_Id },
+                transaction
+            )
+
+            if (account) {
+                await transaction.commit()
+                return res.successNoData('Thay đổi thông tin thành công!')
+            }
+
+            await transaction.rollback()
+            return res.error(404, 'Thay đổi thông tin thất bại!')
+        } catch (err) {
+            await transaction.rollback()
+            return res.errorServer()
+        }
+    },
+    async changeScore(req, res) {
+        const { account_Id, account_email, account_score } = req.body
+
+        if ((!account_email && !account_Id) || isNaN(+account_score)) {
+            return res.errorValid()
+        }
+
+        try {
+            const account = await AccountServices.updateScore(
+                account_score,
+                {
+                    account_Id,
+                    account_email
+                }
+            )
+
+            if (account) {
+                return res.successNoData('Cập nhật điểm tích lũy thành công!')
+            }
+
+            return res.error(404, 'Cập nhật điểm tích lũy thất bại!')
+        } catch (err) {
+            return res.errorServer()
+        }
+    },
+    async changeName(req, res) {
+        const { account_name } = req.body
+        const { account_Id } = req
+
+        if (!account_Id || !account_name) {
+            return res.errorValid()
+        }
+
+        const transaction = await db.sequelize.transaction()
+
+        try {
+            const account = await AccountServices.update(
+                { account_name },
+                { account_Id },
+                transaction
+            )
+
+            if (account) {
+                await transaction.commit()
+                return res.successNoData('Thay đổi tên tài khoản thành công!')
+            }
+
+            await transaction.rollback()
+            return res.error(404, 'Thay đổi tên tài khoản thất bại!')
+        } catch (err) {
+            await transaction.rollback()
             return res.errorServer()
         }
     }

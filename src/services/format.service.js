@@ -46,7 +46,8 @@ const FormatServices = {
                     model: db.Post,
                     as: 'posts'
                 }
-            ]
+            ],
+            distinct: true
         }
 
         if (page) {

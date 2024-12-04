@@ -99,6 +99,10 @@ const StoreControllers = {
                             'Cập nhật kho thành công!'
                         )
                     }
+                } else {
+                    return res.successNoData(
+                        'Cập nhật kho thành công!'
+                    )
                 }
             }
 

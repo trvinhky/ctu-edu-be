@@ -8,7 +8,7 @@ const AuthServices = {
             { account_Id, account_admin },
             process.env.ACCESS_TOKEN_SECRET,
             {
-                expiresIn: '1d'
+                expiresIn: '1d' /* 15m */
             }
         )
     },

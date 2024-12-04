@@ -2,6 +2,7 @@ const db = require("../models")
 const axios = require("axios")
 const RechargeServices = require("../services/recharge.service")
 const crypto = require('crypto');
+const HistoryServices = require("../services/history.service");
 
 const RechargeControllers = {
     async create(req, res) {
@@ -50,6 +51,18 @@ const RechargeControllers = {
         const transaction = await db.sequelize.transaction()
 
         try {
+            const histories = await HistoryServices.getAll({
+                recharge: id
+            })
+
+            if (histories && histories.count > 0) {
+                await transaction.commit()
+                return res.error(
+                    404,
+                    'Cập nhật gói nạp thất bại!'
+                )
+            }
+
             const recharge = await RechargeServices.update(
                 {
                     recharge_money: +recharge_money,
@@ -139,6 +152,17 @@ const RechargeControllers = {
         }
 
         try {
+            const histories = await HistoryServices.getAll({
+                recharge: id
+            })
+
+            if (histories && histories.count > 0) {
+                return res.error(
+                    404,
+                    'Xóa gói nạp thất bại!'
+                )
+            }
+
             const recharge = await RechargeServices.delete(id)
 
             if (recharge) {
@@ -159,10 +183,8 @@ const RechargeControllers = {
         const { amount } = req.body
         const { account_Id } = req
 
-        if (!amount) {
-            return res.errorValid(
-                'Số tiền nạp không tồn tại!'
-            )
+        if (!amount || !account_Id) {
+            return res.errorValid()
         }
         //https://developers.momo.vn/#/docs/en/aiov2/?id=payment-method
         //parameters
@@ -170,10 +192,10 @@ const RechargeControllers = {
         const secretKey = process.env.MOMO_SECRET_KEY;
         const orderInfo = 'pay with MoMo';
         const partnerCode = 'MOMO';
-        const redirectUrl = process.env.FE_URL; // FE
+        const orderId = partnerCode + new Date().getTime();
+        const redirectUrl = process.env.FE_URL + `/${orderId}`; // FE
         const ipnUrl = process.env.CALLBACK_URL; // BE
         const requestType = "payWithMethod";
-        const orderId = partnerCode + new Date().getTime();
         const requestId = orderId;
         const extraData = account_Id;
         const orderGroupId = '';

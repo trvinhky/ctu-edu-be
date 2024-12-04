@@ -24,7 +24,8 @@ const StatusServices = {
             include: [{
                 model: db.Post,
                 as: 'posts'
-            }]
+            }],
+            distinct: true
         })
     }
 }

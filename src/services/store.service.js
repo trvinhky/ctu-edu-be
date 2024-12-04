@@ -52,6 +52,7 @@ const StoreServices = {
 
         const role = {
             ...(Object.keys(where).length > 0 && { where }),
+            distinct: true,
             include: [
                 {
                     model: db.Document,

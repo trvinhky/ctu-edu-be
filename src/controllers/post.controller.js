@@ -1,9 +1,10 @@
 const db = require("../models")
 const PostServices = require("../services/post.service")
-const ProfileServices = require("../services/profile.service")
 const StatusServices = require("../services/status.service")
+const AccountServices = require("../services/account.service")
 const path = require('path');
 const fs = require('fs');
+const { PDFDocument } = require('pdf-lib');
 
 const PostControllers = {
     async create(req, res) {
@@ -11,18 +12,54 @@ const PostControllers = {
             post_title,
             post_content,
             format_Id,
-            account_Id
+            account_Id,
+            post_year,
+            post_author
         } = req.body
 
-        if (!post_title || !post_content || !format_Id || !account_Id || !req.file) {
+        if (!post_title || !post_content || !format_Id || !account_Id || !req.file || isNaN(+post_year) || !post_author) {
             return res.errorValid()
         }
 
         try {
             const status_Id = (await StatusServices.getOne({ status_index: 0 })).status_Id
+            const filePath = path.resolve(__dirname, '../uploads', req.file.filename)
+            const filePathSave = path.join('uploads', req.file.filename)
 
-            let filePath
-            filePath = path.join('uploads', req.file.filename)
+            // Kiểm tra sự tồn tại của file
+            if (!fs.existsSync(filePath)) {
+                return res.error(
+                    404,
+                    'File không tồn tại!'
+                )
+            }
+
+            // Lấy dung lượng file gốc
+            const fileStats = fs.statSync(filePath);
+            const fileSizeInBytes = fileStats.size; // Dung lượng file tính bằng bytes
+            const fileSizeInKB = (fileSizeInBytes / 1024).toFixed(2); // Dung lượng tính bằng KB (2 chữ số thập phân)
+
+            // Đọc file PDF gốc
+            const existingPdfBytes = fs.readFileSync(filePath);
+            const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+            // Lấy tổng số trang của file gốc
+            const totalPages = pdfDoc.getPageCount();
+
+            // Tạo PDF chỉ với 10% số trang hoặc tối đa 15 trang
+            const shortPdfDoc = await PDFDocument.create();
+            const numShortPages = Math.min(Math.max(1, Math.ceil(totalPages * 0.1)), 15); // Tính số trang
+            for (let i = 0; i < numShortPages; i++) {
+                const [copiedPage] = await shortPdfDoc.copyPages(pdfDoc, [i]);
+                shortPdfDoc.addPage(copiedPage);
+            }
+
+            // Lưu PDF có 10% số trang hoặc tối đa 15 trang
+            const shortPdfBytes = await shortPdfDoc.save();
+            const uploadFolder = path.join(__dirname, '../uploads');
+            const shortFilePath = path.join(uploadFolder, `short_${req.file.filename}`);
+            const shortFileSave = path.join('uploads', `short_${req.file.filename}`);
+            fs.writeFileSync(shortFilePath, shortPdfBytes);
 
             if (!status_Id) {
                 return res.error(
@@ -38,7 +75,12 @@ const PostControllers = {
                     status_Id,
                     format_Id,
                     account_Id,
-                    post_url: filePath
+                    post_author,
+                    post_sub: shortFileSave,
+                    post_capacity: +fileSizeInKB, // Dung lượng file
+                    post_page: totalPages,
+                    post_year: +post_year,
+                    post_url: filePathSave
                 }
             )
 
@@ -62,10 +104,12 @@ const PostControllers = {
         const {
             post_title,
             post_content,
-            status_Id
+            status_Id,
+            post_year,
+            post_author
         } = req.body
 
-        if (!id || !post_title || !post_content || !status_Id) {
+        if (!id || !post_title || !post_content || !status_Id || isNaN(+post_year) || !post_author) {
             return res.errorValid()
         }
 
@@ -86,7 +130,9 @@ const PostControllers = {
                 {
                     post_title,
                     post_content,
-                    status_Id
+                    status_Id,
+                    post_author,
+                    post_year: +post_year
                 },
                 id,
                 transaction
@@ -110,11 +156,11 @@ const PostControllers = {
         }
     },
     async getAll(req, res) {
-        const { page, limit, status, account, title, format, index } = req.query
+        const { page, limit, status, account, title, format, index, auth, year, id, month } = req.query
 
         try {
             const posts = await PostServices.getAll({
-                page, limit, status, account, title, format, index
+                page, limit, status, account, title, format, index, auth, year, id, month
             })
 
             if (posts) {
@@ -212,10 +258,6 @@ const PostControllers = {
             return res.errorValid()
         }
 
-        if (!(status_index && +status_index === 1)) {
-            return res.errorValid()
-        }
-
         const transaction = await db.sequelize.transaction()
 
         try {
@@ -243,19 +285,15 @@ const PostControllers = {
                     await transaction.rollback()
                     return res.errorValid('Không tồn tại Id tài khoản!')
                 }
-                const profile = await ProfileServices.getOne(account_Id, false)
-                if (!profile) {
+                const account = await AccountServices.getOne({ account_Id })
+                if (!account) {
                     await transaction.rollback()
                     return res.error(404, 'Không tồn tại tài khoản!')
                 }
 
-                const isUpdate = await ProfileServices.update(
-                    {
-                        profile_score: profile.profile_score + parseInt(score)
-                    },
-                    account_Id,
-                    transaction,
-                    false
+                const isUpdate = await AccountServices.updateScore(
+                    parseInt(score),
+                    { account_Id }
                 )
 
                 if (isUpdate) flag = 1

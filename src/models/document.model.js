@@ -13,6 +13,11 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'store'
             })
 
+            this.hasMany(models.Review, {
+                foreignKey: 'document_Id',
+                as: 'documents'
+            })
+
             this.belongsToMany(models.Account, {
                 through: models.Buy,
                 foreignKey: 'document_Id',
@@ -28,9 +33,14 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true
         },
         document_title: DataTypes.STRING,
+        document_author: DataTypes.STRING,
         document_content: DataTypes.TEXT,
         document_url: DataTypes.STRING,
+        document_sub: DataTypes.STRING,
         document_score: DataTypes.INTEGER,
+        document_year: DataTypes.INTEGER,
+        document_page: DataTypes.INTEGER,
+        document_capacity: DataTypes.DOUBLE,
         format_Id: DataTypes.STRING,
         store_Id: DataTypes.STRING,
     }, {

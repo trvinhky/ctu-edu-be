@@ -5,7 +5,7 @@ const DocumentServices = {
         return await db.Document.create(document)
     },
     async update(document, document_Id, transaction) {
-        await db.Lesson.update(
+        await db.Document.update(
             document,
             { where: { document_Id } },
             transaction
@@ -39,15 +39,39 @@ const DocumentServices = {
         const format_Id = params.format
         const store_Id = params.store
         const title = params.title
+        const auth = params.auth
+        const year = params.year
+        const document_Id = params.id
+        const order = params.order; // sắp xếp giảm dần
         const where = {}
+        const orderCheck = [];
 
         if (document_score) where.document_score = { [db.Sequelize.Op.lte]: document_score }
         if (format_Id) where.format_Id = format_Id
         if (store_Id) where.store_Id = store_Id
+        if (!isNaN(+year)) where.document_year = +year
         if (title) {
             where.document_title = {
                 [db.Sequelize.Op.like]: `%${title}%`
             }
+        }
+
+        if (auth) {
+            where.document_author = {
+                [db.Sequelize.Op.like]: `%${auth}%`
+            }
+        }
+
+        if (document_Id) {
+            where.document_Id = {
+                [db.Sequelize.Op.ne]: document_Id
+            }
+        }
+
+        if (["desc", "asc"].includes(order)) {
+            orderCheck.push(["document_score", order.toUpperCase()]);
+        } else {
+            orderCheck.push(["createdAt", "DESC"]);
         }
 
         const check = {
@@ -61,7 +85,9 @@ const DocumentServices = {
                     model: db.Store,
                     as: 'store'
                 }
-            ]
+            ],
+            distinct: true,
+            order: [orderCheck]
         }
 
         if (page) {

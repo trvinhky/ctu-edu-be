@@ -1,7 +1,9 @@
 const db = require("../models")
+const AccountServices = require("../services/account.service")
 const HistoryServices = require("../services/history.service")
-const ProfileServices = require("../services/profile.service")
 const RechargeServices = require("../services/recharge.service")
+const crypto = require('crypto');
+const axios = require("axios")
 
 const HistoryControllers = {
     async create(req, res) {
@@ -70,6 +72,7 @@ const HistoryControllers = {
     },
     async changeScoreAccount(req, res) {
         const results = req.body
+
         /**
             resultCode = 0: giao dịch thành công.
             resultCode = 9000: giao dịch được cấp quyền (authorization) thành công .
@@ -111,29 +114,26 @@ const HistoryControllers = {
                     'Có lỗi xảy ra! Gói nạp không tồn tại!'
                 )
             }
-
-            const profile = await ProfileServices.getOne(results.extraData, false)
-            if (!profile) {
-                return res.error(
-                    404,
-                    'Không tồn tại tài khoản!'
-                )
+            const account = await AccountServices.getOne({ account_Id: results.extraData })
+            if (!account) {
+                return res.error(404, 'Không tồn tại tài khoản!')
             }
 
-            const updateInfo = await ProfileServices.update({
-                profile_score: profile.profile_score + recharge.recharge_score
-            }, profile.profile_Id, transaction)
+            const updateAccount = await AccountServices.updateScore(
+                recharge.recharge_score,
+                { account_Id: account.account_Id }
+            )
 
             const newHistory = await HistoryServices.create(
                 {
                     recharge_Id: recharge.recharge_Id,
-                    account_Id: updateInfo.account_Id,
+                    account_Id: updateAccount.account_Id,
                     history_createdAt: new Date()
                 },
                 transaction
             )
 
-            if (updateInfo && newHistory) {
+            if (updateAccount && newHistory) {
                 await transaction.commit()
                 return res.successNoData('Thanh toán thành công!')
             }
@@ -166,6 +166,60 @@ const HistoryControllers = {
             return res.error(
                 404,
                 'Lấy tổng tiền thất bại!'
+            )
+        } catch (err) {
+            return res.errorServer()
+        }
+    },
+    async checkStatus(req, res) {
+        const { order } = req.params;
+
+        if (!order) {
+            return res.errorValid(
+                'Id thanh toán không tồn tại!'
+            )
+        }
+
+        try {
+            const accessKey = process.env.MOMO_ACCESS_KEY;
+            const secretKey = process.env.MOMO_SECRET_KEY;
+
+            const rawSignature = `accessKey=${accessKey}&orderId=${order}&partnerCode=MOMO&requestId=${order}`;
+
+            const signature = crypto.createHmac('sha256', secretKey)
+                .update(rawSignature)
+                .digest('hex');
+
+            const requestBody = JSON.stringify({
+                partnerCode: 'MOMO',
+                requestId: order,
+                orderId: order,
+                signature: signature,
+                lang: 'vi',
+            });
+
+            // options for axios
+            const options = {
+                method: 'POST',
+                url: 'https://test-payment.momo.vn/v2/gateway/api/query',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                data: requestBody,
+            };
+
+            const { data } = await axios(options);
+            if (!data) {
+                return res.errorValid(
+                    'Thanh toán thất bại!'
+                )
+            }
+
+            return res.success(
+                data.message,
+                {
+                    code: data.resultCode,
+                }
             )
         } catch (err) {
             return res.errorServer()

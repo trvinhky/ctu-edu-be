@@ -22,6 +22,17 @@ module.exports = {
             },
             account_token: {
                 type: Sequelize.STRING,
+                unique: true
+            },
+            account_name: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            account_score: {
+                type: Sequelize.INTEGER
+            },
+            account_band: {
+                type: Sequelize.BOOLEAN,
             },
             createdAt: {
                 allowNull: false,

@@ -5,12 +5,17 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerOptions = require('./config/swagger');
 const corsOptions = require('./config/cors');
 const session = require('express-session');
+const cookieParser = require('cookie-parser')
 const path = require('path');
+const dotenv = require('dotenv')
+
+dotenv.config()
 
 const app = express()
 const specs = swaggerJsdoc(swaggerOptions)
 
 app.use(cors(corsOptions))
+app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -52,7 +57,7 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-    res.error = (code, message) => {
+    res.error = (code = 404, message) => {
         return res.status(code).json({ message });
     };
     next();
@@ -80,7 +85,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 /* router */
 app.use('/account', require('./routes/account.route'))
-app.use('/profile', require('./routes/profile.route'))
 
 app.use('/store', require('./routes/store.route'))
 app.use('/recharge', require('./routes/recharge.route'))
@@ -91,6 +95,7 @@ app.use('/history', require('./routes/history.route'))
 
 app.use('/status', require('./routes/status.route'))
 app.use('/post', require('./routes/post.route'))
+app.use('/review', require('./routes/review.route'))
 
 app.use('/file', require('./routes/file.route'))
 

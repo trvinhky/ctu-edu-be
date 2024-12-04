@@ -60,6 +60,7 @@ const BuyServices = {
 
         const roleObj = {
             ...(Object.keys(where).length > 0 && { where }),
+            distinct: true,
             include: [
                 {
                     model: db.Document,

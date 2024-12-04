@@ -32,15 +32,10 @@ const HistoryServices = {
                             'account_token',
                             'account_admin'
                         ]
-                    },
-                    include: [
-                        {
-                            model: db.Profile,
-                            as: 'profile'
-                        }
-                    ]
+                    }
                 }
-            ]
+            ],
+            distinct: true
         }
 
         if (params.page) {

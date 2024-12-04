@@ -56,7 +56,8 @@ const FileControllers = {
 
             // Thêm trang từ file PDF cũ vào PDF mới
             const totalPages = pdfDoc.getPageCount();
-            const pagesToExtractCount = Math.floor(totalPages * 0.1) || 1; // Ít nhất trích xuất 1 trang nếu 10% nhỏ hơn 1
+            const pageMin = Math.floor(totalPages * 0.1)
+            const pagesToExtractCount = pageMin > 15 ? 15 : pageMin || 1; // Ít nhất trích xuất 1 trang nếu 10% nhỏ hơn 1
             const pagesToExtract = Array.from({ length: pagesToExtractCount }, (_, i) => i);
             for (const pageIndex of pagesToExtract) {
                 const [copiedPage] = await newPdfDoc.copyPages(pdfDoc, [pageIndex]);

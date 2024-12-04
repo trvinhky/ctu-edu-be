@@ -4,11 +4,6 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Account extends Model {
         static associate(models) {
-            this.hasOne(models.Profile, {
-                foreignKey: 'account_Id',
-                as: 'profile'
-            })
-
             this.hasMany(models.Post, {
                 foreignKey: 'account_Id',
                 as: 'posts'
@@ -23,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
             this.hasMany(models.History, {
                 foreignKey: 'account_Id',
                 as: 'histories'
+            })
+
+            this.hasMany(models.Review, {
+                foreignKey: 'account_Id',
+                as: 'reviews'
             })
         }
     }
@@ -41,15 +41,17 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         account_password: DataTypes.STRING,
-        account_token: {
-            type: DataTypes.STRING,
-            unique: true,
-            allowNull: true
-        },
+        account_token: DataTypes.STRING,
         account_admin: {
             type: DataTypes.BOOLEAN,
             defaultValue: false
-        }
+        },
+        account_band: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+        account_score: DataTypes.INTEGER,
+        account_name: DataTypes.STRING,
     }, {
         sequelize,
         modelName: 'Account',

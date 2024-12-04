@@ -25,13 +25,7 @@ const PostServices = {
                             'account_token',
                             'account_admin'
                         ]
-                    },
-                    include: [
-                        {
-                            model: db.Profile,
-                            as: 'profile'
-                        }
-                    ]
+                    }
                 }
             ]
         })
@@ -56,7 +50,11 @@ const PostServices = {
         const account_Id = params.account
         const format_Id = params.format
         const title = params.title
-        const status_index = isNaN(+params.index) && +params.index
+        const auth = params.auth
+        const year = params.year
+        const month = params.month
+        const post_Id = params.id
+        const status_index = !isNaN(+params.index) && +params.index
 
         const where = {}
         const whereSub = {}
@@ -70,6 +68,25 @@ const PostServices = {
         }
         if (format_Id) where.format_Id = format_Id
         if (status_index) whereSub.status_index = status_index
+        if (!isNaN(+year) && !isNaN(month)) {
+            where.createdAt = {
+                [db.Sequelize.Op.and]: [
+                    db.Sequelize.where(db.Sequelize.fn('MONTH', db.Sequelize.col('Post.createdAt')), +month),
+                    db.Sequelize.where(db.Sequelize.fn('YEAR', db.Sequelize.col('Post.createdAt')), +year),
+                ]
+            }
+        }
+
+        if (auth) {
+            where.post_author = {
+                [db.Sequelize.Op.like]: `%${auth}%`
+            }
+        }
+        if (post_Id) {
+            where.post_Id = {
+                [db.Sequelize.Op.ne]: post_Id
+            }
+        }
 
         return await db.Post.findAndCountAll({
             limit,
@@ -94,15 +111,11 @@ const PostServices = {
                             'account_token',
                             'account_admin'
                         ]
-                    },
-                    include: [
-                        {
-                            model: db.Profile,
-                            as: 'profile'
-                        }
-                    ]
+                    }
                 }
-            ]
+            ],
+            distinct: true,
+            order: [[db.Sequelize.col('Post.createdAt'), "DESC"]]
         })
     },
     async delete(post_Id) {

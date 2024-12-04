@@ -1,7 +1,7 @@
 const BuyServices = require("../services/buy.service")
 const db = require("../models")
 const DocumentServices = require("../services/document.service")
-const ProfileServices = require("../services/profile.service")
+const AccountServices = require("../services/account.service")
 
 const BuyControllers = {
     async create(req, res) {
@@ -23,18 +23,19 @@ const BuyControllers = {
                 return res.error(404, 'Không tồn tại tài liệu!')
             }
 
-            const profile = await ProfileServices.getOne(account_Id, false)
-            if (!profile) {
+            const account = await AccountServices.getOne({ account_Id })
+            if (!account) {
                 return res.error(404, 'Không tồn tại tài khoản!')
             }
 
-            if (profile.profile_score < document.document_score) {
+            if (account.account_score < document.document_score) {
                 return res.error(403, 'Mua thất bại! Số điểm không đủ!')
             }
 
-            const updateInfo = await ProfileServices.update({
-                profile_score: profile.profile_score - document.document_score
-            }, profile.profile_Id, transaction)
+            const updateAccount = await AccountServices.updateScore(
+                -document.document_score,
+                { account_Id }
+            )
 
             const newBuy = await BuyServices.create(
                 {
@@ -45,7 +46,7 @@ const BuyControllers = {
                 transaction
             )
 
-            if (newBuy && updateInfo) {
+            if (newBuy && updateAccount) {
                 await transaction.commit()
                 return res.successNoData('Mua tài liệu thành công!')
             }

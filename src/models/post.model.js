@@ -30,6 +30,11 @@ module.exports = (sequelize, DataTypes) => {
         post_title: DataTypes.STRING,
         post_content: DataTypes.TEXT,
         post_url: DataTypes.STRING,
+        post_sub: DataTypes.STRING,
+        post_year: DataTypes.INTEGER,
+        post_page: DataTypes.INTEGER,
+        post_capacity: DataTypes.DOUBLE,
+        post_author: DataTypes.STRING,
         status_Id: DataTypes.STRING,
         format_Id: DataTypes.STRING,
         account_Id: DataTypes.STRING
