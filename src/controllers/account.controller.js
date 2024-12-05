@@ -132,6 +132,7 @@ const AccountControllers = {
 
             return res.error(404, 'Email hoặc mật khẩu không khớp!')
         } catch (err) {
+            console.log(err)
             return res.errorServer()
         }
     },
